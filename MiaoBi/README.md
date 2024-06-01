@@ -16,8 +16,9 @@
 
 ### MiaoBi SingleFile:
 
-- Download [text_encoder](https://huggingface.co/ShineChen1024/MiaoBi/blob/main/miaobi_beta0.9/text_encoder/model.safetensors) and rename "model.safetensors" to "MiaoBi_clip.safetensors" or any name U like.Then move it into **ComfyUI\models\clip**.
+- Download all files of [text_encoder](https://huggingface.co/ShineChen1024/MiaoBi/tree/main/miaobi_beta0.9/text_encoder) and put them in a floder.Then rename this folder to "MiaoBi_clip" or any name U like.Finally move this folder into **ComfyUI\models\clip**.
 
+![](./assets/MiaoBi_clip.jpg)
 ### MiaoBi Diffsuers SD15:
 
 - Models will automatically download into **ComfyUI\models\diffusers** when node execute.
