@@ -1,6 +1,6 @@
 # My ComfyUI custom-nodes
 
-## Warning: this custom_node costs 5s for loading when startup ComfyUI.
+## Warning: this custom_node takes 5s for importing when startup ComfyUI.
 
 ## 1、[AnyText](./AnyText/README.md) 
 - It's not compitable with [ComfyUI-AnyText](https://github.com/zmwv823/ComfyUI-AnyText).

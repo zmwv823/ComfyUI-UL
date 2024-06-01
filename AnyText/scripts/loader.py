@@ -61,7 +61,7 @@ class AnyText_loader:
     RETURN_NAMES = ("for_debug", "clip_path", "font", "ckpt_name")
     FUNCTION = "AnyText_loader_fn"
     CATEGORY = "ExtraModels/MiaoBi"
-    TITLE = "AnyText-loader"
+    TITLE = "AnyText loader"
 
     def AnyText_loader_fn(self, text, font, ckpt_name, clip_path):
         for search_path in folder_paths.get_folder_paths("clip"):
