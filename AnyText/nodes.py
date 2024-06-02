@@ -81,6 +81,12 @@ class AnyText:
                     "max": 99,
                     "step": 0.1
                 }),
+                "eta": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 1,
+                    "step": 0.1
+                }),
             },
             "optional": {
                         "ori_image": ("STRING", {"forceInput": True}),
@@ -108,7 +114,7 @@ class AnyText:
         strength=1, 
         cfg_scale=9, 
         seed="", 
-        eta=1.0, 
+        eta=0.0, 
         a_prompt="", 
         n_prompt="", 
         width=512, 
@@ -187,12 +193,13 @@ class AnyText:
         #             model_path = path
         #             break
         path = f"{current_directory}\scripts"
-        print(path)
-        pipe = pipeline('my-anytext-task', model=path, model_revision='v1.1.3', use_fp16=True, use_translator=False)
+        print("\033[93mBackend scripts location(后端脚本位置):\033[0m", path)
+        pipe = pipeline('my-anytext-task', model=path, use_fp16=True, use_translator=False)
         n_lines = count_lines(prompt)
+        print("\033[93mNumber of text-content to draw(需要生成的文本数量):\033[0m", n_lines)
         ref_image = ori_image
-        print(pos_image)
-        print(ori_image)
+        print("\033[93mpos_imagg location(遮罩图位置):\033[0m", pos_image)
+        print("\033[93mori_image location(原图位置):\033[0m", ori_image)
         if Random_Gen == True:
             pos_img = generate_rectangles(width, height, n_lines, max_trys=500)
         else:
@@ -241,8 +248,8 @@ class AnyText:
                 "seed": seed,
                 "draw_pos": pos_img,
                 }
-        print(sort_radio)
-        print(revise_pos)
+        print("\033[93mDraw Order(文本生成优先位置):\033[0m", sort_radio)
+        print("\033[93mrevise_pos set to(位置修正设置):\033[0m", revise_pos)
         x_samples, results, rtn_code, rtn_warning, debug_info = pipe(input_data, **params)
         if rtn_code < 0:
             raise Exception(f"Error in AnyText pipeline: {rtn_warning}")
@@ -283,10 +290,9 @@ class AnyText_Pose_IMG:
         comfy_mask_pos_img_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_mask_pos_img.png")
         gr_mask_pose_image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "gr_mask_pos_imgs.png")
         img = node_helpers.pillow(Image.open, image_path)
-        width = img.width
-        height = img.height
-        # print(width)
-        # print(height)
+        # width = img.width
+        # height = img.height
+        width, height = img.size
         output_images = []
         output_masks = []
         w, h = None, None
@@ -327,6 +333,7 @@ class AnyText_Pose_IMG:
         inverted_mask_image = invert_mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
         i = 255. * inverted_mask_image.cpu().numpy()[0]
         img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+        print("\033[93mInput img Resolution(输入图像分辨率):\033[0m", width, "x", height)
         img.save("custom_nodes\ComfyUI-UL\AnyText\comfy_mask_pos_img.png")
 
         return (

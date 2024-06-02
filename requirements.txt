@@ -7,8 +7,6 @@ peft
 opencv-python
 transformers
 accelerate
-json
-re
 einops
 huggingface_hub
 pytorch_lightning
