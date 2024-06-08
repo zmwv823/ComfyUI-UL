@@ -74,8 +74,9 @@
 - 使用ComfyUI原生生成的遮罩。
 
 ## 鸣谢:
-
-**[Repo: tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)**
+### [Fork Repo: MaletteAI/anytext](https://github.com/MaletteAI/anytext)
+- V2构建本地管线思路的来源。
+### [Official Repo: tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 
 ```
 @article{tuo2023anytext,

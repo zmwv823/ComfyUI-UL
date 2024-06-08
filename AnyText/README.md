@@ -70,8 +70,9 @@
 - make a mask with comfyui.
 
 ## Citation:
-
-**[Repo: tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)**
+### [Fork Repo: MaletteAI/anytext](https://github.com/MaletteAI/anytext)
+- V2 build native pipeline method inspired by it.
+### [Official Repo: tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 
 ```
 @article{tuo2023anytext,
