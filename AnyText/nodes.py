@@ -1,16 +1,11 @@
-#from .AnyText.cldm.model import create_model, load_state_dict
 from modelscope.pipelines import pipeline
 import os
 import folder_paths
 import re
 import torch
 from modelscope.pipelines import pipeline
-from modelscope.utils.constant import Tasks
 import cv2
 import numpy as np
-import node_helpers
-from PIL import Image, ImageOps, ImageSequence
-import hashlib
 import cv2
 from modelscope.hub.snapshot_download import snapshot_download
 
@@ -28,7 +23,7 @@ class AnyText:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "font_dir":(os.listdir(os.path.join(folder_paths.models_dir, "fonts")), 'utf-8', ),
+                "AnyText_Loader": ("AnyText_Loader", {"forceInput": True}),
                 "prompt": ("STRING", {"default": "A raccoon stands in front of the blackboard with the words \"你好呀~Hello!\" written on it.", "multiline": True}),
                 "a_prompt": ("STRING", {"default": "best quality, extremely detailed,4k, HD, supper legible text,  clear text edges,  clear strokes, neat writing, no watermarks", "multiline": True}),
                 "n_prompt": ("STRING", {"default": "low-res, bad anatomy, extra digit, fewer digits, cropped, worst quality, low quality, watermark, unreadable text, messy words, distorted text, disorganized writing, advertising picture", "multiline": True}),
@@ -37,14 +32,14 @@ class AnyText:
                 "revise_pos": ("BOOLEAN", {"default": False}),
                 "img_count": ("INT", {"default": 1, "min": 1, "max": 10}),
                 "ddim_steps": ("INT", {"default": 20, "min": 1, "max": 100}),
-                "show_debug": ("BOOLEAN", {"default": False}),
-                "use_translator": ("BOOLEAN", {"default": False}),
+                "use_translator": (["Original", "SavedModel", "None"],{"default": "None"}), 
                 "seed": ("INT", {"default": 9999, "min": -1, "max": 99999999}),
                 "width": ("INT", {"default": 512, "min": 128, "max": 1920, "step": 64}),
                 "height": ("INT", {"default": 512, "min": 128, "max": 1920, "step": 64}),
                 # "width": ("INT", {"forceInput": True}),
                 # "height": ("INT", {"forceInput": True}),
                 "Random_Gen": ("BOOLEAN", {"default": False}),
+                "fp16": ("BOOLEAN", {"default": True}),
                 "strength": ("FLOAT", {
                     "default": 1.00,
                     "min": -999999,
@@ -65,8 +60,10 @@ class AnyText:
                 }),
             },
             "optional": {
-                        "ori_image": ("STRING", {"forceInput": True}),
-                        "pos_image": ("STRING", {"forceInput": True}),
+                        "ori_image": ("ref", {"forceInput": True}),
+                        "pos_image": ("pos", {"forceInput": True}),
+                        #"allow_remote": ("BOOLEAN", {"default": False}),
+                        "show_debug": ("BOOLEAN", {"default": False}),
                         },
         }
 
@@ -77,7 +74,7 @@ class AnyText:
 
     def anytext_process(self,
         mode,
-        font_dir,
+        AnyText_Loader,
         pos_image,
         ori_image,
         sort_radio,
@@ -85,8 +82,10 @@ class AnyText:
         Random_Gen,
         prompt, 
         show_debug, 
+        #allow_remote,
         use_translator,
         img_count, 
+        fp16,
         ddim_steps=20, 
         strength=1, 
         cfg_scale=9, 
@@ -167,15 +166,36 @@ class AnyText:
             pass
         else:
             raise Exception(f"width and height must be multiple of 64(宽度和高度必须为64的倍数).")
-        font_path = os.path.join(folder_paths.models_dir, "fonts", font_dir)
-        path = f"{current_directory}\scripts"
-        if use_translator == True:
+        
+        # path = f"{current_directory}\scripts"
+        remote_code_path = os.path.join(current_directory, "scripts")
+        
+        loader_out = AnyText_Loader.split("|")
+        if fp16 == False:
+            raise Exception(f"FP32 not work at now(暂时不支持FP32).")
+        if use_translator == 'Original':
             #如果启用中译英，则提前判断本地是否存在翻译模型，没有则自动下载，以防跑半路报错。
             if os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
                 pass
             else:
                 snapshot_download('damo/nlp_csanmt_translation_zh2en', revision='v1.0.1')
-        pipe = pipeline('my-anytext-task', model=path, use_fp16=True, use_translator=use_translator)
+        if use_translator == 'SavedModel':
+            if os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "CSANMT", "variables", "variables.data-00000-of-00001"), os.F_OK):
+                pass
+            else:
+                raise Exception(f"Converted SavedModel must be created  before execute by using 'AnyText Create SavedModel' node(必须先使用AnyText Create SavedModel节点创建转换模型文件).\n")
+        pipe = pipeline(
+                        'my-anytext-task', 
+                        model=remote_code_path, 
+                        font_path=loader_out[0], 
+                        ckpt_path=loader_out[1], 
+                        clip_path=loader_out[2], 
+                        translator_path=loader_out[3], 
+                        cfg_path=loader_out[4], 
+                        use_fp16=fp16, 
+                        use_translator=use_translator, 
+                        #allow_remote=allow_remote
+                    )
         n_lines = count_lines(prompt)
         if Random_Gen == True:
             pos_img = generate_rectangles(width, height, n_lines, max_trys=500)
@@ -186,6 +206,10 @@ class AnyText:
             revise_pos = revise_pos
         else:
             revise_pos = False
+        # lora_path = r"D:\AI\ComfyUI_windows_portable\ComfyUI\models\loras\ys艺术\sd15_mw_bpch_扁平风格插画v1d1.safetensors"
+        # lora_ratio = 1
+        # lora_path_ratio = str(lora_path)+ " " + str(lora_ratio)
+        # print("\033[93m", lora_path_ratio, "\033[0m")
         params = {
             "mode": mode,
             "sort_priority": sort_radio,
@@ -200,6 +224,7 @@ class AnyText:
             "eta": eta,
             "a_prompt": a_prompt,
             "n_prompt": n_prompt,
+            # "lora_path_ratio": lora_path_ratio,
             }
         input_data = {
                 "prompt": prompt,
@@ -207,167 +232,31 @@ class AnyText:
                 "draw_pos": pos_img,
                 "ori_image": ori_image,
                 }
-        print("\033[93mImg Resolution<=768x768 Recmmended(图像分辨率,建议<=768x768):", width, "x", height, "\033[0m")
+        print("\033[93mImg Resolution<=768x768 Recommended(图像分辨率,建议<=768x768):", width, "x", height, "\033[0m")
         if show_debug ==True:
-            print("\033[93mFont(字体):", font_dir, "\033[0m")
-            print("\033[93mChinese2English translator(中译英):", use_translator, "\033[0m")
-            print("\033[93mBackend scripts location(后端脚本位置):", path, "\033[0m")
-            print("\033[93mNumber of text-content to generate(需要生成的文本数量):", n_lines, "\033[0m")
-            print("\033[93mpos_image location(遮罩图位置):", pos_image, "\033[0m")
-            print("\033[93mori_image location(原图位置):", ori_image, "\033[0m")
-            print("\033[93mSort Position(文本生成位置排序):", sort_radio, "\033[0m")
-            print("\033[93mEnable revise_pos(启用位置修正):", revise_pos, "\033[0m")
+            print("\033[93mloader from .util(从.util输入的loader):", AnyText_Loader, "\033[0m\n")
+            print("\033[93mloader_out split form loader(分割loader得到4个参数):", loader_out, "\033[0m\n")
+            print("\033[93mFont(字体)--loader_out[0],:", loader_out[0], "\033[0m\n")
+            print("\033[93mAnyText Model(AnyText模型)--loader_out[1]:", loader_out[1], "\033[0m\n")
+            print("\033[93mclip model(clip模型)--loader_out[2]:", loader_out[2], "\033[0m\n")
+            print("\033[93mTranslator(翻译模型)--loader_out[3]:", loader_out[3], "\033[0m\n")
+            print("\033[93myaml_file(yaml配置文件):", loader_out[4], "\033[0m\n")
+            print("\033[93mChinese2English translator(中译英):", use_translator, "\033[0m\n")
+            # print("\033[93mallow_remote(远程代码):", allow_remote, "\033[0m\n")
+            print("\033[93mBackend scripts location(后端脚本位置):", remote_code_path, "\033[0m\n")
+            print("\033[93mNumber of text-content to generate(需要生成的文本数量):", n_lines, "\033[0m\n")
+            print("\033[93mpos_image location(遮罩图位置):", pos_image, "\033[0m\n")
+            print("\033[93mori_image location(原图位置):", ori_image, "\033[0m\n")
+            print("\033[93mSort Position(文本生成位置排序):", sort_radio, "\033[0m\n")
+            print("\033[93mEnable revise_pos(启用位置修正):", revise_pos, "\033[0m\n")
         x_samples, results, rtn_code, rtn_warning, debug_info = pipe(input_data, **params)
         if rtn_code < 0:
             raise Exception(f"Error in AnyText pipeline: {rtn_warning}")
         output = pil2tensor(x_samples)
         print("\n", debug_info)
         return(output)
-
-class AnyText_Pose_IMG:
-    @classmethod
-    def INPUT_TYPES(s):
-        input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
-        return {"required":
-                    {
-                        "image": (sorted(files), {"image_upload": True}),
-                        },
-                }
-
-    CATEGORY = "ExtraModels/AnyText"
-    RETURN_TYPES = (
-        "STRING", 
-        "STRING", 
-        "INT", 
-        "INT", 
-        "STRING", 
-        "IMAGE")
-    RETURN_NAMES = (
-        "ori_img", 
-        "comfy_mask_pos_img", 
-        "width", 
-        "height", 
-        "gr_mask_pose_img", 
-        "mask_img")
-    FUNCTION = "AnyText_Pose_IMG"
-    TITLE = "AnyText Pose IMG"
-    
-    def AnyText_Pose_IMG(self, image):
-        image_path = folder_paths.get_annotated_filepath(image)
-        comfy_mask_pos_img_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_mask_pos_img.png")
-        gr_mask_pose_image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "gr_mask_pos_imgs.png")
-        img = node_helpers.pillow(Image.open, image_path)
-        # width = img.width
-        # height = img.height
-        width, height = img.size
-        if width%64 == 0 and height%64 == 0:
-            pass
-        else:
-            raise Exception(f"Input pos_img resolution must be multiple of 64(输入的pos_img图片分辨率必须为64的倍数).")
-        output_images = []
-        output_masks = []
-        w, h = None, None
-
-        excluded_formats = ['MPO']
-        
-        for i in ImageSequence.Iterator(img):
-            i = node_helpers.pillow(ImageOps.exif_transpose, i)
-
-            if i.mode == 'I':
-                i = i.point(lambda i: i * (1 / 255))
-            image = i.convert("RGB")
-
-            if len(output_images) == 0:
-                w = image.size[0]
-                h = image.size[1]
-            
-            if image.size[0] != w or image.size[1] != h:
-                continue
-            
-            image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image)[None,]
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
-            output_images.append(image)
-            output_masks.append(mask.unsqueeze(0))
-
-        if len(output_images) > 1 and img.format not in excluded_formats:
-            # output_image = torch.cat(output_images, dim=0)
-            output_mask = torch.cat(output_masks, dim=0)
-        else:
-            # output_image = output_images[0]
-            output_mask = output_masks[0]
-        invert_mask = 1.0 - output_mask
-        inverted_mask_image = invert_mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
-        i = 255. * inverted_mask_image.cpu().numpy()[0]
-        img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-        print("\033[93mInput img Resolution<=768x768 Recmmended(输入图像分辨率,建议<=768x768):", width, "x", height, "\033[0m")
-        img.save("custom_nodes\ComfyUI-UL\AnyText\comfy_mask_pos_img.png")
-
-        return (
-            image_path, 
-            comfy_mask_pos_img_path, 
-            width, 
-            height, 
-            gr_mask_pose_image_path, 
-            inverted_mask_image)
-
-    @classmethod
-    def IS_CHANGED(s, image):
-        image_path = folder_paths.get_annotated_filepath(image)
-        m = hashlib.sha256()
-        with open(image_path, 'rb') as f:
-            m.update(f.read())
-        return m.digest().hex()
-
-    @classmethod
-    def VALIDATE_INPUTS(s, image):
-        if not folder_paths.exists_annotated_filepath(image):
-            return "Invalid image file: {}".format(image)
-        return True
-
-class AnyText_translator:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "prompt": ("STRING", {"default": "声明补充说，沃伦的同事都深感震惊，并且希望他能够投案自首。这里面是单批次翻译文本。", "multiline": True}),
-                "Batch_prompt": ("STRING", {"default": "'特斯拉汽车公司联合创始人兼首席执行官埃隆 · 马斯克。', '阿里巴巴集团的使命是让世界没有困难的生意。', '今天的天气怎么样？, 这里面是多批次翻译文本，使用,+空格进行分割。'", "multiline": True}),
-                "if_Batch": ("BOOLEAN", {"default": False}),
-            },
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("中译英结果",)
-    CATEGORY = "ExtraModels/AnyText"
-    FUNCTION = "AnyText_translator"
-    TITLE = "AnyText中译英-阿里达摩院damo/nlp_csanmt_translation_zh2en"
-
-    def AnyText_translator(self, prompt, Batch_prompt, if_Batch):
-        if if_Batch == True:
-            input_sequence = Batch_prompt
-            # 用特定的连接符<SENT_SPLIT>，将多个句子进行串联
-            input_sequence = '<SENT_SPLIT>'.join(input_sequence)
-        else:
-            input_sequence = prompt
-        if os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
-            zh2en_path = os.path.join(folder_paths.models_dir, 'prompt_generator', 'nlp_csanmt_translation_zh2en')
-        else:
-            zh2en_path = "damo/nlp_csanmt_translation_zh2en"
-        pipeline_ins = pipeline(task=Tasks.translation, model=zh2en_path)
-        outputs = pipeline_ins(input=input_sequence)
-        print(outputs)
-        results = outputs['translation']
-        print(results)
-        return results
         
 # Node class and display name mappings
 NODE_CLASS_MAPPINGS = {
     "AnyText": AnyText,
-    "AnyText_Pose_IMG": AnyText_Pose_IMG,
-    "AnyText_translator": AnyText_translator,
 }

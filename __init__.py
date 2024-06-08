@@ -10,6 +10,10 @@ else:
 	from .AnyText.nodes import NODE_CLASS_MAPPINGS as AnyText_Nodes
 	NODE_CLASS_MAPPINGS.update(AnyText_Nodes)
  
+	# AnyText_utils
+	from .AnyText.utils import NODE_CLASS_MAPPINGS as AnyText_loader_Nodes
+	NODE_CLASS_MAPPINGS.update(AnyText_loader_Nodes)
+ 
 	# MiaoBi
 	from .MiaoBi.nodes import NODE_CLASS_MAPPINGS as MiaoBi_Nodes
 	NODE_CLASS_MAPPINGS.update(MiaoBi_Nodes)
