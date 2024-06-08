@@ -168,7 +168,7 @@ class AnyText:
             raise Exception(f"width and height must be multiple of 64(宽度和高度必须为64的倍数).")
         
         # path = f"{current_directory}\scripts"
-        remote_code_path = os.path.join(current_directory, "scripts")
+        remote_code_path = os.path.join(current_directory, "AnyText_scripts")
         
         loader_out = AnyText_Loader.split("|")
         if fp16 == False:

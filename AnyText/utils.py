@@ -247,7 +247,7 @@ class AnyText_SavedModel_translator:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "prompt": ("STRING", {"default": "声明补充说，沃伦的同事都深感震惊，并且希望他能够投案自首。需要手动转换模型，请勿使用此节点。", "multiline": True}),
+                "prompt": ("STRING", {"default": "声明补充说，沃伦的同事都深感震惊，并且希望他能够投案自首。\n需要手动转换模型，请勿使用此节点。\n句子之间最好用换行，否则容易误翻译。", "multiline": True}),
             },
         }
 
@@ -370,8 +370,7 @@ def nlp_csanmt_translation_zh2en(prompt):
     result = {OutputKeys.TRANSLATION: translation_out}
     results = result['translation']
     endtime = time.time()
-    print(result)
-    print(endtime - sttime)
+    print("\033[93m加载模型之后翻译耗时：\033[0m", endtime - sttime)
     with open(temp_txt_path, "w", encoding="UTF-8") as text_file:
             text_file.write(results)
     with open(temp_txt_path, "r", encoding="UTF-8") as f:

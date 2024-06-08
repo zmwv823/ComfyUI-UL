@@ -5,7 +5,6 @@ from transformers import AutoTokenizer, CLIPTokenizer
 import folder_paths
 import numpy as np
 import transformers
-from .MiaoBi_Pipelines.lpw_stable_diffusion import StableDiffusionLongPromptWeightingPipeline
 #这里直接导入插件目录下的社区长文本带权重区分包，貌似custom方法不起作用。
 from .MiaoBi_hidiffusion.hidiffusion import apply_hidiffusion
 from huggingface_hub import snapshot_download

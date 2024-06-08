@@ -152,6 +152,6 @@ def nlp_csanmt_translation_zh2en(prompt):
     translation_out = '<SENT_SPLIT>'.join(translation_out)
     result = {OutputKeys.TRANSLATION: translation_out}
     endtime = time.time()
-    print("加载模型之后翻译耗时：", endtime - sttime)
+    print("\033[93m加载模型之后翻译耗时：\033[0m", endtime - sttime)
     return result
     #以上就是一整套本地调用翻译的全部流程，将它们按顺序放在一整个脚本中就可以顺利翻译了。

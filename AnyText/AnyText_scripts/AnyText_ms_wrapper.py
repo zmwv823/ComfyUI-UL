@@ -10,8 +10,8 @@ import time
 from PIL import ImageFont
 from cldm.model import create_model, load_state_dict
 from cldm.ddim_hacked import DDIMSampler
-from .t3_dataset import draw_glyph, draw_glyph2
-from .util import check_channels, resize_image, save_images
+from .AnyText_t3_dataset import draw_glyph, draw_glyph2
+from .AnyText_util import check_channels, resize_image, save_images
 from pytorch_lightning import seed_everything
 from modelscope.pipelines import pipeline
 from modelscope.utils.constant import Tasks
@@ -26,7 +26,7 @@ from modelscope.hub.snapshot_download import snapshot_download
 from .AnyText_bert_tokenizer import BasicTokenizer
 import folder_paths
 from huggingface_hub import hf_hub_download
-from .util import nlp_csanmt_translation_zh2en
+from .AnyText_util import nlp_csanmt_translation_zh2en
 
 checker = BasicTokenizer()
 BBOX_MAX_NUM = 8
