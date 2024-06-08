@@ -1,4 +1,4 @@
-## sd1.5中文文生图-妙笔-非官方Diffusers Pipeline & Hidiffusion(Higher Resolution) & ResAdapter(Higher Resolution)实现,Unofficial implementation of MiaoBi.  |  [Index](../README.md)
+## sd1.5中文文生图-妙笔-非官方Diffusers Pipeline & Hidiffusion(Higher Resolution) & ResAdapter(Higher Resolution)实现,Unofficial implementation of MiaoBi.  |  [Index-目录](../README.md)
 
 [@ShineChen1024](https://github.com/ShineChen1024)
 
