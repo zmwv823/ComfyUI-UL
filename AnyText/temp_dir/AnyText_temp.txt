@@ -1,1 +1,2 @@
-D:\AI\ComfyUI_windows_portable\ComfyUI\models\fonts\Auto_DownLoad|None|D:\AI\ComfyUI_windows_portable\ComfyUI\models\clip\openai--clip-vit-large-patch14|D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en|D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\AnyText\models_yaml\anytext_sd15.yaml
+转换后的模型位置：
+D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en\CSANMT
