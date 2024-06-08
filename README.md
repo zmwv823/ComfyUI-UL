@@ -1,4 +1,4 @@
-# My Personal custom-nodes | For Study Purpose | Not Recommeded.
+# My Personal custom-nodes | For Study Purpose Only | Not Recommeded
 
 ## Warning: this custom_node takes 7s for importing when startup ComfyUI.
 
