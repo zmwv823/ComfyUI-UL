@@ -10,5 +10,6 @@ accelerate
 einops
 huggingface_hub
 pytorch_lightning
+tensorflow
 subword_nmt #translator essensial
 #gradio==3.50.0 #use gradio web for generating mask image
