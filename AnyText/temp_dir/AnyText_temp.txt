@@ -1,2 +1,1 @@
-转换后的模型位置：
-D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en\CSANMT
+The statement added that Wallen's colleagues were deeply shocked and hoped that he would surrender to the case. If you need to manually convert the model, please do not use this point. It is best to use line breaks between sentences, otherwise it is easy to mistranslate.
