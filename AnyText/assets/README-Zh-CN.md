@@ -3,13 +3,14 @@
 ## 原Repo: [AnyText: Multilingual Visual Text Generation And Editing](https://github.com/tyxsspa/AnyText)
 
 ## 警告: 
-- 这个插件生成结果可能比官方差很多。
+- 这个插件生成质量可能比官方差很多。
 - 仅在ComfyUI官方整合包+绿色便携(python_embed)+windows测试，第三方整合包、虚拟环境和其他操作系统(例如linux)可能无法使用。
 - 官方bat启动脚本和辣椒酱的铁锅炖启动器正常运行，秋叶管理器暂不兼容。
+### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:
 - 手绘遮罩数量必须>=你想生成文字的数量，每一个“”代表一个文字数量，“”里面内容不限长度,否则会报错 ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
-- 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+win10+torch2.2.1+cu121+rtx3050laptop(4GB).
+- 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0)大部分包都是最新版本。
 - **输入的图片分辨率必须为64的倍数。** 输入图片最大分辨率建议768x768。
 - **如果font、ckpt_name、clip、translator设置为Auto_DownLoad，则会自动下载默认模型到特定目录。如果模型已经存在，则会自动加载。**

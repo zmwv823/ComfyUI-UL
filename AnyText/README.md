@@ -3,22 +3,23 @@
 ## Original Repo: [AnyText: Multilingual Visual Text Generation And Editing](https://github.com/tyxsspa/AnyText)
 
 ## Warning: 
-- This custom-node results may worse than official.
+- This custom-node results may worse than official. 
 - Works well with official ComfyUI release using python_embed on windows in my case. Distributions from unofficial or vitural env or other OS(such as linux) may not work.
 - Work with official start.bat and AIgodlike launcher(TGD), incompatible with Aki launcher.
+### v2 test, more native, not remote_code mode.
 
 ## Instructions:
 - Numbers of draw_masks must >= nunbers of string_content (in the "") we want to generate, or it will raise an error ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
-- works on my pc: ComfyUI official release+(ComfyUI_windows_portable\ComfyUI)start with powershell+win10+torch2.2.1(2.3.0)+cu121+rtx3050laptop(4GB).
+- works on my pc: ComfyUI official release+(ComfyUI_windows_portable\ComfyUI)start with powershell+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0) Most packages are the newest.
 - **Input image resolution must be multiple of 64.** Input image max resolution 768x768 Recommended.
 - **If font、ckpt_name、clip、translator set to Auto_DownLoad, default models will automtically download to specified directory. Models will loaded if models already exist.**
 - AnyText model will automatically download into "ComfyUI\models\checkpoints\15\anytext_v1.1.safetensors" from huggingface(fp16: 2.66 GB) when first time executing the node if the model file dose not exist.
 - You can download [AnyText-FP32-5.73 GB](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/file/view/master?fileName=anytext_v1.1.ckpt&status=2) from modelscope,(fp32 5.73 GB).Then put it into **ComfyUI\models\checkpoints\15**.
 - Or manually download [AnyText-FP16-2.66 GB](https://huggingface.co/Sanster/AnyText/blob/main/pytorch_model.fp16.safetensors) from huggingface and rename it to **anytext_v1.1.safetensors**.Then put it into **ComfyUI\models\checkpoints\15**.
-- clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will automatically download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**![](./assets/clip_model.jpg)
+- clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will automatically download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**![](./AnyText/assets/clip_model.jpg)
 - A [font-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf) (SourceHanSansSC-Medium.otf) will automatically download into **ComfyUI\models\fonts** from huggingface.
-- With use_translator checked, translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will automatically download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
+- With use_translator checked, translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will automatically download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**![](./AnyText/assets/zh2en_model.jpg)
 - **The AnyText model itself is also a standard sd1.5 text2image model.**
 ## Example Prompts:
 ### Text-Generation English Prompts:
@@ -47,7 +48,7 @@
 - 一个黄色标志牌，上边写着"不要" 和 "大意"
 - 一个建筑物前面的字母标牌， 上面写着 " "
 ## Example workflow:
-![workflow](./assets/AnyText-wf.png)
+![workflow](./AnyText/assets/AnyText-wf.png)
 
 ## Some Params:
 

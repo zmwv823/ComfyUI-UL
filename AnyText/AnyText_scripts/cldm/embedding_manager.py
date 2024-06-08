@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from functools import partial
-from ldm.modules.diffusionmodules.util import conv_nd, linear
+from ..ldm.modules.diffusionmodules.util import conv_nd, linear
 
 
 def get_clip_token_for_string(tokenizer, string):
