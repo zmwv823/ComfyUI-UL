@@ -5,9 +5,12 @@
 ## 警告: 
 - 这个插件生成质量可能比官方差很多。
 - 仅在ComfyUI官方整合包+绿色便携(python_embed)+windows测试，第三方整合包、虚拟环境和其他操作系统(例如linux)可能无法使用。
+- 本插件目前仅支持CUDA+FP16生成。
+
 ### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:
+- 自动检测输入提示词是否为中文，来决定是否自动加载翻译。但是要生成的文本必须在(全角字符)(“”)里面不能是(半角字符)("")。
 - 手绘遮罩数量必须>=你想生成文字的数量，每一个“”代表一个文字数量，“”里面内容不限长度,否则会报错 ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0)大部分包都是最新版本。
