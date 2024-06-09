@@ -18,5 +18,9 @@ else:
 	from .MiaoBi.nodes import NODE_CLASS_MAPPINGS as MiaoBi_Nodes
 	NODE_CLASS_MAPPINGS.update(MiaoBi_Nodes)
  
+	# MiaoBi_utils
+	from .MiaoBi.utils import NODE_CLASS_MAPPINGS as MiaoBi_Loader_Nodes
+	NODE_CLASS_MAPPINGS.update(MiaoBi_Loader_Nodes)
+ 
 	NODE_DISPLAY_NAME_MAPPINGS = {k:v.TITLE for k,v in NODE_CLASS_MAPPINGS.items()}
 	__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
