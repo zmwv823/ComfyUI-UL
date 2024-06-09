@@ -10,7 +10,7 @@
 ### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:
-- 自动检测提示词是否中文，来决定是否自动加载翻译。如果使用英文提示词生成中文文本，要生成的中文文本必须在(全角字符)`(“”)`里面，不能是(半角字符)`("")`。
+- 自动检测提示词是否中文，来决定是否自动加载翻译。
 - 手绘遮罩数量必须>=你想生成文字的数量，每一个“”代表一个文字数量，“”里面内容不限长度,否则会报错 ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0)大部分包都是最新版本。

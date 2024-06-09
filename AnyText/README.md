@@ -10,7 +10,7 @@
 ### v2 test, more native, not remote_code mode.
 
 ## Instructions:
-- Input_prompts will be checked if is_Chinese_prompts to decide whether auto load translator or not. If input_prompts is English but want to generate Chinese_text, then the Chinese_text must in the（Full-width characters）`(“”)` , not（Half-width characters）`("")`.
+- Input_prompts will be checked if is_Chinese_prompts to decide whether auto load translator or not.
 - Numbers of draw_masks must >= nunbers of string_content (in the "") we want to generate, or it will raise an error ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - works on my pc: ComfyUI official release+(ComfyUI_windows_portable\ComfyUI)start with powershell+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0) Most packages are the newest.
