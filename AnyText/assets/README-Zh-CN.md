@@ -10,7 +10,7 @@
 ### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:
-- 自动检测输入提示词是否为中文，来决定是否自动加载翻译。但是要生成的文本必须在(全角字符)(“”)里面不能是(半角字符)("")。
+- 自动检测提示词是否中文，来决定是否自动加载翻译。如果使用英文提示词生成中文文本，要生成的中文文本必须在(全角字符)`(“”)`里面，不能是(半角字符)`("")`。
 - 手绘遮罩数量必须>=你想生成文字的数量，每一个“”代表一个文字数量，“”里面内容不限长度,否则会报错 ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0)大部分包都是最新版本。
@@ -28,11 +28,11 @@
 
 ## 示例提示词:
 ### 文本生成英文提示词：
-- An exquisite mug with an ancient Chinese poem engraved on it, including  "花落知多少" and "夜来风雨声" and "处处闻啼鸟" and "春眠不觉晓"
-- Sign on the clean building that reads "科学" and "과학"  and "ステップ" and "SCIENCE"
+- An exquisite mug with an ancient Chinese poem engraved on it, including  “花落知多少” and “夜来风雨声” and “处处闻啼鸟” and “春眠不觉晓”
+- Sign on the clean building that reads “科学” and "과학"  and "ステップ" and "SCIENCE"
 - An ice sculpture is made with the text "Happy" and "Holidays".Dslr photo.
-- A baseball cap with words "要聪明地" and "全力以赴"
-- A nice drawing of octopus, sharks, and boats made by a child with crayons, with the words "神奇海底世界"
+- A baseball cap with words “要聪明地” and “全力以赴”
+- A nice drawing of octopus, sharks, and boats made by a child with crayons, with the words “神奇海底世界”
 ### 文本编辑英文提示词
 - A Minion meme that says "wrong"
 - A pile of fruit with "UIT" written in the middle

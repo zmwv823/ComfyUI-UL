@@ -10,7 +10,7 @@
 ### v2 test, more native, not remote_code mode.
 
 ## Instructions:
-- Input prompts will be checked if is_Chinese to decide whether auto load translator or not. But the text we want to generate must in the（Full-width characters）(“”) not （Half-width characters）("").
+- Input_prompts will be checked if is_Chinese_prompts to decide whether auto load translator or not. If input_prompts is English but want to generate Chinese_text, then the Chinese_text must in the（Full-width characters）`(“”)` , not（Half-width characters）`("")`.
 - Numbers of draw_masks must >= nunbers of string_content (in the "") we want to generate, or it will raise an error ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - works on my pc: ComfyUI official release+(ComfyUI_windows_portable\ComfyUI)start with powershell+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0) Most packages are the newest.
@@ -25,11 +25,11 @@
 - **The AnyText model itself is also a standard sd1.5 text2image model.**
 ## Example Prompts:
 ### Text-Generation English Prompts:
-- An exquisite mug with an ancient Chinese poem engraved on it, including  "花落知多少" and "夜来风雨声" and "处处闻啼鸟" and "春眠不觉晓"
-- Sign on the clean building that reads "科学" and "과학"  and "ステップ" and "SCIENCE"
+- An exquisite mug with an ancient Chinese poem engraved on it, including  “花落知多少” and “夜来风雨声” and “处处闻啼鸟” and “春眠不觉晓”
+- Sign on the clean building that reads “科学” and "과학"  and "ステップ" and "SCIENCE"
 - An ice sculpture is made with the text "Happy" and "Holidays".Dslr photo.
-- A baseball cap with words "要聪明地" and "全力以赴"
-- A nice drawing of octopus, sharks, and boats made by a child with crayons, with the words "神奇海底世界"
+- A baseball cap with words “要聪明地” and “全力以赴”
+- A nice drawing of octopus, sharks, and boats made by a child with crayons, with the words “神奇海底世界”
 ### Text-Editing English Prompts:
 - A Minion meme that says "wrong"
 - A pile of fruit with "UIT" written in the middle
