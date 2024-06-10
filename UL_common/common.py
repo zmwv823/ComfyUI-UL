@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import os
 import shutil
+import comfy.model_management as mm
 
 def is_module_imported(module_name):
     try:
@@ -23,6 +24,22 @@ def get_device():
         return "mps"
     print(f"[INFO]device: {device}")
     return device
+
+def get_dtype(dtype):
+    if dtype == 'auto':
+        try:
+            if mm.should_use_fp16():
+                   print("\033[93mfp16\033[0m")
+                   dtype = torch.float16
+            elif mm.should_use_bf16():
+                   print("\033[93mbf16\033[0m")
+                   dtype = torch.bfloat16
+            else:
+                   print("\033[93mfp32\033[0m")
+                   dtype = torch.float32
+        except:
+                raise AttributeError("ComfyUI version too old, can't autodetect properly. Set your dtypes manually.")
+    return dtype
 
 def copy_and_rename_file(source, destination, new_name):
     try:

@@ -46,4 +46,4 @@ else:
 	__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 
 # web ui的节点功能
-WEB_DIRECTORY = "./web"
+WEB_DIRECTORY = "./UL_web"

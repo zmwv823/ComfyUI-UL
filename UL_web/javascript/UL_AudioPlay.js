@@ -67,14 +67,13 @@ const createWaveSurfer = (wavesurfer, id) => {
     barRadius: 6
   })
 
-  //true循环播放，false播完暂停
-  wavesurfer._auto = false
+  wavesurfer._auto = true
 
   // 监听播放结束事件，重新开始播放以实现循环播放
-  wavesurfer.on('finish', function () {
-    // console.log(wavesurfer)
-    if (wavesurfer._auto) wavesurfer.play()
-  })
+  // wavesurfer.on('finish', function () {
+  //   // console.log(wavesurfer)
+  //   if (wavesurfer._auto) wavesurfer.play()
+  // })
 
   wavesurfer.on('interaction', () => {
     wavesurfer._auto = false
