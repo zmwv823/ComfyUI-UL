@@ -1,3 +1,5 @@
+## Warning: `.wav` audio file will automatically save into comfy_output_directory.
+
 ## Official example prompts
 - Simulate a forest ambiance with birds chirping and wind rustling through the leaves.
 - Create a serene soundscape of a quiet beach at sunset.

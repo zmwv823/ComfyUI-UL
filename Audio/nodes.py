@@ -9,7 +9,7 @@ from .stable_audio_tools.inference.generation import generate_diffusion_cond
 import folder_paths
 import json
 import time
-from ..UL_common.common import get_device
+from ..UL_common.common import get_device, copy_and_rename_file
 
 # 获取当前文件的目录
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -78,6 +78,7 @@ class UL_StableAudio:
                 "fp16": ("BOOLEAN", {"default": True}),
                 "save_name": ("STRING", {"multiline": False, "default": "stabe_audio"}),
                 "force_cpu":("BOOLEAN", {"default": False}),
+                "save_to_desktop":("BOOLEAN", {"default": False}),
             }
         }
     
@@ -90,7 +91,7 @@ class UL_StableAudio:
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
 
-    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, force_cpu, ckpt_name, fp16, sampler_type, save_name):
+    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, force_cpu, ckpt_name, fp16, sampler_type, save_name, save_to_desktop):
 
         if fp16 == True:
             dtype = torch.float16
@@ -118,12 +119,17 @@ class UL_StableAudio:
 
         comfy_output_dir = folder_paths.get_output_directory()
         # 添加文件名后缀
-        audio_file = save_name
+        audio_file = 'stabe_audio'
         now = time.strftime("%Y%m%d%H%M%S",time.localtime(time.time())) 
-        audio_file = f"{audio_file}_{now}.wav"
+        # audio_file = f"{audio_file}_{now}.wav"
+        audio_file = f"{audio_file}.wav"
         audio_path = os.path.join(comfy_output_dir, audio_file)
 
         torchaudio.save(audio_path, output, self.sample_rate)
+        if save_to_desktop == True:
+            desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+            new_name = f"{save_name}_{now}.wav"
+            copy_and_rename_file(audio_path, desktop_path, new_name)
         
         return ({
                 "filename": audio_file,
