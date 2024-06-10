@@ -1,4 +1,4 @@
-## Official example prompts
+## Official example prompts  |  [Index](../README.md)
 - Simulate a forest ambiance with birds chirping and wind rustling through the leaves.
 - Create a serene soundscape of a quiet beach at sunset.
 - clapping.

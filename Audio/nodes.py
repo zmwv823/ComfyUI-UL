@@ -77,10 +77,10 @@ class UL_StableAudio:
                 "sampler_type": (["dpmpp-3m-sde", "dpmpp-2m-sde", "k-dpm-fast", "k-lms", 'k-heun', 'k-dpmpp-2s-ancestral', 'k-dpm-2', 'k-dpm-adaptive'], {"default": "dpmpp-3m-sde"}),
                 "fp16": ("BOOLEAN", {"default": True}),
                 "save_name": ("STRING", {"multiline": False, "default": "stabe_audio"}),
-                "force_cpu":("BOOLEAN", {"default": False}),
                 "save_to_desktop":("BOOLEAN", {"default": False}),
+                "whether_save_to_folderpath":("BOOLEAN", {"default": False}),
                 "save_to_folderpath": ("STRING", {"multiline": False, "default": ""}),
-                "if_save_to_folderpath":("BOOLEAN", {"default": False}),
+                "force_cpu":("BOOLEAN", {"default": False}),
             }
         }
     
@@ -93,14 +93,15 @@ class UL_StableAudio:
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
 
-    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, force_cpu, ckpt_name, fp16, sampler_type, save_name, save_to_desktop, save_to_folderpath, if_save_to_folderpath):
+    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, force_cpu, ckpt_name, fp16, sampler_type, save_name, save_to_desktop, save_to_folderpath, whether_save_to_folderpath):
 
         #如果开启保存到自定义目录，先检查目录是否存在
-        custom_path = save_to_folderpath
-        if is_folder_exist(custom_path):
-            pass
-        else:
-            raise Exception(f"Invalid folderpath, plz specify a exist folderpath(无效路径，请指定一个已经存在的目录).")
+        if whether_save_to_folderpath == True:
+            custom_path = save_to_folderpath
+            if is_folder_exist(custom_path):
+                pass
+            else:
+                raise Exception(f"Invalid folderpath, plz specify a exist folderpath(无效路径，请指定一个已经存在的目录).")
         
         if fp16 == True:
             dtype = torch.float16
@@ -140,9 +141,10 @@ class UL_StableAudio:
             desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
             new_name = f"{save_name}_{now}.wav"
             copy_and_rename_file(audio_path, desktop_path, new_name)
-        if if_save_to_folderpath == True:
+        if whether_save_to_folderpath == True:
             new_name = f"{save_name}_{now}.wav"
             copy_and_rename_file(audio_path, save_to_folderpath, new_name)
+            
         return ({
                 "filename": audio_file,
                 "subfolder": "",
