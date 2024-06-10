@@ -32,3 +32,11 @@ def copy_and_rename_file(source, destination, new_name):
         print("\033[93mSuccess copy and rename file!-文件复制并重命名成功！\033[0m")
     except FileNotFoundError:
         print("\033[93mNo file!-文件不存在！\033[0m")
+        
+def is_folder_exist(folder_path):
+    result = os.path.exists(folder_path)
+    return result
+    
+def is_file_exists(file_path):
+    result = os.path.exists(file_path)
+    return result
