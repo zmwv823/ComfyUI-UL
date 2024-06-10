@@ -1,9 +1,12 @@
 modelscope
+#MiaoBi
+peft
+
+#AnyText
 pillow
 numpy
 torch
 torchvision
-peft
 opencv-python
 transformers
 accelerate
@@ -13,3 +16,19 @@ pytorch_lightning
 tensorflow
 subword_nmt #translator essensial
 #gradio==3.50.0 #use gradio web for generating mask image
+
+#Audio
+torchaudio
+einops
+einops-exts
+soundfile
+aeiou
+transformers
+alias-free-torch
+ema-pytorch
+encodec
+x-transformers
+descript-audiotools
+descript-audio-codec
+k-diffusion
+setuptools==69.5.0
