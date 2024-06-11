@@ -5,7 +5,7 @@
 ## Warning: 
 - This custom-node results may worse than official. 
 - Works well with official ComfyUI release using python_embed on windows in my case. Distributions from unofficial or vitural env or other OS(such as linux) may not work.
-- Works only on **CUDA with fp16 in this node** for now.
+- Works only on **CUDA in this node** for now.
 
 ### v2 test, more native, not remote_code mode.
 
