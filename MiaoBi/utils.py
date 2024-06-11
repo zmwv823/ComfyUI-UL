@@ -41,8 +41,8 @@ class MiaoBi_Loader:
                 }
         }
          
-    RETURN_TYPES = ("MiaoBi_Loader","STRING")
-    RETURN_NAMES = ("MiaoBi_Loader","MiaoBi_Loader_text")
+    RETURN_TYPES = ("MiaoBi_Loader", )
+    RETURN_NAMES = ("MiaoBi_Loader", )
     FUNCTION = "MiaoBi_Loader"
     CATEGORY = "ExtraModels/MiaoBi"
     TITLE = "MiaoBi Loader"
@@ -62,8 +62,8 @@ class MiaoBi_Loader:
                     multi_loras_weight, #11
                     ):
         self.MiaoBi_paths = str(Apply_Hidiffusion) + '|' + str(clip_layer) + '|' + LoRA_name1 + '|' + LoRA_name2 + '|' + LoRA_name3 + '|' + str(lora_weight1) + '|' + str(lora_weight2) + '|' + str(lora_weight3) + '|' + str(LoRA_switch1) + '|' + str(LoRA_switch2) + '|' + str(LoRA_switch3) + '|' + str(multi_loras_weight)
-        print(self.MiaoBi_paths)
-        return (self.MiaoBi_paths, self.MiaoBi_paths,)
+        # print(self.MiaoBi_paths)
+        return (self.MiaoBi_paths, )
     
 NODE_CLASS_MAPPINGS = {
     "MiaoBi_Loader": MiaoBi_Loader,

@@ -13,6 +13,7 @@
 - Use [ComfyUI_ExtraModels](https://github.com/city96/ComfyUI_ExtraModels) instead.
 
 ## 3、[Audio](./Audio/README.md)
+### stable-audio-open-1.0
 - Original Github Repo: [stable-audio-open-1.0](https://github.com/Stability-AI/stable-audio-tools)
 - Original Huggingface Repo: [stable-audio-open-1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)
 - Fork from Github Repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)
