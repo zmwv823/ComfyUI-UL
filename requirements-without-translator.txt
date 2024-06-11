@@ -12,6 +12,7 @@ accelerate
 einops
 huggingface_hub
 pytorch_lightning
+ujson
 
 #Audio
 torchaudio

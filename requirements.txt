@@ -12,6 +12,7 @@ accelerate
 einops
 huggingface_hub
 pytorch_lightning
+ujson
 tensorflow #translator essensial
 subword_nmt #translator essensial
 modelscope #translator essensial
