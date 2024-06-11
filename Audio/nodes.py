@@ -12,7 +12,7 @@ from ..UL_common.common import copy_and_rename_file, is_folder_exist, is_module_
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 # 加载模型
-def load_model(device, model_path, dtype):
+def StableAudio_load_model(device, model_path, dtype):
     # model_config = get_model_config()
     with open(os.path.join(current_directory, f'stable-audio-open-model-config\model_config.json'), encoding='utf-8') as f:
         model_config = json.load(f)
@@ -28,7 +28,7 @@ def load_model(device, model_path, dtype):
     model = model.to(device, dtype)
     return model,sample_rate,sample_size
 
-def generate(model,prompt,seconds,seed,steps,cfg_scale,sample_size, sigma_min, sigma_max, sampler_type,device):
+def StableAudio_generate(model,prompt,seconds,seed,steps,cfg_scale,sample_size, sigma_min, sigma_max, sampler_type,device):
     conditioning = [{
         "prompt": prompt,
         "seconds_start": 0,
@@ -114,12 +114,12 @@ class UL_StableAudio:
         if self.initialized_model:
             self.initialized_model=self.initialized_model.to(device, dtype) #t5-base
         else:
-            self.initialized_model,self.sample_rate,self.sample_size=load_model(device, ckpt_path, dtype)
+            self.initialized_model,self.sample_rate,self.sample_size=StableAudio_load_model(device, ckpt_path, dtype)
 
         # 根据时长，计算size
         self.sample_size=int(self.sample_rate*seconds)
         
-        output=generate(self.initialized_model,prompt,seconds,seed,steps,cfg_scale,self.sample_size, sigma_min, sigma_max, sampler_type, device)
+        output=StableAudio_generate(self.initialized_model,prompt,seconds,seed,steps,cfg_scale,self.sample_size, sigma_min, sigma_max, sampler_type, device)
 
         #生成后将模型转移到cpu，释放显存。
         self.initialized_model.to(torch.device('cpu'), dtype)
