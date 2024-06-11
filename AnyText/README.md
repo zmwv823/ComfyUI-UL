@@ -3,7 +3,7 @@
 ## Original Repo: [AnyText: Multilingual Visual Text Generation And Editing](https://github.com/tyxsspa/AnyText)
 
 ## Warning: 
-- This custom-node results may worse than official. 
+- This custom-node results maybe worse than official. 
 - Works well with official ComfyUI release using python_embed on windows in my case. Distributions from unofficial or vitural env or other OS(such as linux) may not work.
 - Tested only on **cuda with fp16 in this node** , you can try others options but maybe not work.
 
