@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import os
-import sys
 import shutil
 import comfy.model_management as mm
 
@@ -13,23 +12,8 @@ def is_module_imported(module_name):
     else:
         return True
     
-def is_module_imported_simple(module_name):
-    return module_name in sys.modules
-    
 def pil2tensor(image):
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
-
-def get_device():
-    # logging.info("[INFO] SDXLNodesLib get_device")
-    device = "cpu"
-    if torch.cuda.is_available():
-        return "cuda"
-    if torch.backends.mps.is_available():
-        return "mps"
-    if torch.xpu.is_available():
-        return "xpu"
-    print(f"[INFO]device: {device}")
-    return device
 
 def get_device_by_name(device):
     if device == 'auto':
@@ -45,9 +29,8 @@ def get_device_by_name(device):
                 raise AttributeError("What's your device(到底用什么设备跑的)？")
     print("\033[93mUse Device(使用设备):", device, "\033[0m")
     return device
-    
 
-def get_dtype(dtype):
+def get_dtype_by_name(dtype):
     if dtype == 'auto':
         try:
             if mm.should_use_fp16():

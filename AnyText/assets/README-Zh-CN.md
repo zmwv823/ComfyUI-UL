@@ -4,9 +4,8 @@
 
 ## 警告: 
 - 这个插件生成质量可能比官方差很多。
-- 仅在ComfyUI官方整合包+绿色便携(python_embed)+windows测试，第三方整合包、虚拟环境和其他操作系统(例如linux)可能无法使用。
 - 仅测试 **cuda+fp16** ，其他搭配自行测试。
-
+- 仅在**ComfyUI官方整合包稳定版**+**绿色便携(python_embed)**+**windows测试**，第三方整合包、虚拟环境和其他操作系统(例如linux)可能无法使用。
 ### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:
@@ -14,15 +13,15 @@
 - 手绘遮罩数量必须>=你想生成文字的数量，每一个“”代表一个文字数量，“”里面内容不限长度,否则会报错 ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - 个人电脑环境: ComfyUI官方整合包+(ComfyUI_windows_portable\ComfyUI下)脚本运行+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0)大部分包都是最新版本。
-- **输入的图片分辨率必须为64的倍数。** 输入图片最大分辨率建议768x768。
+- **支持任意分辨率图片输入，但是会被缩放到<=768，输出图片也会被限制到<=768(官方策略)。**
 - **如果font、ckpt_name、clip、translator设置为Auto_DownLoad，则会自动下载默认模型到特定目录。如果模型已经存在，则会自动加载。**
-- 运行本插件节点时，如果本地没有模型文件，会自动从笑脸(huggingface)下载AnyText模型(fp16: 2.66 GB)到"ComfyUI\models\checkpoints\15\anytext_v1.1.safetensors"。
-- 你可以手动从[魔搭(modelscope)-AnyText-FP32-5.73 GB](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/file/view/master?fileName=anytext_v1.1.ckpt&status=2)下载，然后放到**ComfyUI\models\checkpoints\15**。
-- 或者手动从[笑脸(huggingface)-AnyText-FP16-2.66 GB](https://huggingface.co/Sanster/AnyText/blob/main/pytorch_model.fp16.safetensors) 下载并重命名为**anytext_v1.1.safetensors**。然后放到 **ComfyUI\models\checkpoints\15**。
-- [clip模型-**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14)会自动下载到 `C:\Users\username\.cache\huggingface\hub`。可以手动下载[clip模型](https://huggingface.co/openai/clip-vit-large-patch14)放到**ComfyUI\models\clip\openai--clip-vit-large-patch14**。
+- 自动从笑脸(huggingface)下载的AnyText模型(fp16: 2.66 GB)在"ComfyUI\models\checkpoints\15\anytext_v1.1.safetensors"。
+- 你可以手动从[魔搭(modelscope)-AnyText-FP32-5.73 GB](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/file/view/master?fileName=anytext_v1.1.ckpt&status=2)下载，然后放到**ComfyUI\models\checkpoints**。
+- 或者手动从[笑脸(huggingface)-AnyText-FP16-2.66 GB](https://huggingface.co/Sanster/AnyText/blob/main/pytorch_model.fp16.safetensors) 下载并重命名为**anytext_v1.1.safetensors或者任意名字**。然后放到 **ComfyUI\models\checkpoints**。
+- [clip模型-**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14)会下载到 `C:\Users\username\.cache\huggingface\hub`。可以手动下载[clip模型](https://huggingface.co/openai/clip-vit-large-patch14)放到**ComfyUI\models\clip\openai--clip-vit-large-patch14**位置。
 - ![](./clip_model.jpg)
-- 默认字体[font-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf)(SourceHanSansSC-Medium.otf) 会自动从笑脸(huggingface)下载到**ComfyUI\models\fonts**。
-- 使用use_translator中译英会自动从[魔搭modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en)下载模型到`C:\Users\username\.cache\modelscope\hub\damo`。可以手动从前面链接下载，然后把所有文件放到**ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**
+- [字体-(SourceHanSansSC-Medium.otf)-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf)会从笑脸(huggingface)下载到**ComfyUI\models\fonts**位置，你也可以使用自己的字体。
+- 中译英模型会自动从[魔搭modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en)下载到`C:\Users\username\.cache\modelscope\hub\damo`位置。可以手动从前面链接下载，然后把所有文件放到**ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**
 - ![](./zh2en_model.jpg)
 - **AnyText模型本身是一个标准的sd1.5文生图模型。**
 
@@ -71,9 +70,9 @@
 
 - 根据提示词内字符串数量自动生成遮罩，启用这个选项时pos_img输入不生效。
 
-### comfy_mask_pos_img:
+### nonEdit_random_gen_width & nonEdit_random_gen_height:
 
-- 使用ComfyUI原生生成的遮罩。
+- 当**text-generation和Random_Gen**一起使用时控制图片尺寸，仅此时生效。
 
 ## 鸣谢:
 ### [Fork Repo: MaletteAI/anytext](https://github.com/MaletteAI/anytext)

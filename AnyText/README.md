@@ -4,9 +4,8 @@
 
 ## Warning: 
 - This custom-node results maybe worse than official. 
-- Works well with official ComfyUI release using python_embed on windows in my case. Distributions from unofficial or vitural env or other OS(such as linux) may not work.
-- Tested only on **cuda with fp16 in this node** , you can try others options but maybe not work.
-
+- Tested only on **cuda with fp16** , you can try others options but maybe not work.
+- Tested with **Official_ComfyUI_Stable_Release** using **python_embed** on **windows** in my case. Distributions from unofficial or vitural env or other OS(such as linux) maybe not work.
 ### v2 test, more native, not remote_code mode.
 
 ## Instructions:
@@ -14,14 +13,15 @@
 - Numbers of draw_masks must >= nunbers of string_content (in the "") we want to generate, or it will raise an error ["not enough values to unpack"](https://github.com/zmwv823/ComfyUI-AnyText/issues/7).
 - works on my pc: ComfyUI official release+(ComfyUI_windows_portable\ComfyUI)start with powershell+python_embed+win10+py311+torch2.3.0+cu121+rtx3050laptop(4GB).
 - pillow>=9.5.0(10.3.0) Most packages are the newest.
-- **Input image resolution must be multiple of 64.** Input image max resolution 768x768 Recommended.
+- **Accept any resolution image input, but will resized to <=768, output images will limited to <=768.(Official method)** 
 - **If font、ckpt_name、clip、translator set to Auto_DownLoad, default models will automtically download to specified directory. Models will loaded if models already exist.**
-- AnyText model will automatically download into "ComfyUI\models\checkpoints\15\anytext_v1.1.safetensors" from huggingface(fp16: 2.66 GB) when first time executing the node if the model file dose not exist.
-- You can download [AnyText-FP32-5.73 GB](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/file/view/master?fileName=anytext_v1.1.ckpt&status=2) from modelscope,(fp32 5.73 GB).Then put it into **ComfyUI\models\checkpoints\15**.
-- Or manually download [AnyText-FP16-2.66 GB](https://huggingface.co/Sanster/AnyText/blob/main/pytorch_model.fp16.safetensors) from huggingface and rename it to **anytext_v1.1.safetensors**.Then put it into **ComfyUI\models\checkpoints\15**.
-- clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will automatically download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**![](./assets/clip_model.jpg)
-- A [font-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf) (SourceHanSansSC-Medium.otf) will automatically download into **ComfyUI\models\fonts** from huggingface.
-- With use_translator checked, translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will automatically download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
+- AnyText model will download into "ComfyUI\models\checkpoints\15\anytext_v1.1.safetensors" from huggingface(fp16: 2.66 GB).
+- We can manually download [AnyText-FP32-5.73 GB](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/file/view/master?fileName=anytext_v1.1.ckpt&status=2) from modelscope,(fp32 5.73 GB).Then put it into **ComfyUI\models\checkpoints**.
+- Or manually download [AnyText-FP16-2.66 GB](https://huggingface.co/Sanster/AnyText/blob/main/pytorch_model.fp16.safetensors) from huggingface and rename it to **anytext_v1.1.safetensors or whatever you like**.Then put it into **ComfyUI\models\checkpoints**.
+- clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**.
+- ![](./assets/clip_model.jpg)
+- [Font-(SourceHanSansSC-Medium.otf)-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf) will download into **ComfyUI\models\fonts** from huggingface, we can use any other fonts too.
+- Translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
 - **The AnyText model itself is also a standard sd1.5 text2image model.**
 ## Example Prompts:
 ### Text-Generation English Prompts:
@@ -67,9 +67,9 @@
 
 - Automatically generate mask as pos_img based on the number of text-content("string"). With this checked the pos_img input dosen't work
 
-### comfy_mask_pos_img:
+### nonEdit_random_gen_width & nonEdit_random_gen_height:
 
-- make a mask with comfyui.
+- For image size control with **text-generation and Random_Gen** together, works only in this situation.
 
 ## Citation:
 ### [Fork Repo: MaletteAI/anytext](https://github.com/MaletteAI/anytext)

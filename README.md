@@ -1,6 +1,6 @@
 # My Personal custom-nodes | For Study Purpose Only | Not Recommeded
 
-## Warning: this custom_node takes 2.4s+ for importing when startup ComfyUI.
+## Warning: this custom_node takes 0.5s+ for importing when startup ComfyUI.
 
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)

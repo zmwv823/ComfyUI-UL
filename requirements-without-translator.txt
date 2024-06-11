@@ -12,9 +12,6 @@ accelerate
 einops
 huggingface_hub
 pytorch_lightning
-tensorflow #translator essensial
-subword_nmt #translator essensial
-modelscope #translator essensial
 
 #Audio
 torchaudio

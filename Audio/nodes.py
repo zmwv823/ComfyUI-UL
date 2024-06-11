@@ -3,13 +3,10 @@ import torch
 import torchaudio
 from einops import rearrange
 import numpy as np
-from .stable_audio_tools.models.factory import create_model_from_config
-from .stable_audio_tools.models.utils import load_ckpt_state_dict
-from .stable_audio_tools.inference.generation import generate_diffusion_cond
 import folder_paths
 import json
 import time
-from ..UL_common.common import get_device, copy_and_rename_file, is_folder_exist
+from ..UL_common.common import copy_and_rename_file, is_folder_exist, is_module_imported, get_device_by_name, get_dtype_by_name
 
 # 获取当前文件的目录
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +16,10 @@ def load_model(device, model_path, dtype):
     # model_config = get_model_config()
     with open(os.path.join(current_directory, f'stable-audio-open-model-config\model_config.json'), encoding='utf-8') as f:
         model_config = json.load(f)
+    if not is_module_imported('create_model_from_config'):
+        from .stable_audio_tools.models.factory import create_model_from_config
+    if not is_module_imported('load_ckpt_state_dict'):
+        from .stable_audio_tools.models.utils import load_ckpt_state_dict
     model = create_model_from_config(model_config)
     model.load_state_dict(load_ckpt_state_dict(model_path))
     sample_rate = model_config["sample_rate"]
@@ -33,6 +34,8 @@ def generate(model,prompt,seconds,seed,steps,cfg_scale,sample_size, sigma_min, s
         "seconds_start": 0,
         "seconds_total": seconds
     }]
+    if not is_module_imported('generate_diffusion_cond'):
+        from .stable_audio_tools.inference.generation import generate_diffusion_cond
     output = generate_diffusion_cond(
         model,
         steps=steps,
@@ -75,12 +78,12 @@ class UL_StableAudio:
                 "sigma_min": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1000.0, "step": 0.01}),
                 "sigma_max": ("FLOAT", {"default": 200.0, "min": 0.0, "max": 1000.0, "step": 0.01}),
                 "sampler_type": (["dpmpp-3m-sde", "dpmpp-2m-sde", "k-dpm-fast", "k-lms", 'k-heun', 'k-dpmpp-2s-ancestral', 'k-dpm-2', 'k-dpm-adaptive'], {"default": "dpmpp-3m-sde"}),
-                "fp16": ("BOOLEAN", {"default": True}),
                 "save_name": ("STRING", {"multiline": False, "default": "stabe_audio"}),
                 "save_to_desktop":("BOOLEAN", {"default": False}),
                 "whether_save_to_custom_folder":("BOOLEAN", {"default": False}),
                 "save_to_custom_folder": ("STRING", {"multiline": False, "default": r"C:\Users\pc\Desktop"}),
-                "force_cpu":("BOOLEAN", {"default": False}),
+                "dtype": (["auto", "fp16", "bf16", "fp32"],{"default": "auto"}), 
+                "device": (["auto", "cuda", "cpu", "mps", "xpu"],{"default": "auto"}), 
             }
         }
     
@@ -93,7 +96,7 @@ class UL_StableAudio:
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
 
-    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, force_cpu, ckpt_name, fp16, sampler_type, save_name, save_to_desktop, save_to_custom_folder, whether_save_to_custom_folder):
+    def UL_StableAudio(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, ckpt_name, dtype, sampler_type, save_name, save_to_desktop, save_to_custom_folder, whether_save_to_custom_folder, device):
 
         #如果开启保存到自定义目录，先检查目录是否存在
         if whether_save_to_custom_folder == True:
@@ -103,16 +106,10 @@ class UL_StableAudio:
             else:
                 raise Exception(f"Invalid folderpath \033[93m, plz specify a exist folderpath(无效路径，请指定一个已经存在的目录).", custom_path)
         
-        if fp16 == True:
-            dtype = torch.float16
-        else:
-            dtype = torch.float32
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
-        device = get_device()
-        if force_cpu == False:
-            device = device
-        else:
-            device = 'cpu'
+        
+        dtype = get_dtype_by_name(dtype)
+        device = get_device_by_name(device)
 
         if self.initialized_model:
             self.initialized_model=self.initialized_model.to(device, dtype) #t5-base
