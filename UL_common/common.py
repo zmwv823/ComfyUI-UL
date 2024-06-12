@@ -3,6 +3,7 @@ import numpy as np
 import os
 import shutil
 import comfy.model_management as mm
+import time
 
 def is_module_imported(module_name):
     try:
@@ -21,12 +22,21 @@ def get_device_by_name(device):
             device = "cpu"
             if torch.cuda.is_available():
                 device = "cuda"
+                # device = torch.device("cuda")
             elif torch.backends.mps.is_available():
                 device = "mps"
+                # device = torch.device("mps")
             elif torch.xpu.is_available():
                 device = "xpu"
+                # device = torch.device("xpu")
         except:
                 raise AttributeError("What's your device(到底用什么设备跑的)？")
+    # elif device == 'cuda':
+    #     device = torch.device("cuda")
+    # elif device == "mps":
+    #     device = torch.device("mps")
+    # elif device == "xpu":
+    #     device = torch.device("xpu")
     print("\033[93mUse Device(使用设备):", device, "\033[0m")
     return device
 
@@ -66,3 +76,14 @@ def is_folder_exist(folder_path):
 def is_file_exists(file_path):
     result = os.path.exists(file_path)
     return result
+
+def save_to_custom_folder_or_desktop(audio_path, save_to_desktop, save_to_custom_folder, save_name, custom_folder):
+    now = time.strftime("%Y%m%d%H%M%S",time.localtime(time.time()))
+    if save_to_desktop == True:
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        new_name = f"{save_name}_{now}.wav"
+        copy_and_rename_file(audio_path, desktop_path, new_name)
+    if save_to_custom_folder == True:
+        new_name = f"{save_name}_{now}.wav"
+        copy_and_rename_file(audio_path, custom_folder, new_name)
+    return

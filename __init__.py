@@ -5,10 +5,13 @@ import folder_paths
 #加载插件前先检查是否在os.listdir里存在自定义目录，没有则自动创建，防止加载节点失败，官方目录可无视。
 fonts_path = os.path.join(folder_paths.models_dir, 'fonts')
 translator_path = os.path.join(folder_paths.models_dir, 'prompt_generator')
+ExtraModels_path = os.path.join(folder_paths.models_dir, 'checkpoints\ex_ExtraModels')
 if not is_folder_exist(fonts_path):
     os.makedirs(fonts_path)
 if not is_folder_exist(translator_path):
     os.makedirs(translator_path)
+if not is_folder_exist(ExtraModels_path):
+    os.makedirs(ExtraModels_path)
 
 # only import if running as a custom node
 try:
