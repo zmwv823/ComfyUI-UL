@@ -14,10 +14,16 @@
 - Use [ComfyUI_ExtraModels](https://github.com/city96/ComfyUI_ExtraModels) instead.
 - ![](./MiaoBi/assets/MiaoBi-wf.png)
 
-## 3、[Audio](./Audio/README.md)(Windows Only)
+## 3、[Audio](./Audio/README.md) (Windows Only)
 - **Need ffmpeg env set.**
 ### stable-audio-open-1.0
 - Original Github Repo: [stable-audio-open-1.0](https://github.com/Stability-AI/stable-audio-tools)
 - Original Huggingface Repo: [stable-audio-open-1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)
-- Fork from Github Repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)
+### ChatTTS
+- Original Github Repo: [ChatTTS](https://github.com/2noise/ChatTTS)
+- Original Huggingface Repo: [ChatTTS](https://huggingface.co/2Noise/ChatTTS)
+### facebook--musicgen-small
+- Original Huggingface Repo: [facebook--musicgen-small](https://huggingface.co/facebook/musicgen-small)
+
+## Fork from Github Repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)
 - ![](./Audio/assets/Audio-wf.png)
