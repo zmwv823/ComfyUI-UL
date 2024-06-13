@@ -113,7 +113,7 @@ const createWaveSurfer = (wavesurfer, id) => {
 //更新gui
 function updateWaveWidgetValue(widgets, id, url, prompt, wavesurfer) {
   // ==或者===后面才是获取node名字，其他为音频播放功能。
-  let widget = widgets.filter(w => w.name == 'UL_AudioPlay')[0]
+  let widget = widgets.filter(w => w.name == 'UL_AudioPlay_AutoPlay')[0]
   // 手动更新widget值
   widget.value = [url, prompt]
 
@@ -146,7 +146,7 @@ app.registerExtension({
   name: 'UL.AudioPlay',
   async beforeRegisterNodeDef(nodeType, nodeData, app) {
     // ==或者===后面才是获取node名字，其他为音频播放功能。
-    if (nodeType.comfyClass == 'UL_AudioPlay') {
+    if (nodeType.comfyClass == 'UL_AudioPlay_AutoPlay') {
       let that = this
       // console.log('that', that)
 
@@ -157,7 +157,7 @@ app.registerExtension({
         const widget = {
           type: 'div',
           // ==或者===后面才是获取node名字，其他为音频播放功能。
-          name: 'UL_AudioPlay',
+          name: 'UL_AudioPlay_AutoPlay',
           draw(ctx, node, widget_width, y, widget_height) {
             Object.assign(
               this.div.style,
@@ -275,9 +275,9 @@ app.registerExtension({
     }
   },
   async loadedGraphNode(node, app) {
-    if (node.type === 'UL_AudioPlay') {
+    if (node.type === 'UL_AudioPlay_AutoPlay') {
       // ==或者===后面才是获取node名字，其他为音频播放功能。
-      let widget = node.widgets.filter(w => w.name == 'UL_AudioPlay')[0]
+      let widget = node.widgets.filter(w => w.name == 'UL_AudioPlay_AutoPlay')[0]
 
       if (widget.value) {
         let [url, prompt] = widget.value

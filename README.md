@@ -5,7 +5,7 @@
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [iic/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
-- Use [ComfyUI-AnyText](https://github.com/zmwv823/ComfyUI-AnyText) instead. It's incompatible with [ComfyUI-AnyText](https://github.com/zmwv823/ComfyUI-AnyText).
+- Use [ComfyUI-AnyText](https://github.com/zmwv823/ComfyUI-AnyText) instead. 
 - ![](./AnyText/assets/AnyText-wf.png)
 
 ## 2、[MiaoBi](./MiaoBi/README.md)
