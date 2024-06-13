@@ -14,7 +14,8 @@
 - Use [ComfyUI_ExtraModels](https://github.com/city96/ComfyUI_ExtraModels) instead.
 - ![](./MiaoBi/assets/MiaoBi-wf.png)
 
-## 3、[Audio](./Audio/README.md)
+## 3、[Audio](./Audio/README.md)(Windows Only)
+- **Need ffmpeg env set.**
 ### stable-audio-open-1.0
 - Original Github Repo: [stable-audio-open-1.0](https://github.com/Stability-AI/stable-audio-tools)
 - Original Huggingface Repo: [stable-audio-open-1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)
