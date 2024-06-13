@@ -22,20 +22,20 @@ else:
 	NODE_CLASS_MAPPINGS = {}
  
  	# AnyText
-	from .AnyText.nodes import NODE_CLASS_MAPPINGS as AnyText_Nodes
-	NODE_CLASS_MAPPINGS.update(AnyText_Nodes)
+	from .AnyText.nodes import NODE_CLASS_MAPPINGS as UL_AnyText_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_AnyText_Nodes)
  
 	# AnyText_utils
-	from .AnyText.utils import NODE_CLASS_MAPPINGS as AnyText_loader_Nodes
-	NODE_CLASS_MAPPINGS.update(AnyText_loader_Nodes)
+	from .AnyText.utils import NODE_CLASS_MAPPINGS as UL_AnyText_loader_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_AnyText_loader_Nodes)
  
 	# MiaoBi
-	from .MiaoBi.nodes import NODE_CLASS_MAPPINGS as MiaoBi_Nodes
-	NODE_CLASS_MAPPINGS.update(MiaoBi_Nodes)
+	from .MiaoBi.nodes import NODE_CLASS_MAPPINGS as UL_MiaoBi_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_MiaoBi_Nodes)
  
 	# MiaoBi_utils
-	from .MiaoBi.utils import NODE_CLASS_MAPPINGS as MiaoBi_Loader_Nodes
-	NODE_CLASS_MAPPINGS.update(MiaoBi_Loader_Nodes)
+	from .MiaoBi.utils import NODE_CLASS_MAPPINGS as UL_MiaoBi_Loader_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_MiaoBi_Loader_Nodes)
  
  	# Audio
 	from .Audio.nodes import NODE_CLASS_MAPPINGS as UL_stable_audio_open_Nodes

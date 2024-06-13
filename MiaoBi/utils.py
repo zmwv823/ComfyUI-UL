@@ -1,6 +1,6 @@
 import folder_paths
 
-class MiaoBi_Loader:
+class UL_MiaoBi_Loader:
     @classmethod
     def INPUT_TYPES(s):
         file_list = folder_paths.get_filename_list("loras")
@@ -43,11 +43,11 @@ class MiaoBi_Loader:
          
     RETURN_TYPES = ("MiaoBi_Loader", )
     RETURN_NAMES = ("MiaoBi_Loader", )
-    FUNCTION = "MiaoBi_Loader"
+    FUNCTION = "UL_MiaoBi_Loader"
     CATEGORY = "ExtraModels/MiaoBi"
-    TITLE = "MiaoBi Loader"
+    TITLE = "UL MiaoBi Loader"
     
-    def MiaoBi_Loader(self,
+    def UL_MiaoBi_Loader(self,
                     Apply_Hidiffusion, #0
                     clip_layer, #1
                     LoRA_name1, #2
@@ -66,5 +66,5 @@ class MiaoBi_Loader:
         return (self.MiaoBi_paths, )
     
 NODE_CLASS_MAPPINGS = {
-    "MiaoBi_Loader": MiaoBi_Loader,
+    "UL_MiaoBi_Loader": UL_MiaoBi_Loader,
 }
