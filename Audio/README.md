@@ -35,5 +35,8 @@
 - Latin song with rhythmic percussion and fiery melodies. bpm: 105.
 - Country track with twangy guitars and heartfelt storytelling. bpm: 85.
 - Indian music with traditional instruments and intricate rhythms. bpm: 95.
-# 3、Workflow
+# 3、ChatTTS
+## Instructions:
+![](./assets/ChatTTS-Instructions.png)
+# 4、Workflow
 ![workflows](./assets/Audio-wf.png)
