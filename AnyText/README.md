@@ -63,9 +63,9 @@
 
 - Which uses the bounding box of the rendered text as the revised position. However, it is occasionally found that the creativity of the generated text is slightly lower using this method, It dosen't work in text-edit mode.
 
-### Random_Gen: automatic generate mask as pos_img.
+### Random_Gen: automatic generate mask.
 
-- Automatically generate mask as pos_img based on the number of text-content("string"). With this checked the pos_img input dosen't work
+- Automatically generate mask based on the number of text-content("string"). With this checked the manual_draw mask dosen't work.
 
 ### nonEdit_random_gen_width & nonEdit_random_gen_height:
 

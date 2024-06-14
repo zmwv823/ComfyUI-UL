@@ -64,7 +64,7 @@ class UL_ChatTTS_Loader:
     def INPUT_TYPES(s):
         models_list = os.listdir(os.path.join(folder_paths.models_dir, r"checkpoints\ex_ExtraModels"))
         speakers_list = os.listdir(os.path.join(current_directory, "ChatTTS_Speakers"))
-        ref_audio_list = os.listdir(os.path.join(os.path.expanduser("~"), "Desktop", "ref_audio\OpenVoiceV2"))
+        ref_audio_list = os.listdir(os.path.join(os.path.expanduser("~"), "Desktop", "ref_audio\OpenVoiceV2_ref_audio"))
         models_list.insert(0, "Auto_DownLoad")
         speakers_list.insert(0, "None")
         return {"required": {

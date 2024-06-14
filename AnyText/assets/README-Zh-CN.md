@@ -68,7 +68,7 @@
 
 ### Random_Gen: 自动生成随机位置遮罩。
 
-- 根据提示词内字符串数量自动生成遮罩，启用这个选项时pos_img输入不生效。
+- 根据提示词内字符串数量自动生成遮罩，启用这个选项时手动绘制的遮罩图不生效。
 
 ### nonEdit_random_gen_width & nonEdit_random_gen_height:
 
