@@ -135,7 +135,7 @@ def stable_audio_open_generate(model,prompt,seconds,seed,steps,cfg_scale,sample_
     output = output.to(torch.float32).div(torch.max(torch.abs(output))).clamp(-1, 1).mul(32767).to(torch.int16).cpu()
     return output
 
-def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_path, temp_dir, ouput_path):
+def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_path, temp_dir, ouput_path, tau):
     from .OpenVoiceV2 import se_extractor
     from .OpenVoiceV2.api import ToneColorConverter
     converter_model_path = converter_model_path
@@ -149,11 +149,13 @@ def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_pa
         audio_src_path=ori_voice_path,
         src_se=source_se,
         tgt_se=target_se,
-        output_path=ouput_path)
+        output_path=ouput_path,
+        tau=tau
+        )
     print("test")
     return
 
-def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_to_desktop, save_to_custom_folder, save_name, custom_folder, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, OpenVoice_clone, ref_audio_path):
+def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_to_desktop, save_to_custom_folder, save_name, custom_folder, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, OpenVoice_clone, ref_audio_path, tau):
     import ChatTTS
     chat = ChatTTS.Chat()
     chat.load_models(local_path=model_local_path,compile=False,device=device) # 设置为True以获得更快速度(其实刚好相反。。。)
@@ -217,7 +219,7 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
         temp_dir = folder_paths.get_temp_directory()
         output_path = f'{audio_path}_clone.wav'
         audio_file = f'{audio_path}_clone.wav'
-        OpenVoiceV2_clone(convertor_path, device, f'{ori_voice_path}.wav', ref_voice_path, temp_dir, output_path)
+        OpenVoiceV2_clone(convertor_path, device, f'{ori_voice_path}.wav', ref_voice_path, temp_dir, output_path, tau)
         audio_path = f'{audio_path}_clone'
         
     save_to_custom_folder_or_desktop(f'{audio_path}.wav', save_to_desktop, save_to_custom_folder, save_name, custom_folder)

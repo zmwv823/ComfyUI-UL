@@ -9,7 +9,6 @@ import librosa
 from .text import text_to_sequence
 from .mel_processing import spectrogram_torch
 from .models import SynthesizerTrn
-import folder_paths
 
 
 class OpenVoiceBaseClass(object):
