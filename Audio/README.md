@@ -6,7 +6,10 @@
 - Recreate a gentle rainfall with distant thunder.
 - Imagine a jazz cafe environment with soft music and ambient chatter.
 - Rock beat played in a treated studio, session drumming on an acoustic kit.
-# 2、[facebook/musicgen](https://huggingface.co/facebook/musicgen-small)(Max:30s)
+# 2、facebook--music series:
+- [facebook/musicgen](https://huggingface.co/facebook/musicgen-small)-(Max:30s)
+- [facebook/musicgen-melody](https://huggingface.co/facebook/musicgen-melody)-(Max:8s?)
+- [facebook/musicgen-stereo-melody](https://huggingface.co/facebook/musicgen-stereo-melody)
 ## Example prompts:
 - Chinese traditional music.
 - An 80s driving pop song with heavy drums and synth pads in the background.

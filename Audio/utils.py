@@ -68,11 +68,12 @@ class UL_ChatTTS_Loader:
         models_list.insert(0, "Auto_DownLoad")
         speakers_list.insert(0, "None")
         return {"required": {
-                "model": (models_list, ),
+                "ChatTTS_model": (models_list, ),
                 "speakers": (speakers_list, ),
                 "ref_audio": (ref_audio_list, ),
                 "custom_folder": ("STRING", {"multiline": False, "default": r"C:\Users\pc\Desktop"}),
                 "save_audio_to_custom_folder":("BOOLEAN", {"default": False}),
+                "OpenVoice_model": (models_list, ),
                         }, 
             }
     
@@ -82,8 +83,15 @@ class UL_ChatTTS_Loader:
     CATEGORY = "ExtraModels/Audio"
     TITLE = "UL ChatTTS Loader"
   
-    def UL_ChatTTS_Loader(self, model, speakers, ref_audio, custom_folder, save_audio_to_custom_folder):
-        self.ChatTTS_Loader = model + '|' + speakers + '|' + ref_audio + '|' + custom_folder + '|' + str(save_audio_to_custom_folder)
+    def UL_ChatTTS_Loader(self, 
+                          ChatTTS_model, #0
+                          speakers, #1
+                          ref_audio, #2
+                          custom_folder, #3
+                          save_audio_to_custom_folder, #4
+                          OpenVoice_model, #5
+                          ):
+        self.ChatTTS_Loader = ChatTTS_model + '|' + speakers + '|' + ref_audio + '|' + custom_folder + '|' + str(save_audio_to_custom_folder) + '|' + OpenVoice_model
         # text = self.ChatTTS_Loader
         return (self.ChatTTS_Loader, )
     
@@ -155,7 +163,7 @@ def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_pa
     print("test")
     return
 
-def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_to_desktop, save_to_custom_folder, save_name, custom_folder, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, OpenVoice_clone, ref_audio_path, tau):
+def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_to_desktop, save_to_custom_folder, save_name, custom_folder, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, OpenVoice_clone, ref_audio_path, tau, OpenVoice_model):
     import ChatTTS
     chat = ChatTTS.Chat()
     chat.load_models(local_path=model_local_path,compile=False,device=device) # 设置为True以获得更快速度(其实刚好相反。。。)
@@ -213,13 +221,13 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
         torch.save(rand_spk, os.path.join(current_directory, f'ChatTTS_Speakers\{save_name}.pth'))
         
     if OpenVoice_clone == True:
-        convertor_path = os.path.join(folder_paths.models_dir, "checkpoints\ex_ExtraModels\models--myshell-ai--OpenVoiceV2")
+        # convertor_path = os.path.join(folder_paths.models_dir, "checkpoints\ex_ExtraModels\models--myshell-ai--OpenVoiceV2")
         ori_voice_path = audio_path
         ref_voice_path = ref_audio_path
         temp_dir = folder_paths.get_temp_directory()
         output_path = f'{audio_path}_clone.wav'
         audio_file = f'{audio_path}_clone.wav'
-        OpenVoiceV2_clone(convertor_path, device, f'{ori_voice_path}.wav', ref_voice_path, temp_dir, output_path, tau)
+        OpenVoiceV2_clone(OpenVoice_model, device, f'{ori_voice_path}.wav', ref_voice_path, temp_dir, output_path, tau)
         audio_path = f'{audio_path}_clone'
         
     save_to_custom_folder_or_desktop(f'{audio_path}.wav', save_to_desktop, save_to_custom_folder, save_name, custom_folder)

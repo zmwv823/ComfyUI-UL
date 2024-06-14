@@ -7,7 +7,7 @@ fonts_path = os.path.join(folder_paths.models_dir, 'fonts')
 translator_path = os.path.join(folder_paths.models_dir, 'prompt_generator')
 ExtraModels_path = os.path.join(folder_paths.models_dir, 'checkpoints\ex_ExtraModels')
 OpenVoice_ref_audio_path = os.path.join(os.path.expanduser("~"), "Desktop", "ref_audio\OpenVoiceV2_ref_audio")
-musicgen_melody_ref_audio_path = os.path.join(os.path.expanduser("~"), "Desktop", "ref_audio\musicgen-melody")
+musicgen_melody_ref_audio_path = os.path.join(os.path.expanduser("~"), "Desktop", "ref_audio\musicgen-melody_ref")
 if not is_folder_exist(fonts_path):
     os.makedirs(fonts_path)
 if not is_folder_exist(translator_path):
