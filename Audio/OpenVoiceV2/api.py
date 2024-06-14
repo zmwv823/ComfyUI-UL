@@ -102,11 +102,11 @@ class ToneColorConverter(OpenVoiceBaseClass):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        WavMark_model_path = os.path.join(os.path.dirname(current_directory), 'OpenVoiceV2-WavMark-Model\step59000_snr39.99_pesq4.35_BERP_none0.30_mean1.81_std1.81.model.pkl')
         if kwargs.get('enable_watermark', True):
             import wavmark
-            self.watermark_model = wavmark.load_model(WavMark_model_path).to(self.device)
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            WavMark_Model_path = os.path.join(os.path.dirname(current_directory), 'OpenVoiceV2-WavMark-Model\step59000_snr39.99_pesq4.35_BERP_none0.30_mean1.81_std1.81.model.pkl')
+            self.watermark_model = wavmark.load_model(WavMark_Model_path).to(self.device)
         else:
             self.watermark_model = None
         self.version = getattr(self.hps, '_version_', "v1")
