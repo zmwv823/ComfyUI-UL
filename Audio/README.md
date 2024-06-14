@@ -36,6 +36,8 @@
 - Country track with twangy guitars and heartfelt storytelling. bpm: 85.
 - Indian music with traditional instruments and intricate rhythms. bpm: 95.
 # 3、ChatTTS
+- Today a man knocked on my door and asked for a small donation toward the local swimming pool. I gave him a glass of water.
+- 四川美食确实以辣闻名，但也有不辣的选择。比如甜水面、赖汤圆、蛋烘糕、叶儿粑等，这些小吃口味温和，甜而不腻，也很受欢迎。[laugh]本姑娘先做再说，哪怕做成屎一样，在慢慢改[laugh]，不要整天犹犹豫豫[uv_break]，一个粗糙的开始，就是最好的开始，什么也别管，先去做，然后你就会发现，用不了多久，你几十万就没了[laugh]。
 ## Instructions:
 ![](./assets/ChatTTS-Instructions.png)
 # 4、Workflow
