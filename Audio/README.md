@@ -48,5 +48,23 @@
 ![](./assets/ChatTTS-Instructions.png)
 # 4、OpenVoiceV2
 - Voice Clone.
-# 4、Workflow
+# 5、XTTS v2
+### Requirement for Japanese:
+- pip install fugashi[unidic]
+- python -m unidic download
+### XTTS is a Voice generation model that lets you clone voices into different languages by using just a quick 3-second audio clip.
+### XTTS-v2 supports 17 languages: English (en), Spanish (es), French (fr), German (de), Italian (it), Portuguese (pt), Polish (pl), Turkish (tr), Russian (ru), Dutch (nl), Czech (cs), Arabic (ar), Chinese (zh-cn), Japanese (ja), Hungarian (hu), Korean (ko) Hindi (hi).
+- en: Hello, World !, here is an example of light voice cloning. Try to upload your best audio samples quality.
+- fr: Je suis un lycéen français de 17 ans, passioner par la Cyber-Sécuritée et les models d'IA.
+- de: Als ich sechs war, sah ich einmal ein wunderbares Bild.
+- es: Cuando tenía seis años, vi una vez una imagen magnífica.
+- pt: Quando eu tinha seis anos eu vi, uma vez, uma imagem magnífica.
+- pl: Kiedy miałem sześć lat, zobaczyłem pewnego razu wspaniały obrazek.
+- it: Un tempo lontano, quando avevo sei anni, vidi un magnifico disegno.
+- tr: Bir zamanlar, altı yaşındayken, muhteşem bir resim gördüm.
+- ru: Когда мне было шесть лет, я увидел однажды удивительную картинку.
+- nl: Toen ik een jaar of zes was, zag ik op een keer een prachtige plaat.
+- cs: Když mi bylo šest let, viděl jsem jednou nádherný obrázek
+- zh-cn: 当我还只有六岁的时候， 看到了一副精彩的插画。
+# Workflow
 ![workflows](./assets/Audio-wf.png)
