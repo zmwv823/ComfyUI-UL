@@ -71,4 +71,22 @@ torchtext
 #D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\metrics\fad.py--14-15
 #D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\builders.py--14-63-64-203-204
 #D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\unet.py--17
-#D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\loaders.py --138-1
+#D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\loaders.py --138-65
+#D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\encodec.py --115
+
+#OpenVoiceV2
+librosa
+faster-whisper
+pydub
+wavmark
+numpy
+eng_to_ipa
+inflect
+unidecode
+whisper-timestamped
+openai
+python-dotenv
+pypinyin
+cn2an
+jieba
+gradio
