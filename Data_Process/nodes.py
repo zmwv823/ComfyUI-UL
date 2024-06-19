@@ -71,11 +71,11 @@ class UL_Data_Process_nlp_csanmt_translation_zh2en_translator:
         return {
             "required": {
                 "model": (['damo/nlp_csanmt_translation_zh2en', 'Saved_Model'] , {"default": "damo/nlp_csanmt_translation_zh2en"}),
-                "device": (['cpu', 'cuda', 'gpu'] , {"default": "cuda"}),
                 "prompt": ("STRING", {"default": "这里是单批次翻译文本输入。\n声明补充说，沃伦的同事都深感震惊，并且希望他能够投案自首。\n尽量输入单句文本，如果是多句长文本建议人工分句，否则可能出现漏译或未译等情况！！！\n建议换行，效果更佳。", "multiline": True}),
                 "Batch_prompt": ("STRING", {"default": "这里是多批次翻译文本输入，使用换行进行分割。\n天上掉馅饼啦，快去看超人！！！\n飞流直下三千尺，疑似银河落九天。\n启用Batch_Newline表示输出的翻译会按换行输入进行二次换行,否则是用空格合并起来的整篇文本。", "multiline": True}),
                 "Batch_Newline" :("BOOLEAN", {"default": True}),
                 "if_Batch": ("BOOLEAN", {"default": False}),
+                "device": (["auto", "cuda", "cpu", "mps", "xpu"],{"default": "auto"}), 
             },
         }
 
@@ -86,6 +86,8 @@ class UL_Data_Process_nlp_csanmt_translation_zh2en_translator:
     TITLE = "UL 中译英-阿里达摩院damo/nlp_csanmt_translation_zh2en"
 
     def UL_Data_Process_nlp_csanmt_translation_zh2en_translator(self, prompt, Batch_prompt, if_Batch, device, Batch_Newline, model):
+        device = get_device_by_name(device)
+        nlp_path = os.path.join(folder_paths.models_dir, r'prompt_generator\nlp_csanmt_translation_zh2en')
         # 使用换行(\n)作为分隔符
         Batch_prompt = Batch_prompt.split("\n")  
         if if_Batch == True:
@@ -95,7 +97,7 @@ class UL_Data_Process_nlp_csanmt_translation_zh2en_translator:
         else:
             input_sequence = prompt
         if model == 'damo/nlp_csanmt_translation_zh2en':
-            outputs = nlp_csanmt_translation_zh2en(device, input_sequence)['translation']
+            outputs = nlp_csanmt_translation_zh2en(device, input_sequence, nlp_path)['translation']
         else:
             outputs = SavedModel_Translator(input_sequence)['translation']
         if if_Batch == True:
