@@ -5,6 +5,34 @@ import shutil
 import comfy.model_management as mm
 import time
 
+class UL_Text_Input:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", 
+                            {
+                                "multiline": True, 
+                                "default": "四川美食确实以辣闻名，但也有不辣的选择。比如甜水面、赖汤圆、蛋烘糕、叶儿粑等，这些小吃口味温和，甜而不腻，也很受欢迎。[laugh]本姑娘先做再说，哪怕做成屎一样，在慢慢改[laugh]，不要整天犹犹豫豫[uv_break]，一个粗糙的开始，就是最好的开始，什么也别管，先去做，然后你就会发现，用不了多久，你几十万就没了[laugh]。",
+                                "dynamicPrompts": True
+                            }),
+                }
+            }
+
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("UL_Text_Input", )
+    FUNCTION = "UL_Text_Input"
+    CATEGORY = "ExtraModels/UL Common"
+    TITLE = "UL Text Input"
+
+    def UL_Text_Input(self, text):
+        self.text = text
+        return (text, )
+    
+NODE_CLASS_MAPPINGS = {
+    "UL_Text_Input": UL_Text_Input, 
+}
+
 def is_module_imported(module_name):
     try:
         __import__(module_name)
@@ -87,31 +115,3 @@ def save_to_custom_folder_or_desktop(audio_path, save_to_desktop, save_to_custom
         new_name = f"{save_name}_{now}.wav"
         copy_and_rename_file(audio_path, custom_folder, new_name)
     return
-
-class UL_Text_Input:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "text": ("STRING", 
-                            {
-                                "multiline": True, 
-                                "default": "四川美食确实以辣闻名，但也有不辣的选择。比如甜水面、赖汤圆、蛋烘糕、叶儿粑等，这些小吃口味温和，甜而不腻，也很受欢迎。[laugh]本姑娘先做再说，哪怕做成屎一样，在慢慢改[laugh]，不要整天犹犹豫豫[uv_break]，一个粗糙的开始，就是最好的开始，什么也别管，先去做，然后你就会发现，用不了多久，你几十万就没了[laugh]。",
-                                "dynamicPrompts": True
-                            }),
-                }
-            }
-
-    RETURN_TYPES = ("STRING", )
-    RETURN_NAMES = ("UL_Text_Input", )
-    FUNCTION = "UL_Text_Input"
-    CATEGORY = "ExtraModels"
-    TITLE = "UL Text Input"
-
-    def UL_Text_Input(self, text):
-        self.text = text
-        return (text, )
-    
-NODE_CLASS_MAPPINGS = {
-    "UL_Text_Input": UL_Text_Input, 
-}

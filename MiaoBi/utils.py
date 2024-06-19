@@ -44,7 +44,7 @@ class UL_MiaoBi_Loader:
     RETURN_TYPES = ("MiaoBi_Loader", )
     RETURN_NAMES = ("MiaoBi_Loader", )
     FUNCTION = "UL_MiaoBi_Loader"
-    CATEGORY = "ExtraModels/MiaoBi"
+    CATEGORY = "ExtraModels/UL MiaoBi"
     TITLE = "UL MiaoBi Loader"
     
     def UL_MiaoBi_Loader(self,
@@ -64,7 +64,7 @@ class UL_MiaoBi_Loader:
         self.MiaoBi_paths = str(Apply_Hidiffusion) + '|' + str(clip_layer) + '|' + LoRA_name1 + '|' + LoRA_name2 + '|' + LoRA_name3 + '|' + str(lora_weight1) + '|' + str(lora_weight2) + '|' + str(lora_weight3) + '|' + str(LoRA_switch1) + '|' + str(LoRA_switch2) + '|' + str(LoRA_switch3) + '|' + str(multi_loras_weight)
         # print(self.MiaoBi_paths)
         return (self.MiaoBi_paths, )
-    
+
 NODE_CLASS_MAPPINGS = {
     "UL_MiaoBi_Loader": UL_MiaoBi_Loader,
 }

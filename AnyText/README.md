@@ -51,6 +51,19 @@
 - 一个建筑物前面的字母标牌， 上面写着 " "
 ## Example workflow:
 ![workflow](./assets/AnyText-wf.png)
+## Translators:
+### Time comsuption (Prompt:一张关于墙上的彩色涂鸦艺术的摄影作品，上面写着“人工智能" 和 “神经网络”)
+- nlp_csanmt_translation_zh2en--**14s+**
+- t5_translate_en_ru_zh_large_1024--**10s+**
+- t5_translate_en_ru_zh_base_200--**4.6s+**
+- SavedModel--**11s+**
+### Size
+- nlp_csanmt_translation_zh2en--**9.47GB**
+- t5_translate_en_ru_zh_large_1024--**3.13GB**
+- t5_translate_en_ru_zh_base_200--**1.11GB**
+- SavedModel--**2.12GB**
+### Zh2En Accuracy
+nlp_csanmt_translation_zh2en **>=** t5_translate_en_ru_zh_large_1024 **>=** SavedModel **>>** t5_translate_en_ru_zh_base_200
 
 ## Some Params:
 
