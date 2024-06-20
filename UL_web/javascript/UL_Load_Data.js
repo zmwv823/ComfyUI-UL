@@ -72,7 +72,7 @@ function dataUpload(node, inputName, inputData, app) {
     const fileInput = document.createElement("input");
     Object.assign(fileInput, {
         type: "file",
-        accept: "file/pdf,file/txt",
+        accept: "file/pdf,file/txt,file/srt",
         style: "display: none",
         onchange: async () => {
             if (fileInput.files.length) {

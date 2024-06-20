@@ -1,0 +1,3 @@
+# for open pdf file
+fitz
+PyMuPDF

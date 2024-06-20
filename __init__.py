@@ -38,8 +38,8 @@ else:
 	NODE_CLASS_MAPPINGS.update(UL_MiaoBi_Loader_Nodes)
  
  	# Audio
-	from .Audio.nodes import NODE_CLASS_MAPPINGS as UL_stable_audio_open_Nodes
-	NODE_CLASS_MAPPINGS.update(UL_stable_audio_open_Nodes)
+	from .Audio.nodes import NODE_CLASS_MAPPINGS as UL_Audio_Stable_Audio_Open_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_Audio_Stable_Audio_Open_Nodes)
  
  	# Audio_utils
 	from .Audio.utils import NODE_CLASS_MAPPINGS as UL_AudioPlay_AutoPlay_Nodes

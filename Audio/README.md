@@ -41,6 +41,178 @@
 - Latin song with rhythmic percussion and fiery melodies. bpm: 105.
 - Country track with twangy guitars and heartfelt storytelling. bpm: 85.
 - Indian music with traditional instruments and intricate rhythms. bpm: 95.
+## musicgen-songstarter:
+- musicgen-songstarter-v0.1 is a musicgen-melody fine-tuned on a dataset of melody loops from my Splice sample library. It's intended to be used to generate song ideas that are useful for music producers. It generates stereo audio in 32khz.
+### Prompt Format:
+- {tag_1}, {tag_1}, ..., {tag_n}, {key}, {bpm} bpm
+#### For example:
+- hip hop, soul, piano, chords, jazz, neo jazz, G# minor, 140 bpm
+#### The training dataset had the following tags in it:
+hip hop
+trap
+soul
+rnb
+synth
+songstarters
+melody
+keys
+chords
+guitar
+vocals
+dancehall
+melodic stack
+piano
+electric
+layered
+music
+drill
+lo-fi hip hop
+cinematic
+pop
+resampled
+afropop & afrobeats
+strings
+leads
+dark
+african
+acoustic
+brass & woodwinds
+live sounds
+reggaeton
+boom bap
+pads
+electric piano
+fx
+downtempo
+wet
+electric guitar
+lo-fi
+caribbean
+chops
+chillout
+riffs
+percussion
+electronic
+bass
+choir
+arp
+uk drill
+female
+plucks
+future bass
+processed
+future soul
+ensemble
+mallets
+hooks
+uk
+flute
+phrases
+drums
+atmospheres
+jazz
+emo
+gospel
+male
+reverse
+latin american
+trap edm
+latin
+bells
+pitched
+ambient
+tonal
+distorted
+moombahton
+vinyl
+orchestral
+dry
+psychedelic
+edm
+funk
+neo soul
+classical
+harmony
+adlib
+trumpet
+high
+horns
+electronica
+violin
+808
+synthwave
+ngoni
+house
+drones
+progressive house
+g-funk
+hats
+trip hop
+baile funk
+filtered
+doo wop
+tambourine
+kora
+stabs
+textures
+claps
+grooves
+clean
+analog
+harp
+ambience
+smooth
+acapella
+blues
+saxophone
+organ
+soft
+tremolo
+chillwave
+reverb
+electric bass
+low
+moog
+wah
+wobble
+indie pop
+modular
+sub
+indie dance
+glide
+k-pop
+afrobeat
+mid
+balafon
+bitcrushed
+phaser
+middle eastern
+zither
+shakers
+delay
+tech house
+disco
+experimental
+celesta
+cello
+drum and bass
+trance
+rock
+rhythm
+whistle
+sidechained
+saw
+breakbeat
+techno
+brazilian
+music box
+glitch
+clarinet
+## Example prompts for musicgen-songstarter:
+- trap, synthesizer, songstarters, dark, G# minor, 140 bpm.
+- acoustic, guitar, melody, trap, D minor, 90 bpm.
+- music, mallets, bells, melody, dancehall, african, afropop & afrobeats.
+- synth, dark, hip hop, melody, trap.
 # 3、ChatTTS
 - Today a man knocked on my door and asked for a small donation toward the local swimming pool. I gave him a glass of water.
 - 四川美食确实以辣闻名，但也有不辣的选择。比如甜水面、赖汤圆、蛋烘糕、叶儿粑等，这些小吃口味温和，甜而不腻，也很受欢迎。[laugh]本姑娘先做再说，哪怕做成屎一样，在慢慢改[laugh]，不要整天犹犹豫豫[uv_break]，一个粗糙的开始，就是最好的开始，什么也别管，先去做，然后你就会发现，用不了多久，你几十万就没了[laugh]。
