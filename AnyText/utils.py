@@ -27,8 +27,7 @@ class UL_AnyText_loader:
                 "font": (font_list, ),
                 "ckpt_name": (checkpoints_list, ),
                 "clip": (clip_list, ),
-                "clip_path_or_repo_id": ("STRING", {"default": "openai/clip-vit-large-patch14"}),
-                "translator": (["utrobinmv/t5_translate_en_ru_zh_base_200", "utrobinmv/t5_translate_en_ru_zh_large_1024", "damo/nlp_csanmt_translation_zh2en", "SavedModel"],{"default": "t5_translate_en_ru_zh_base_200"}), 
+                "translator": (["utrobinmv/t5_translate_en_ru_zh_small_1024", "utrobinmv/t5_translate_en_ru_zh_base_200", "utrobinmv/t5_translate_en_ru_zh_large_1024", "damo/nlp_csanmt_translation_zh2en", "SavedModel"],{"default": "t5_translate_en_ru_zh_base_200"}), 
                 "show_debug": ("BOOLEAN", {"default": False}),
                 }
             }
@@ -39,21 +38,17 @@ class UL_AnyText_loader:
     CATEGORY = "ExtraModels/UL AnyText"
     TITLE = "UL AnyText Loader"
 
-    def AnyText_loader_fn(self, font, ckpt_name, clip, clip_path_or_repo_id, translator, show_debug):
+    def AnyText_loader_fn(self, font, ckpt_name, clip, translator, show_debug):
         font_path = os.path.join(comfyui_models_dir, "fonts", font)
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         cfg_path = os.path.join(current_directory, 'models_yaml', 'anytext_sd15.yaml')
-        if clip_path_or_repo_id == "":
+        if clip != 'Auto_DownLoad':
             clip_path = os.path.join(comfyui_models_dir, "clip", clip)
         else:
-            if clip != 'Auto_DownLoad':
-                clip_path = os.path.join(comfyui_models_dir, "clip", clip)
-            else:
-                clip_path = clip_path_or_repo_id
+            clip_path = clip
         
         #将输入参数合并到一一起传递到.nodes，此时为字符串，使用特殊符号|拼接，方便后面nodes分割。
         loader = (font_path + "|" + str(ckpt_path) + "|" + clip_path + "|" + translator + "|" + cfg_path)
-        print(loader)
         #按|分割
         # loader_s = loader.split("|")
         
