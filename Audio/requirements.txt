@@ -54,3 +54,4 @@ unidecode>=1.3.2
 num2words
 spacy[ja]>=3
 cutlet
+ffmpeg-python

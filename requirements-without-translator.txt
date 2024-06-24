@@ -90,3 +90,10 @@ pypinyin
 cn2an
 jieba
 gradio
+
+#DataProcess
+# for open pdf file and get audio from video
+fitz
+PyMuPDF
+pysubs2
+moviepy

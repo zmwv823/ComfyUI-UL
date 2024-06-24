@@ -1,5 +1,0 @@
-# for open pdf file
-fitz
-PyMuPDF
-pysubs2
-moviepy

@@ -95,3 +95,10 @@ cn2an
 jieba
 gradio
 langid
+
+#DataProcess
+# for open pdf file and get audio from video
+fitz
+PyMuPDF
+pysubs2
+moviepy
