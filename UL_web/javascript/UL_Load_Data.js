@@ -72,7 +72,7 @@ function dataUpload(node, inputName, inputData, app) {
     const fileInput = document.createElement("input");
     Object.assign(fileInput, {
         type: "file",
-        accept: "file/pdf,file/txt,file/srt",
+        accept: "file/pdf,file/txt,file/srt,file/ass",
         style: "display: none",
         onchange: async () => {
             if (fileInput.files.length) {
@@ -83,7 +83,7 @@ function dataUpload(node, inputName, inputData, app) {
     document.body.append(fileInput);
 
     // Create the button widget for selecting the files
-    uploadWidget = node.addWidget("button", "choose data file to upload", "Audio", () => {
+    uploadWidget = node.addWidget("button", "choose data file to upload", "data", () => {
         fileInput.click();
     });
 

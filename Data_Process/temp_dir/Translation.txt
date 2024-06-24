@@ -1,7 +1,0 @@
-There are many batches of translated text inputs, which are used to split in alternate order. 
-
-drop the pie in the sky, and go see Superman! 
-
-flows down 3,000 feet, presumably nine days into the galaxy. 
-
-enables Batch_Newline to say that the output translation will be reversed by alternate input, otherwise the entire text combined with the space will be reversed.
