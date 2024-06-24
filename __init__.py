@@ -57,6 +57,10 @@ else:
 	from .DataProcess.utils import NODE_CLASS_MAPPINGS as UL_DataProcess_Create_SavedModel_Nodes
 	NODE_CLASS_MAPPINGS.update(UL_DataProcess_Create_SavedModel_Nodes)
  
+    # Video
+	from .Video.nodes import NODE_CLASS_MAPPINGS as UL_DataProcess_t5_translate_en_ru_zh_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_DataProcess_t5_translate_en_ru_zh_Nodes)
+ 
 	NODE_DISPLAY_NAME_MAPPINGS = {k:v.TITLE for k,v in NODE_CLASS_MAPPINGS.items()}
 	__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 
