@@ -214,12 +214,15 @@ clarinet
 - music, mallets, bells, melody, dancehall, african, afropop & afrobeats.
 - synth, dark, hip hop, melody, trap.
 # 3、ChatTTS
+- 如果尾字吞字不读，可以试试结尾加上 [lbreak]
+- If the input text is all in English, it is recommended to check disable_normalize
+- 'oral' means add filler words, 'laugh' means add laughter, and 'break' means add a pause. (0-10)
 - Today a man knocked on my door and asked for a small donation toward the local swimming pool. I gave him a glass of water.
 - 四川美食确实以辣闻名，但也有不辣的选择。比如甜水面、赖汤圆、蛋烘糕、叶儿粑等，这些小吃口味温和，甜而不腻，也很受欢迎。[laugh]本姑娘先做再说，哪怕做成屎一样，在慢慢改[laugh]，不要整天犹犹豫豫[uv_break]，一个粗糙的开始，就是最好的开始，什么也别管，先去做，然后你就会发现，用不了多久，你几十万就没了[laugh]。
 ## Instructions:
 ![](./assets/ChatTTS-Instructions.png)
 # 4、OpenVoiceV2
-- Voice Clone.
+- The input speech audio of OpenVoice can be in Any Language. OpenVoice can clone the voice in that speech audio, and use the voice to speak in multiple languages. 
 # 5、XTTS v2
 ### Requirement for Japanese:
 - pip install fugashi[unidic]
@@ -238,5 +241,7 @@ clarinet
 - nl: Toen ik een jaar of zes was, zag ik op een keer een prachtige plaat.
 - cs: Když mi bylo šest let, viděl jsem jednou nádherný obrázek
 - zh-cn: 当我还只有六岁的时候， 看到了一副精彩的插画。
+# 6、uvr5
+# 7、noise supression
 # Workflow
 ![workflows](./assets/Audio-wf.png)

@@ -113,7 +113,7 @@ const createWaveSurfer = (wavesurfer, id, url) => {
 
 //更新gui
 function updateWaveWidgetValue(widgets, id, url, prompt, wavesurfer) {
-  let widget = widgets.filter(w => w.name == 'UL_AudioPlay_noAutoPlay')[0]
+  let widget = widgets.filter(w => w.name == 'UL_Advance_noAutoPlay')[0]
   // 手动更新widget值
   widget.value = [url, prompt]
 
@@ -144,9 +144,9 @@ function updateWaveWidgetValue(widgets, id, url, prompt, wavesurfer) {
 }
 
 app.registerExtension({
-  name: 'UL.UL_AudioPlay_noAutoPlay',
+  name: 'UL.Advance_noAutoPlay',
   async beforeRegisterNodeDef(nodeType, nodeData, app) {
-    if (nodeType.comfyClass == 'UL_AudioPlay_noAutoPlay') {
+    if (nodeType.comfyClass == 'UL_Advance_noAutoPlay') {
       let that = this
       // console.log('that', that)
 
@@ -156,7 +156,7 @@ app.registerExtension({
 
         const widget = {
           type: 'div',
-          name: 'UL_AudioPlay_noAutoPlay',
+          name: 'UL_Advance_noAutoPlay',
           draw(ctx, node, widget_width, y, widget_height) {
             Object.assign(
               this.div.style,
@@ -274,8 +274,8 @@ app.registerExtension({
     }
   },
   async loadedGraphNode(node, app) {
-    if (node.type === 'UL_AudioPlay_noAutoPlay') {
-      let widget = node.widgets.filter(w => w.name == 'UL_AudioPlay_noAutoPlay')[0]
+    if (node.type === 'UL_Advance_noAutoPlay') {
+      let widget = node.widgets.filter(w => w.name == 'UL_Advance_noAutoPlay')[0]
 
       if (widget.value) {
         let [url, prompt] = widget.value

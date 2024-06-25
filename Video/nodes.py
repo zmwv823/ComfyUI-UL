@@ -31,7 +31,7 @@ class UL_Video_Stabilization:
     RETURN_NAMES = ("UL_Video_Stabilization", )
     FUNCTION = "UL_Video_Stabilization"
     CATEGORY = "ExtraModels/UL Video"
-    TITLE = "UL Video Video_Stabilization"
+    TITLE = "UL Video Video_Stabilization-视频防抖"
 
     def UL_Video_Stabilization(self, video_path, save_to_folder, model):
         if not is_module_imported('OutputKeys'):

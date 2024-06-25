@@ -42,8 +42,8 @@ else:
 	NODE_CLASS_MAPPINGS.update(UL_Audio_Stable_Audio_Open_Nodes)
  
  	# Audio_utils
-	from .Audio.utils import NODE_CLASS_MAPPINGS as UL_AudioPlay_AutoPlay_Nodes
-	NODE_CLASS_MAPPINGS.update(UL_AudioPlay_AutoPlay_Nodes)
+	from .Audio.utils import NODE_CLASS_MAPPINGS as UL_Advance_AutoPlay_Nodes
+	NODE_CLASS_MAPPINGS.update(UL_Advance_AutoPlay_Nodes)
  
   	# UL_common
 	from .UL_common.common import NODE_CLASS_MAPPINGS as UL_Text_Input_Nodes

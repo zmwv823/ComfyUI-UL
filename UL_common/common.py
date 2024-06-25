@@ -23,7 +23,7 @@ class UL_Text_Input:
     RETURN_NAMES = ("UL_Text_Input", )
     FUNCTION = "UL_Text_Input"
     CATEGORY = "ExtraModels/UL Common"
-    TITLE = "UL Text Input"
+    TITLE = "UL Text Input-文本输入"
 
     def UL_Text_Input(self, text):
         self.text = text
