@@ -46,6 +46,39 @@
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression--人声降噪。
+### Models:
+- Manual model path, ignore it if auto download--手动放置模型位置，自动下载模型可无视。
+```
+PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
+├─ExtraModels
+│  ├─models--facebook--encodec_32khz
+│  ├─models--Systran--faster-whisper-faster-whisper-large-v2
+│  ├─models--Systran--faster-whisper-large-v3
+│  ├─models--Systran--faster-whisper-medium
+│  ├─modelscope--damo--cv_dut-raft_video-stabilization_base
+│  │  ├─ckpt
+│  │  └─img
+│  ├─modelscope--damo--speech_dfsmn_ans_psm_48k_causal
+│  │  ├─examples
+│  │  └─img
+│  ├─modelscope--damo--speech_frcrn_ans_cirm_16k
+│  ├─stable_whisper_model
+│  └─uvr5
+│      └─uvr5_weights
+│          └─Onnx_dereverb_By_FoxJoy
+├─models--coqui--XTTS-v1
+├─models--coqui--XTTS-v2
+│  └─2.0.3
+├─models--Dzkaka--ChatTTS
+│  ├─asset
+│  └─config
+├─models--facebook--musicgen-stereo-medium
+├─models--facebook--musicgen-stereo-melody
+├─models--facebook--musicgen-stereo-small
+└─models--myshell-ai--OpenVoiceV2
+    └─checkpoints
+        └─converter
+```
 ### UL_VAEDecodeAudio: Audio preview node for comfyui official audio_output--官方音频输出预览节点。
 - ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### **Some code from github repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [AIFSH/ComfyUI-GPT_SoVITS](https://github.com/AIFSH/ComfyUI-GPT_SoVITS)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)**
@@ -55,7 +88,24 @@
 - Docment summarization--文档总结。
 - Make subtitle with faster-whisper--使用faster-whisper制作字幕。
 - ![](./DataProcess/assets/DataProcess-wf.png)
+- Manual model path, ignore it if auto download--手动放置模型位置，自动下载模型可无视。
+```
+D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
+├─models--csebuetnlp--mT5_multilingual_XLSum
+├─models--facebook--nllb-200-distilled-1.3B
+├─models--facebook--nllb-200-distilled-600M
+├─models--utrobinmv--t5_summary_en_ru_zh_base_2048
+├─models--utrobinmv--t5_translate_en_ru_zh_base_200
+├─models--utrobinmv--t5_translate_en_ru_zh_large_1024
+├─models--utrobinmv--t5_translate_en_ru_zh_small_1024
+├─nlp_csanmt_translation_zh2en
+│  ├─CSANMT
+│  │  └─variables
+│  ├─resources
+│  └─tf_ckpts
+```
 ## 5、[Video]()
+- Original Modelscope Repo: [damo/cv_dut-raft_video-stabilization_base](https://www.modelscope.cn/models/iic/cv_dut-raft_video-stabilization_base)
 - Video Stabilization--视频防抖。
 - 使用16G显存的显卡测试时，建议的最大输入为 30fps帧率下30s时长的1920x1080分辨率视频。
 - ![](./Video/assets/Video-wf.png)
