@@ -59,7 +59,7 @@ class UL_Audio_stable_audio_open:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_stable_audio_open"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio Stable-Audio-Open-声音生成"
+    TITLE = "UL Audio Stable-Audio-Open"
     
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
@@ -176,7 +176,7 @@ class UL_Audio_facebook_musicgen:
         return {
             "required": {
                 "advance_preview_only": ("BOOLEAN",{"default": False}),
-                "model": (["facebook/musicgen-stereo-small", "facebook/musicgen-stereo-medium", "facebook/musicgen-stereo-large","facebook-- musicgen-stereo-melody", "facebook/musicgen-stereo-melody-large", "nateraw/musicgen-songstarter-v0.2"],{"default": "facebook/musicgen-stereo-small"}), 
+                "model": (["facebook/musicgen-stereo-small", "facebook/musicgen-stereo-medium", "facebook/musicgen-stereo-large","facebook/musicgen-stereo-melody", "facebook/musicgen-stereo-melody-large", "nateraw/musicgen-songstarter-v0.2"],{"default": "facebook/musicgen-stereo-small"}), 
                 "ref_audio_for_melody": ("AUDIO_PATH",),
                 "trim_ref_audio": ("BOOLEAN",{"default": False}),
                 "start_time": ("FLOAT" , {"default": 0, "min": 0, "max": 10000000, "step": 0.01}),
@@ -226,7 +226,7 @@ class UL_Audio_facebook_musicgen:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_facebook_musicgen"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio facebook-musicge-音乐、旋律生成"
+    TITLE = "UL Audio facebook-musicgen"
 
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
@@ -263,22 +263,27 @@ class UL_Audio_facebook_musicgen:
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--facebook--musicgen-stereo-small")
             if not os.access(os.path.join(musicgen_modelpath, "model.safetensors"), os.F_OK):
                 musicgen_modelpath = 'facebook/musicgen-stereo-small'
+                
         elif model == 'facebook/musicgen-stereo-medium':
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--facebook--musicgen-stereo-medium")
             if not os.access(os.path.join(musicgen_modelpath, "model.safetensors"), os.F_OK):
                 musicgen_modelpath = 'facebook/musicgen-stereo-medium'
+                
         elif model == 'facebook/musicgen-stereo-large':
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--facebook--musicgen-stereo-large")
             if not os.access(os.path.join(musicgen_modelpath, "model-00001-of-00002.safetensors"), os.F_OK):
                 musicgen_modelpath = 'facebook/musicgen-stereo-large'
+                
         elif model == 'facebook/musicgen-stereo-melody':
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--facebook--musicgen-stereo-melody")
             if not os.access(os.path.join(musicgen_modelpath, "model-00001-of-00002.safetensors"), os.F_OK):
                 musicgen_modelpath = 'facebook/musicgen-stereo-melody'
+                
         elif model == 'facebook/musicgen-stereo-melody-large':
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--facebook--musicgen-stereo-melody-large")
             if not os.access(os.path.join(musicgen_modelpath, "model-00002-of-00003.safetensors"), os.F_OK):
                 musicgen_modelpath = 'facebook/musicgen-stereo-melody-large'
+                
         elif model == 'nateraw/musicgen-songstarter-v0.2':
             musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "models--nateraw--musicgen-songstarter-v0.2")
             if not os.access(os.path.join(musicgen_modelpath, "state_dict.bin"), os.F_OK):
@@ -358,7 +363,7 @@ class UL_Audio_ChatTTS:
     RETURN_NAMES = ("audio_path", )
     FUNCTION = "UL_ChatTTS"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio ChatTTS-文本转语音"
+    TITLE = "UL Audio ChatTTS"
 
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
@@ -431,13 +436,14 @@ class UL_Audio_OpenVoiceV2:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_OpenVoiceV2"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio OpenVoiceV2-音色克隆"
+    TITLE = "UL Audio OpenVoiceV2"
 
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
   
     def UL_OpenVoiceV2(self, model, ori_audio, ref_audio, mono2stereo, seed, OpenVoiceV2_tau, device, trim_ref_audio, start_time, duration, advance_preview_only):
-        
+        ori_audio = get_audio_from_video(ori_audio)
+        ref_audio = get_audio_from_video(ref_audio)
         if trim_ref_audio == True:
             # dirname, filename = os.path.split(ref_audio)
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
@@ -448,14 +454,14 @@ class UL_Audio_OpenVoiceV2:
             )
             ref_audio = trim_audio_path
             
-        print(ori_audio)
         model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints', model)
-        OpenVoiceV2_model_path = os.path.join(folder_paths.models_dir, "audio_checkpoints\models--myshell-ai--OpenVoiceV2")
         if model == 'Auto_DownLoad':
+            OpenVoiceV2_model_path = os.path.join(folder_paths.models_dir, "audio_checkpoints\models--myshell-ai--OpenVoiceV2")
             if not os.access(os.path.join(OpenVoiceV2_model_path, "checkpoints\converter\checkpoint.pth"), os.F_OK):
                 model_path = 'myshell-ai/OpenVoiceV2'
             else:
                 model_path = OpenVoiceV2_model_path
+                
         device = get_device_by_name(device)
         audio_file = 'UL_audio_clone'
         audio_path = os.path.join(output_dir, f'{audio_file}.wav')
@@ -519,7 +525,7 @@ class UL_Audio_XTTS:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_XTTS"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio XTTS-文本转语音加音色克隆"
+    TITLE = "UL Audio XTTS"
 
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
@@ -645,7 +651,7 @@ class UL_Audio_UVR5:
     RETURN_NAMES = ("vocal_audio","bgm_audio", )
     FUNCTION = "UL_Audio_UVR5"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio UVR5-人声、乐器声分离"
+    TITLE = "UL Audio UVR5"
     
     def UL_Audio_UVR5(self, audio, model, agg, device, is_half, advance_preview_only, tta):
         device =get_device_by_name(device)
@@ -705,7 +711,7 @@ class UL_Audio_noise_suppression:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_Audio_noise_suppression"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio noise_suppression-单麦16k/48k人声降噪"
+    TITLE = "UL Audio noise_suppression"
     
     def UL_Audio_noise_suppression(self, audio, model, device, advance_preview_only, mono2stereo): 
         audio = get_audio_from_video(audio)

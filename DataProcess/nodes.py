@@ -34,7 +34,7 @@ class UL_DataProcess_t5_translate_en_ru_zh:
     RETURN_NAMES = ("text",)
     CATEGORY = "ExtraModels/UL DataProcess"
     FUNCTION = "UL_DataProcess_t5_translate_en_ru_zh"
-    TITLE = "UL DataProcess t5_translate_en_ru_zh-中、英、俄互译"
+    TITLE = "UL DataProcess t5_translate_en_ru_zh"
 
     def UL_DataProcess_t5_translate_en_ru_zh(self, translator, Target_Language, prompt, device, Batch_prompt, Batch_Newline, if_Batch):
         device = get_device_by_name(device)
@@ -47,23 +47,23 @@ class UL_DataProcess_t5_translate_en_ru_zh:
         else:
             input_sequence = prompt
         if translator == 'utrobinmv/t5_translate_en_ru_zh_large_1024':
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024", "model.safetensors"), os.F_OK):
+            zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024")
+            if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
                 zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_large_1024'
-            else:
-                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024")
             outputs = t5_translate_en_ru_zh(Target_Language, input_sequence, zh2en_path, device)[0]
+            
         elif translator == 'utrobinmv/t5_translate_en_ru_zh_base_200':
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200", "model.safetensors"), os.F_OK):
+            zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200")
+            if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
                 zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_base_200'
-            else:
-                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200")
             outputs = t5_translate_en_ru_zh(Target_Language, input_sequence, zh2en_path, device)[0]
+            
         elif translator == 'utrobinmv/t5_translate_en_ru_zh_small_1024':
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024", "model.safetensors"), os.F_OK):
+            zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024")
+            if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
                 zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_small_1024'
-            else:
-                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024")
             outputs = t5_translate_en_ru_zh(Target_Language, input_sequence, zh2en_path, device)[0]
+            
         if if_Batch == True:
             results = outputs.split('| ')
             if Batch_Newline == True:
@@ -97,13 +97,16 @@ class UL_DataProcess_nlp_csanmt_translation_zh2en_translator:
     RETURN_NAMES = ("text",)
     CATEGORY = "ExtraModels/UL DataProcess"
     FUNCTION = "UL_DataProcess_nlp_csanmt_translation_zh2en_translator"
-    TITLE = "UL DataProcess-中英互译：阿里达摩院damo/nlp_csanmt_translation_zh2en"
+    TITLE = "UL DataProcess-阿里damo中英互译"
 
     def UL_DataProcess_nlp_csanmt_translation_zh2en_translator(self, prompt, Batch_prompt, if_Batch, device, Batch_Newline, model):
         device = get_device_by_name(device)
-        if device == 'cuda':
-            device = 'gpu'
         nlp_path = os.path.join(folder_paths.models_dir, r'prompt_generator\nlp_csanmt_translation_zh2en')
+        if not os.access(os.path.join(nlp_path, "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
+            if not is_module_imported('snapshot_download'):
+                from modelscope.hub.snapshot_download import snapshot_download
+            snapshot_download('damo/nlp_csanmt_translation_zh2en', revision='v1.0.1')
+            nlp_path = 'damo/nlp_csanmt_translation_zh2en'
         # 使用换行(\n)作为分隔符
         Batch_prompt = Batch_prompt.split("\n")  
         if if_Batch == True:
@@ -112,10 +115,12 @@ class UL_DataProcess_nlp_csanmt_translation_zh2en_translator:
             input_sequence = '<SENT_SPLIT>'.join(input_sequence)
         else:
             input_sequence = prompt
+            
         if model == 'damo/nlp_csanmt_translation_zh2en':
             outputs = nlp_csanmt_translation_zh2en(device, input_sequence, nlp_path)['translation']
         else:
             outputs = SavedModel_Translator(input_sequence)['translation']
+            
         if if_Batch == True:
             results = outputs.split('<SENT_SPLIT>')
             if Batch_Newline == True:
@@ -151,7 +156,7 @@ class UL_DataProcess_nllb_200_translator:
     RETURN_NAMES = ("text",)
     CATEGORY = "ExtraModels/UL DataProcess"
     FUNCTION = "UL_DataProcess_nllb_200_translator"
-    TITLE = "UL DataProcess nllb_200_translator-多国语言互译"
+    TITLE = "UL DataProcess nllb_200_translator"
 
     def UL_DataProcess_nllb_200_translator(self, prompt, Batch_prompt, if_Batch, device, Batch_Newline, model, dtype, Source_Language, Target_Language, use_fast, max_length):
         device = get_device_by_name(device)
@@ -204,28 +209,26 @@ class UL_DataProcess_Summarization:
     RETURN_NAMES = ("text",)
     CATEGORY = "ExtraModels/UL DataProcess"
     FUNCTION = "UL_DataProcess_Summarization"
-    TITLE = "UL DataProcess Summarization-文档总结"
+    TITLE = "UL DataProcess Summarization"
 
     def UL_DataProcess_Summarization(self, prompt, device, model, summary_type, target_language, max_length, num_beams, no_repeat_ngram_size, output_max_length, use_T5, data, use_data):
         device = get_device_by_name(device)
         if model == "utrobinmv/t5_summary_en_ru_zh_base_2048":
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_summary_en_ru_zh_base_2048", "model.safetensors"), os.F_OK):
+            Summarizer_path = os.path.join(folder_paths.models_dir, r'prompt_generator\models--utrobinmv--t5_summary_en_ru_zh_base_2048')
+            if not os.access(os.path.join(Summarizer_path, "model.safetensors"), os.F_OK):
                 Summarizer_path = model
-            else:
-                Summarizer_path = os.path.join(folder_paths.models_dir, r'prompt_generator\models--utrobinmv--t5_summary_en_ru_zh_base_2048')
+                
 
         if model == "csebuetnlp/mT5_multilingual_XLSum":
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--csebuetnlp--mT5_multilingual_XLSum", "pytorch_model.bin"), os.F_OK):
-            # if not os.access(os.path.join(os.path.expanduser("~"), "Desktop", "models--csebuetnlp--mT5_multilingual_XLSum", "pytorch_model.bin"), os.F_OK):
+            # Summarizer_path = os.path.join(os.path.expanduser("~"), "Desktop", "models--csebuetnlp--mT5_multilingual_XLSum")
+            Summarizer_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--csebuetnlp--mT5_multilingual_XLSum")
+            if not os.access(os.path.join(Summarizer_path, "pytorch_model.bin"), os.F_OK):
                 Summarizer_path = model
-            else:
-                Summarizer_path = os.path.join(os.path.expanduser("~"), "Desktop", "models--csebuetnlp--mT5_multilingual_XLSum")
 
         if model == "csebuetnlp/mT5_m2o_chinese_simplified_crossSum":
-            if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--csebuetnlp--mT5_m2o_chinese_simplified_crossSum", "pytorch_model.bin"), os.F_OK):
+            Summarizer_path = os.path.join(folder_paths.models_dir, r'prompt_generator\models--csebuetnlp--mT5_m2o_chinese_simplified_crossSum')
+            if not os.access(os.path.join(Summarizer_path, "pytorch_model.bin"), os.F_OK):
                 Summarizer_path = model
-            else:
-                Summarizer_path = os.path.join(folder_paths.models_dir, r'prompt_generator\models--csebuetnlp--mT5_m2o_chinese_simplified_crossSum')
         
         if use_data == True:
             if "txt" in data:
@@ -338,7 +341,7 @@ class UL_DataProcess_Faster_Whisper:
     RETURN_NAMES = ("text", )
     FUNCTION = "UL_DataProcess_Faster_Whisper"
     CATEGORY = "ExtraModels/UL DataProcess"
-    TITLE = "UL DataProcess Faster Whisper-音视频字幕生成"
+    TITLE = "UL DataProcess Faster Whisper"
     
     def UL_DataProcess_Faster_Whisper(self,audio, faster_whisper_model, device, faster_whisper_dtype, target_lanuage, word_timestamps, whisper_type, faster_whisper_beam_size, stable_whisper_alignment, vad_filter, faster_whisper_min_silence_duration_ms, stable_whisper_model, stable_whisper_cpu_preload, save_subtitles_to_folder, folder, save_other_formats, stable_whisper_demucs_denoiser):
         if whisper_type != 'stable_whisper':
@@ -347,32 +350,39 @@ class UL_DataProcess_Faster_Whisper:
                 # model_path = r"C:\Users\pc\Desktop\models--Systran--faster-whisper-medium"
                 if not os.access(os.path.join(model_path, "model.bin"), os.F_OK):
                     model_path = faster_whisper_model
+                    
             elif faster_whisper_model == 'Systran/faster-whisper-large-v2':
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-faster-whisper-large-v2')
                 # model_path = r"C:\Users\pc\Desktop\models--Systran--faster-whisper-large-v2"
                 if not os.access(os.path.join(model_path, "model.bin"), os.F_OK):
                     model_path = faster_whisper_model
+                    
             else:
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-large-v3')
                 # model_path = r"C:\Users\pc\Desktop\models--Systran--faster-whisper-large-v3"
                 if not os.access(os.path.join(model_path, "model.bin"), os.F_OK):
                     model_path = faster_whisper_model
+                    
+                    
         else:
             if stable_whisper_model == "small":
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\small.pt')
                 # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\small.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
+                    
             if stable_whisper_model == "medium":
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\medium.pt')
                 # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\medium.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
+                    
             if stable_whisper_model == "large-v2":
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v2.pt')
                 # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v2.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
+                    
             if stable_whisper_model == "large-v3":
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v3.pt')
                 # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v3.pt"

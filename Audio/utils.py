@@ -58,7 +58,7 @@ class UL_Advance_AutoPlay:
     RETURN_NAMES = ()
     FUNCTION = "UL_Advance_AutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_AutoPlay-高级声音预览自动播放"
+    TITLE = "UL Advance_AutoPlay"
 
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
@@ -81,7 +81,7 @@ class UL_VAEDecodeAudio:
     RETURN_NAMES = ("audio_path",)
     FUNCTION = "UL_VAEDecodeAudio"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL VAEDecodeAudio-comfyui原生音频解码后预览"
+    TITLE = "UL VAEDecodeAudio"
 
     def UL_VAEDecodeAudio(self, vae, samples, advance_preview_only):
         audio_file = 'UL_audio.wav'
@@ -115,7 +115,7 @@ class UL_Advance_noAutoPlay:
     RETURN_NAMES = ()
     FUNCTION = "UL_Advance_noAutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_noAutoPlay-高级声音预览不自动播放"
+    TITLE = "UL Advance_noAutoPlay"
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
     OUTPUT_NODE = True
@@ -138,7 +138,7 @@ class UL_Load_Audio:
     RETURN_NAMES = ("audio_path",)
     RETURN_TYPES = ("AUDIO_PATH",)
     FUNCTION = "UL_load_audio"
-    TITLE = "UL Load Audio-加载音频、视频"
+    TITLE = "UL Load Audio"
 
     def UL_load_audio(self, audio):
         audio_path = folder_paths.get_annotated_filepath(audio)
@@ -161,7 +161,7 @@ class UL_PreView_Audio:
                 }
 
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL PreView Audio-音频预览自动播放"
+    TITLE = "UL PreView Audio"
     FUNCTION = "UL_PreView_Audio"
     RETURN_TYPES = ()
     RETURN_NAMES = ()
@@ -214,7 +214,7 @@ def stable_audio_open_load_model(device, model_path, dtype):
     stable_audio_open_model_config_file = os.path.join(current_directory, 'stable-audio-open-model-config\model_config.json')
     with open(stable_audio_open_model_config_file, encoding='utf-8') as f:
         model_config = json.load(f)
-        print(f'\033[93mModel config file(模型配置文件):', stable_audio_open_model_config_file, '\033[0m')
+        # print(f'\033[93mModel config file(模型配置文件):', stable_audio_open_model_config_file, '\033[0m')
     if not is_module_imported('create_model_from_config'):
         from .stable_audio_tools.models.factory import create_model_from_config
     if not is_module_imported('load_ckpt_state_dict'):
@@ -256,11 +256,13 @@ def stable_audio_open_generate(model,prompt,seconds,seed,steps,cfg_scale,sample_
     return output
 
 def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_path, temp_dir, ouput_path, tau):
-    from .OpenVoiceV2 import se_extractor
-    from .OpenVoiceV2.api import ToneColorConverter
+    if not is_module_imported('se_extractor'):
+        from .OpenVoiceV2 import se_extractor
+    if not is_module_imported('ToneColorConverter'):
+        from .OpenVoiceV2.api import ToneColorConverter
     converter_model_path = converter_model_path
     tone_color_converter = ToneColorConverter(os.path.join(converter_model_path, 'checkpoints\converter\config.json'), device=device)
-    tone_color_converter.load_ckpt(os.path.join(converter_model_path, 'checkpoints\converter\checkpoint.pth'))
+    model = tone_color_converter.load_ckpt(os.path.join(converter_model_path, 'checkpoints\converter\checkpoint.pth'))
     #input_voice_path from chattts
     source_se, audio_name = se_extractor.get_se(ori_voice_path, tone_color_converter, target_dir=temp_dir, vad=True)
     reference_speaker = ref_voice_path
@@ -272,6 +274,8 @@ def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_pa
         output_path=ouput_path,
         tau=tau
         )
+    del tone_color_converter
+    del model
 
 def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_name, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, fix_saved_speaker_temperature, advance_preview_only):
     if not is_module_imported('ChatTTS'):

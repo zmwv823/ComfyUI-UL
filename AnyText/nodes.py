@@ -67,7 +67,7 @@ class UL_AnyText:
     RETURN_TYPES = ("IMAGE",)
     CATEGORY = "ExtraModels/UL AnyText"
     FUNCTION = "anytext_process"
-    TITLE = "UL AnyText Geneation-AnyText文本生成"
+    TITLE = "UL AnyText Geneation"
 
     def anytext_process(self,
         mode,
@@ -178,16 +178,25 @@ class UL_AnyText:
                     if not is_module_imported('snapshot_download'):
                         from modelscope.hub.snapshot_download import snapshot_download
                     snapshot_download('damo/nlp_csanmt_translation_zh2en', revision='v1.0.1')
+                    
+            elif loader_out[3] == 'utrobinmv/t5_translate_en_ru_zh_small_1024':
+                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024", "model.safetensors"), os.F_OK):
+                    if not is_module_imported('snapshot_download'):
+                        from huggingface_hub import snapshot_download
+                    snapshot_download(repo_id="utrobinmv/t5_translate_en_ru_zh_small_1024")
+                    
             elif loader_out[3] == 'utrobinmv/t5_translate_en_ru_zh_base_200':
                 if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200", "model.safetensors"), os.F_OK):
                     if not is_module_imported('snapshot_download'):
                         from huggingface_hub import snapshot_download
                     snapshot_download(repo_id="utrobinmv/t5_translate_en_ru_zh_base_200")
+                    
             elif loader_out[3] == 'utrobinmv/t5_translate_en_ru_zh_large_1024':
                 if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024", "model.safetensors"), os.F_OK):
                     if not is_module_imported('snapshot_download'):
                         from huggingface_hub import snapshot_download
                     snapshot_download(repo_id="utrobinmv/t5_translate_en_ru_zh_large_1024")
+                    
             else:
                 if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "CSANMT", "variables", "variables.data-00000-of-00001"), os.F_OK):
                     raise Exception(f"Converted SavedModel must be created  before execute by using 'AnyText Create SavedModel' node(必须先使用AnyText Create SavedModel节点创建转换模型文件).")

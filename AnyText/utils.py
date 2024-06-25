@@ -27,7 +27,7 @@ class UL_AnyText_loader:
                 "font": (font_list, ),
                 "ckpt_name": (checkpoints_list, ),
                 "clip": (clip_list, ),
-                "translator": (["utrobinmv/t5_translate_en_ru_zh_small_1024", "utrobinmv/t5_translate_en_ru_zh_base_200", "utrobinmv/t5_translate_en_ru_zh_large_1024", "damo/nlp_csanmt_translation_zh2en", "SavedModel"],{"default": "t5_translate_en_ru_zh_base_200"}), 
+                "translator": (["utrobinmv/t5_translate_en_ru_zh_small_1024", "utrobinmv/t5_translate_en_ru_zh_base_200", "utrobinmv/t5_translate_en_ru_zh_large_1024", "damo/nlp_csanmt_translation_zh2en", "SavedModel"],{"default": "utrobinmv/t5_translate_en_ru_zh_small_1024"}), 
                 "show_debug": ("BOOLEAN", {"default": False}),
                 }
             }

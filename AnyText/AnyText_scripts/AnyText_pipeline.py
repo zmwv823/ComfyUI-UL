@@ -297,28 +297,30 @@ class AnyText_Pipeline():
             if self.trans_pipe is None:
                 return None, None
             old_prompt = prompt
-            if self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_base_200':
-                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200", "model.safetensors"), os.F_OK):
-                    zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_base_200'
-                else:
-                    zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200")
-                prompt = t5_translate_en_ru_zh('en', prompt + ' .', zh2en_path, device)[0]
-            elif self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_large_1024':
-                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024", "model.safetensors"), os.F_OK):
-                    zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_large_1024'
-                else:
-                    zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024")
-                prompt = t5_translate_en_ru_zh('en', prompt + ' .', zh2en_path, device)[0]
-            elif self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_small_1024':
-                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024", "model.safetensors"), os.F_OK):
+            
+            if self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_small_1024':
+                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024")
+                if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
                     zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_small_1024'
-                else:
-                    zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_small_1024")
                 prompt = t5_translate_en_ru_zh('en', prompt + ' .', zh2en_path, device)[0]
+                
+            elif self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_base_200':
+                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_base_200")
+                if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
+                    zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_base_200'
+                prompt = t5_translate_en_ru_zh('en', prompt + ' .', zh2en_path, device)[0]
+                
+            elif self.trans_pipe == 'utrobinmv/t5_translate_en_ru_zh_large_1024':
+                zh2en_path = os.path.join(folder_paths.models_dir, "prompt_generator", "models--utrobinmv--t5_translate_en_ru_zh_large_1024")
+                if not os.access(os.path.join(zh2en_path, "model.safetensors"), os.F_OK):
+                    zh2en_path = 'utrobinmv/t5_translate_en_ru_zh_large_1024'
+                prompt = t5_translate_en_ru_zh('en', prompt + ' .', zh2en_path, device)[0]
+                
             elif self.trans_pipe == 'SavedModel_Translation':
                 input = (prompt + ' .')
                     #获取第一个值(tuple)，然后再处理
                 prompt = SavedModel_Translator(input)['translation']
+                
             else:
                 if os.access(os.path.join(comfyui_models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
                     zh2en_path = os.path.join(comfyui_models_dir, 'prompt_generator', 'nlp_csanmt_translation_zh2en')

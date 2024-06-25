@@ -421,7 +421,9 @@ class T5Conditioner(TextConditioner):
                 t5_base_path = os.path.join(folder_paths.models_dir, r"t5\models--t5-base")
                 if not os.access(os.path.join(t5_base_path, "model.safetensors"), os.F_OK):
                     from huggingface_hub import snapshot_download
-                    snapshot_download(repo_id="google-t5/t5-base", cache_dir=os.path.join(folder_paths.models_dir, r"t5"))
+                    # snapshot_download(repo_id="google-t5/t5-base", cache_dir=os.path.join(folder_paths.models_dir, r"t5"))
+                    snapshot_download(repo_id="google-t5/t5-base")
+                    t5_base_path = "google-t5/t5-base"
                 self.t5_tokenizer = T5Tokenizer.from_pretrained(t5_base_path)
                 t5 = T5EncoderModel.from_pretrained(t5_base_path).train(mode=finetune)
                 print('\033[93mT5-base path(T5-base模型路径): ', t5_base_path, '\nScript path(脚本路径): ' , current_file_path, '\nFunction name(功能名): T5Conditioner(Conditioner)\033[0m')

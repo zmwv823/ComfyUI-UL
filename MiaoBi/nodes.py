@@ -118,7 +118,7 @@ class UL_MiaoBi_ResAdapterLoader:
     RETURN_TYPES = ("MODEL", "CLIP")
     FUNCTION = "UL_MiaoBi_ResAdapterLoader"
     CATEGORY = "ExtraModels/UL MiaoBi"
-    TITLE = "UL MiaoBi ResAdapter Loader-高清生成LoRA"
+    TITLE = "UL MiaoBi ResAdapter Loader"
 
     def UL_MiaoBi_ResAdapterLoader(self, model, clip, resadapter_name, strength_model, strength_clip):
         if strength_model == 0 and strength_clip == 0:
@@ -238,7 +238,7 @@ class UL_MiaoBi_Singlefile_SD15:
     RETURN_NAMES = ("images",)
     FUNCTION = "UL_MiaoBi_Singlefile_SD15"
     CATEGORY = "ExtraModels/UL MiaoBi"
-    TITLE = "UL MiaoBi Singlefile SD15-单文件模型中文文生图"
+    TITLE = "UL MiaoBi Singlefile SD15"
     DESCRIPTION = "text_encoder--clip(text2image)--clip_dtype--c_dtype,diffusion--model--model_dtype--m_dtype."
     
     def UL_MiaoBi_Singlefile_SD15(
@@ -574,7 +574,7 @@ class UL_MiaoBi_diffusers_SD15:
     RETURN_NAMES = ("images",)
     FUNCTION = "UL_MiaoBi_diffusers_SD15"
     CATEGORY = "ExtraModels/UL MiaoBi"
-    TITLE = "UL MiaoBi Diffusers SD15-diffusers模型中文文生图"
+    TITLE = "UL MiaoBi Diffusers SD15"
     DESCRIPTION = """diffusion_dtype--text_encoder&diffusion--clip&model|diffusion的clip和model必须统一精度."""
 
     def UL_MiaoBi_diffusers_SD15(

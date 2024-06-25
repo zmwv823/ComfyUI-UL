@@ -31,7 +31,7 @@ class UL_Video_Stabilization:
     RETURN_NAMES = ("UL_Video_Stabilization", )
     FUNCTION = "UL_Video_Stabilization"
     CATEGORY = "ExtraModels/UL Video"
-    TITLE = "UL Video Video_Stabilization-视频防抖"
+    TITLE = "UL Video Video_Stabilization"
 
     def UL_Video_Stabilization(self, video_path, save_to_folder, model):
         if not is_module_imported('OutputKeys'):
@@ -49,8 +49,10 @@ class UL_Video_Stabilization:
             cv_dut_raft_video_stabilization_base_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\modelscope--damo--cv_dut-raft_video-stabilization_base')
             if not os.access(os.path.join(cv_dut_raft_video_stabilization_base_path, r'ckpt\raft-things.pth'), os.F_OK):
                 cv_dut_raft_video_stabilization_base_path = 'damo/cv_dut-raft_video-stabilization_base'
+                
             video_stabilization = pipeline(Tasks.video_stabilization, 
                                 model=cv_dut_raft_video_stabilization_base_path)
+            
         out_video_path = video_stabilization(video_path)[OutputKeys.OUTPUT_VIDEO]
         print('Pipeline: the output video path is {}'.format(out_video_path))
         shutil.move(out_video_path, out_put_path)

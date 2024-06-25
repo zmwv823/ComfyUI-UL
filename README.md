@@ -79,6 +79,10 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
     └─checkpoints
         └─converter
 ```
+```
+PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
+├─models--t5-base
+```
 ### UL_VAEDecodeAudio: Audio preview node for comfyui official audio_output--官方音频输出预览节点。
 - ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### **Some code from github repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [AIFSH/ComfyUI-GPT_SoVITS](https://github.com/AIFSH/ComfyUI-GPT_SoVITS)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)**
@@ -88,6 +92,7 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 - Docment summarization--文档总结。
 - Make subtitle with faster-whisper--使用faster-whisper制作字幕。
 - ![](./DataProcess/assets/DataProcess-wf.png)
+### Models:
 - Manual model path, ignore it if auto download--手动放置模型位置，自动下载模型可无视。
 ```
 D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
