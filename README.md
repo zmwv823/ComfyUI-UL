@@ -105,7 +105,12 @@ D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
 ├─models--utrobinmv--t5_translate_en_ru_zh_base_200
 ├─models--utrobinmv--t5_translate_en_ru_zh_large_1024
 ├─models--utrobinmv--t5_translate_en_ru_zh_small_1024
-├─nlp_csanmt_translation_zh2en
+├─modelscope--damo--nlp_csanmt_translation_en2zh_base
+│  ├─CSANMT
+│  │  └─variables
+│  ├─resources
+│  └─tf_ckpts
+├─modelscope--damo--nlp_csanmt_translation_zh2en
 │  ├─CSANMT
 │  │  └─variables
 │  ├─resources
