@@ -240,7 +240,7 @@ class UL_Audio_facebook_musicgen:
             # 去除音频名字后缀，后续统一改为.wav
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
             temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'ChatTTS.wav')
+            trim_audio_path = os.path.join(temp_dir,f'trim_audio_ChatTTS.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -448,7 +448,7 @@ class UL_Audio_OpenVoiceV2:
             # dirname, filename = os.path.split(ref_audio)
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
             temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'XTTS.wav')
+            trim_audio_path = os.path.join(temp_dir,f'trim_auido_OpenVoiceV2.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -538,7 +538,7 @@ class UL_Audio_XTTS:
             # dirname, filename = os.path.split(ref_audio)
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
             temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'XTTS.wav')
+            trim_audio_path = os.path.join(temp_dir,f'trim_audio_XTTS.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -697,6 +697,7 @@ class UL_Audio_noise_suppression:
         model_list = ["damo/speech_frcrn_ans_cirm_16k", "damo/speech_dfsmn_ans_psm_48k_causal"]
         return {
             "required": {
+                "uuid_output_only": ("BOOLEAN",{"default": False}),
                 "advance_preview_only": ("BOOLEAN",{"default": False}),
                 "audio": ("AUDIO_PATH",),
                 "model": (model_list,{
@@ -713,12 +714,19 @@ class UL_Audio_noise_suppression:
     CATEGORY = "ExtraModels/UL Audio"
     TITLE = "UL Audio noise_suppression"
     
-    def UL_Audio_noise_suppression(self, audio, model, device, advance_preview_only, mono2stereo): 
+    def UL_Audio_noise_suppression(self, audio, model, device, advance_preview_only, mono2stereo, uuid_output_only): 
         audio = get_audio_from_video(audio)
         device =get_device_by_name(device)
-        audio_file = 'UL_audio.wav'
+        audio_file = 'UL_audio_denoised.wav'
         output_audio_path = os.path.join(output_dir, audio_file)
-        stereo_audio_path = os.path.join(output_dir, 'UL_audio_stereo.wav')
+        stereo_audio_path = os.path.join(output_dir, 'UL_audio_stereo_denoised.wav')
+        if uuid_output_only == True:
+            import uuid
+            audio_file = f'UL_audio_denoised_{uuid.uuid1()}'
+            output_audio_path = os.path.join(sys_temp_dir, f'{audio_file}.wav')
+            stereo_audio_path = os.path.join(sys_temp_dir,  f'{audio_file}_denoised_stereo.wav')
+            if advance_preview_only == True:
+                raise Exception(f"It's (uuid) just for output, no preview-开启uuid仅输出，无预览。")
         noise_suppression(audio, output_audio_path, device, model)
         if model == 'damo/speech_frcrn_ans_cirm_16k':
             model_args = 'FRCRN语音降噪-单麦-16k'
@@ -729,7 +737,7 @@ class UL_Audio_noise_suppression:
             os.system(
                 f'ffmpeg -i "{output_audio_path}" -ac 2 "{stereo_audio_path}" -y'
             )
-            audio_file = 'UL_audio_stereo.wav'
+            audio_file = 'UL_audio_denoised_stereo.wav'
             output_audio_path = stereo_audio_path
             
         if advance_preview_only == True:

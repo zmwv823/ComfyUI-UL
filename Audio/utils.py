@@ -466,8 +466,8 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
     else:
         vocal_name = 'vocal_UL_audio.wav_10.wav'
         bgm_name = 'instrument_UL_audio.wav_10.wav'
-    vocal_path = os.path.join(output_dir, vocal_name)
-    bgm_path = os.path.join(output_dir,bgm_name)
+    vocal_path = os.path.join(output_dir,  vocal_name)
+    bgm_path = os.path.join(output_dir,  bgm_name)
     if advance_preview_only == True:
         result_a = {
                 "filename": vocal_name,
@@ -495,17 +495,19 @@ def noise_suppression(input_audio_path, output_audio_path, device, model):
         if not os.access(os.path.join(noise_suppression_model_path, 'pytorch_model.bin'), os.F_OK):
             noise_suppression_model_path = 'damo/speech_frcrn_ans_cirm_16k'
     elif model == 'damo/speech_dfsmn_ans_psm_48k_causal':
-        import ffmpeg
         noise_suppression_model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\modelscope--damo--speech_dfsmn_ans_psm_48k_causal')
         if not os.access(os.path.join(noise_suppression_model_path, 'pytorch_model.bin'), os.F_OK):
             noise_suppression_model_path = 'damo/speech_dfsmn_ans_psm_48k_causal'
+            
+        import ffmpeg
         info = ffmpeg.probe(input_audio_path, cmd="ffprobe")
-        tmp_path = os.path.join(sys_temp_dir, 'UL_audio.wav')
+        tmp_path = os.path.join(sys_temp_dir, 'UL_audio_denoised.wav')
         if info["streams"][0]["sample_rate"] != "48000":
             # -i输入input， -vn表示vedio not，即输出不包含视频，-acodec重新音频编码，-ac 1单声道, -ac 2双声道, ar 48000采样率48khz, -y操作自动确认.
             os.system(f'ffmpeg -i "{input_audio_path}" -vn -acodec pcm_s16le -ac 1 -ar 48000 "{tmp_path}" -y')
             input_audio_path = tmp_path
             
+    print(input_audio_path, output_audio_path)
     ans = pipeline_ali(Tasks.acoustic_noise_suppression,model=noise_suppression_model_path, device=device)
     ans(input_audio_path,output_path=output_audio_path)
     
@@ -519,22 +521,20 @@ def get_audio_from_video(input_video_path):
             from moviepy.editor import VideoFileClip
     match = ['.mp3','.wav','.m4a','.ogg','.flac']
     dirname, filename = os.path.split(input_video_path)
-    srt_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
-    temp_audio = os.path.join(sys_temp_dir, srt_name)
+    file_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
+    temp_audio = os.path.join(sys_temp_dir, f'{file_name}.wav')
     
     if not any(c in input_video_path for c in match):
         if '.avi' in input_video_path:
-            tmp_path = os.path.join(sys_temp_dir, 'UL_audio.wav')
-            # -i 表示input，即输入文件, -f 表示format，即输出格式, -vn表示vedio not，即输出不包含视频，输出位置不能覆盖原始文件。
-            os.system(f'ffmpeg -i "{input_video_path}" -f wav -vn "{tmp_path}.wav" -y')
-            audio = f'{tmp_path}.wav'
+            # -i 表示input，即输入文件, -f 表示format，即输出格式, -vn表示video not，即输出不包含视频，注：输出位置不能覆盖原始文件(输入文件)。
+            os.system(f'ffmpeg -i "{input_video_path}" -f wav -vn {temp_audio} -y')
         else:
             # 读取视频文件
             video = VideoFileClip(input_video_path)
             # 提取视频文件中的声音
             audio = video.audio
-            audio.write_audiofile(f"{temp_audio}.wav")
-            audio = f"{temp_audio}.wav"
+            audio.write_audiofile(temp_audio)
+        audio = temp_audio
     else:
         audio = input_video_path
     return audio
