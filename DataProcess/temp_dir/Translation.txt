@@ -1,4 +1,1 @@
-00:00:00:我应在江湖悠悠
-00:00:03:饮一壶酌酒
-00:00:06:嘴里看百花深处愁
-00:00:11:我把那关外一眼
+Accept any resolution image input, but will resized to < = 768, output images will limited to < = 768. (Official method).

@@ -15,39 +15,30 @@ input_path = folder_paths.get_input_directory()
 class UL_DataProcess_Create_SavedModel:
     @classmethod
     def INPUT_TYPES(cls):
-        
-        translator_list = os.listdir(os.path.join(folder_paths.models_dir, "prompt_generator"))
-        translator_list.insert(0, "Auto_DownLoad")
-        
         return {
             "required": {
-                "translator_local_path": (translator_list, ),
-                "translator_path_or_repo_id": ("STRING", {"default": "damo/nlp_csanmt_translation_zh2en"}),
-                "save_model_to_folder": ("STRING", {"default": r"D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en\CSANMT", 
-                                                    # "multiline": True
-                                                    }),
+                "translator": (["damo/nlp_csanmt_translation_en2zh_base",  "damo/nlp_csanmt_translation_en2zh", "damo/nlp_csanmt_translation_zh2en"], {"default": "damo/nlp_csanmt_translation_zh2en"}),
             },
         }
 
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("Model Path",)
     CATEGORY = "ExtraModels/UL DataProcess"
-    FUNCTION = "UL_Data_Process_Create_SavedModel"
+    FUNCTION = "UL_DataProcess_Create_SavedModel"
     TITLE = "UL DataProcess Create SavedModel"
 
-    def UL_DataProcess_Create_SavedModel(self, translator_local_path, translator_path_or_repo_id, save_model_to_folder):
-        if translator_path_or_repo_id == "":
-            translator_path = os.path.join(comfyui_models_dir, "prompt_generator", translator_local_path)
-        else:
-            if translator_local_path != 'Auto_DownLoad':
-                translator_path = os.path.join(comfyui_models_dir, "prompt_generator", translator_local_path)
-            else:
-                translator_path = translator_path_or_repo_id
-        if save_model_to_folder != '':
-            save_folder = save_model_to_folder
-        else:
-            save_folder = os.path.join(translator_path, "CSANMT")
-        SavedModel(translator_path)
+    def UL_DataProcess_Create_SavedModel(self, translator):
+        if translator == 'damo/nlp_csanmt_translation_en2zh_base':
+            translator_path = os.path.join(comfyui_models_dir, "prompt_generator\modelscope--damo--nlp_csanmt_translation_en2zh_base")
+        elif translator == 'damo/nlp_csanmt_translation_en2zh':
+            translator_path = os.path.join(comfyui_models_dir, "prompt_generator\modelscope--damo--nlp_csanmt_translation_en2zh")
+        elif translator == 'damo/nlp_csanmt_translation_zh2en':
+            translator_path = os.path.join(comfyui_models_dir, "prompt_generator\modelscope--damo--nlp_csanmt_translation_zh2en")
+        if not os.access(os.path.join(translator_path, "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
+            translator_path = translator
+                    
+        save_folder = os.path.join(translator_path, "CSANMT")
+        Create_SavedModel(translator_path)
         result = ("转换后的模型位置：\n" + save_folder)
         return (result, )
 
@@ -83,7 +74,7 @@ NODE_CLASS_MAPPINGS = {
     "UL_Load_Data": UL_Load_Data, 
 }
 
-def SavedModel_Translator(prompt):
+def SavedModel_Translator(prompt, model):
     sttime = time.time()
     import tensorflow
     from sacremoses import MosesDetokenizer, MosesPunctNormalizer, MosesTokenizer
@@ -96,7 +87,14 @@ def SavedModel_Translator(prompt):
     if tensorflow.__version__ >= '2.0':
         tf = tensorflow.compat.v1
         tf.disable_eager_execution()
-    model_dir = os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en")
+    if model == 'Saved_Model_zh2en':
+        model_dir = os.path.join(folder_paths.models_dir, "prompt_generator", "modelscope--damo--nlp_csanmt_translation_zh2en")
+    elif model == 'Saved_Model_en2zh_base':
+        model_dir = os.path.join(folder_paths.models_dir, "prompt_generator", "modelscope--damo--nlp_csanmt_translation_en2zh_base")
+    elif model == 'Saved_Model_en2zh':
+        model_dir = os.path.join(folder_paths.models_dir, "prompt_generator", "modelscope--damo--nlp_csanmt_translation_en2zh")
+    if not os.access(os.path.join(model_dir, "CSANMT", "variables", "variables.data-00000-of-00001"), os.F_OK):
+        raise Exception(f'Generate converted model with "UL_Data_Process_Create_SavedModel" node first(先使用“UL_Data_Process_Create_SavedModel”节点生成转换模型).')
 
     #读取配置文件和中英字典（这些文件需要再模型下载中获得）：
     cfg_dir = os.path.join(model_dir,"configuration.json")
@@ -123,6 +121,8 @@ def SavedModel_Translator(prompt):
 
     # _src_bpe_path = os.path.join(model_dir,"bpe.en")
     _src_bpe_path = os.path.join(model_dir,"bpe.zh")
+    if model != 'Saved_Model_zh2en':
+        _src_bpe_path = os.path.join(model_dir,"bpe.en")
 
     _punct_normalizer = MosesPunctNormalizer(lang=_src_lang)
     _tok = MosesTokenizer(lang=_src_lang)
@@ -139,6 +139,9 @@ def SavedModel_Translator(prompt):
 
     if (_src_lang in ['es', 'fr'] and _tgt_lang == 'zh') or (_src_lang == 'zh' and _tgt_lang in ['es', 'fr']):
         aggressive_dash_splits = False
+        if model != 'Saved_Model_zh2en':
+            if (_src_lang in ['es', 'fr'] and _tgt_lang == 'en') or (_src_lang == 'en' and _tgt_lang in ['es', 'fr']):
+                aggressive_dash_splits = False
 
     input_tok = [
                     _tok.tokenize(
@@ -194,7 +197,8 @@ def SavedModel_Translator(prompt):
     results = {OutputKeys.TRANSLATION: translation_out}
     # print(results, result)
     endtime = time.time()
-    print("\033[93m翻译耗时：\033[0m", endtime - sttime)
+    from tensorflow.python.client import device_lib
+    print("\033[93m翻译耗时：", endtime - sttime, "\n翻译使用的设备：\n", device_lib.list_local_devices(), "\033[0m")
     del MetaGraphDef
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -202,7 +206,7 @@ def SavedModel_Translator(prompt):
     #以上就是一整套本地调用翻译的全部流程，将它们按顺序放在一整个脚本中就可以顺利翻译了。
 
 #将模型转换为SavedModel格式
-def SavedModel(model_path):
+def Create_SavedModel(model_path):
     if not is_module_imported('Model'):
         from modelscope.models import Model
     if not is_module_imported('TfModelExporter'):
@@ -249,7 +253,8 @@ def nlp_csanmt_translation_zh2en(device, prompt, nlp_csanmt_translation_zh2en_pa
     pipeline_ins = pipeline(task=Tasks.translation, model=nlp_csanmt_translation_zh2en_path, device=device)
     outputs = pipeline_ins(input=prompt)
     endtime = time.time()
-    print("\033[93mTime for translating(翻译耗时): ", endtime - sttime, "\033[0m")
+    from tensorflow.python.client import device_lib
+    print("\033[93m翻译耗时：", endtime - sttime, "\n翻译使用的设备：\n", device_lib.list_local_devices(), "\033[0m")
     del pipeline_ins
     if torch.cuda.is_available():
         torch.cuda.empty_cache()

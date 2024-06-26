@@ -21,7 +21,7 @@
 - clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**.
 - ![](./assets/clip_model.jpg)
 - [Font-(SourceHanSansSC-Medium.otf)-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf) will download into **ComfyUI\models\fonts** from huggingface, we can use any other fonts too.
-- Translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
+- Translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\modelscope--damo--nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
 - **The AnyText model itself is also a standard sd1.5 text2image model.**
 ## Example Prompts:
 ### Text-Generation English Prompts:

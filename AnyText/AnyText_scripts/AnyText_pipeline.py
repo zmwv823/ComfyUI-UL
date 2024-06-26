@@ -318,13 +318,12 @@ class AnyText_Pipeline():
                 
             elif self.trans_pipe == 'SavedModel_Translation':
                 input = (prompt + ' .')
-                    #获取第一个值(tuple)，然后再处理
-                prompt = SavedModel_Translator(input)['translation']
+                #获取translation值(tuple)，然后再处理
+                prompt = SavedModel_Translator(input, 'Saved_Model_zh2en')['translation']
                 
             else:
-                if os.access(os.path.join(comfyui_models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
-                    zh2en_path = os.path.join(comfyui_models_dir, 'prompt_generator', 'nlp_csanmt_translation_zh2en')
-                else:
+                zh2en_path = os.path.join(comfyui_models_dir, 'prompt_generator', 'modelscope--damo--nlp_csanmt_translation_zh2en')
+                if not os.access(os.path.join(zh2en_path, "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
                     zh2en_path = "damo/nlp_csanmt_translation_zh2en"
                 prompt = nlp_csanmt_translation_zh2en(device, prompt + ' .', zh2en_path)['translation']
             print(f'Translate: {old_prompt} --> {prompt}')

@@ -174,7 +174,7 @@ class UL_AnyText:
         if bool_is_chinese == True:
             #如果启用中译英，则提前判断本地是否存在翻译模型，没有则自动下载，以防跑半路报错。
             if loader_out[3] == 'nlp_csanmt_translation_zh2en':
-                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
+                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "modelscope--damo--nlp_csanmt_translation_zh2en", "tf_ckpts", "ckpt-0.data-00000-of-00001"), os.F_OK):
                     if not is_module_imported('snapshot_download'):
                         from modelscope.hub.snapshot_download import snapshot_download
                     snapshot_download('damo/nlp_csanmt_translation_zh2en', revision='v1.0.1')
@@ -198,7 +198,7 @@ class UL_AnyText:
                     snapshot_download(repo_id="utrobinmv/t5_translate_en_ru_zh_large_1024")
                     
             else:
-                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "nlp_csanmt_translation_zh2en", "CSANMT", "variables", "variables.data-00000-of-00001"), os.F_OK):
+                if not os.access(os.path.join(folder_paths.models_dir, "prompt_generator", "modelscope--damo--nlp_csanmt_translation_zh2en", "CSANMT", "variables", "variables.data-00000-of-00001"), os.F_OK):
                     raise Exception(f"Converted SavedModel must be created  before execute by using 'AnyText Create SavedModel' node(必须先使用AnyText Create SavedModel节点创建转换模型文件).")
         
         device = get_device_by_name(device)    

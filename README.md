@@ -1,6 +1,8 @@
 # My Personal custom-nodes | For Study Purpose Only | Not Recommeded  |  Will Not Accept Any Issue
 # 个人专属插件  |  仅用于学习  |  不建议使用  |  不接收issue
-
+# Warning:
+- tensorflow need specified cuda_version to run on gpu, but on windows 2.16.0rc0+(latest at now:2.17.0rc0) will not work on cuda, it's an official issue (tensorflow需要特定版本cuda才能跑到gpu上，但是在windows上2.16.0rc0+(目前最新版本:2.17.0rc0)暂时无法正常调用gpu，这是个官方issue).
+- `2.15.1 cuda:11.8 | 2.16.0rc0+ cuda:12`
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
