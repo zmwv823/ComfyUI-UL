@@ -21,7 +21,7 @@
 - clip model [**clip-vit-large-patch14**](https://huggingface.co/openai/clip-vit-large-patch14) will download into `C:\Users\username\.cache\huggingface\hub`. We can manually download all files from [clip_model](https://huggingface.co/openai/clip-vit-large-patch14) into **ComfyUI\models\clip\openai--clip-vit-large-patch14**.
 - ![](./assets/clip_model.jpg)
 - [Font-(SourceHanSansSC-Medium.otf)-18MB](https://huggingface.co/Sanster/AnyText/blob/main/SourceHanSansSC-Medium.otf) will download into **ComfyUI\models\fonts** from huggingface, we can use any other fonts too.
-- Translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\modelscope--damo--nlp_csanmt_translation_zh2en**![](./assets/zh2en_model.jpg)
+- Translator model [modelscope--damo\nlp_csanmt_translation_zh2en--7.3GB](https://www.modelscope.cn/models/iic/nlp_csanmt_translation_zh2en) will download into `C:\Users\username\.cache\modelscope\hub\damo`. We can maually download translator model from link before, then put all files into **ComfyUI\models\prompt_generator\modelscope--damo--nlp_csanmt_translation_zh2en**
 - **The AnyText model itself is also a standard sd1.5 text2image model.**
 ## Example Prompts:
 ### Text-Generation English Prompts:
@@ -51,19 +51,6 @@
 - 一个建筑物前面的字母标牌， 上面写着 " "
 ## Example workflow:
 ![workflow](./assets/AnyText-wf.png)
-## Translators:
-### Time comsuption (Prompt:一张关于墙上的彩色涂鸦艺术的摄影作品，上面写着“人工智能" 和 “神经网络”)
-- nlp_csanmt_translation_zh2en--**14s+**
-- t5_translate_en_ru_zh_large_1024--**10s+**
-- t5_translate_en_ru_zh_base_200--**4.6s+**
-- SavedModel--**11s+**
-### Size
-- nlp_csanmt_translation_zh2en--**9.47GB**
-- t5_translate_en_ru_zh_large_1024--**3.13GB**
-- t5_translate_en_ru_zh_base_200--**1.11GB**
-- SavedModel--**2.12GB**
-### Zh2En Accuracy
-nlp_csanmt_translation_zh2en **>=** t5_translate_en_ru_zh_large_1024 **>=** SavedModel **>>** t5_translate_en_ru_zh_base_200
 
 ## Some Params:
 
