@@ -359,8 +359,8 @@ def uvr5_split(self, audio, model,agg, device, is_half, tta):
         new_name = os.path.join(sys_temp_dir, 'UL_audio.wav')
         shutil.copy(old_name, new_name)
         new_audio = new_name
-        save_root_vocal = output_dir
-        save_root_ins = output_dir
+        save_root_vocal = os.path.join(output_dir, 'audio')
+        save_root_ins = os.path.join(output_dir, 'audio')
         vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path = uvr5(model, new_audio, save_root_vocal,save_root_ins,agg, 'wav', device, is_half, tta)
         return (vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path)
 

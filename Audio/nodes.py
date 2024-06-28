@@ -211,11 +211,13 @@ class UL_Audio_facebook_musicgen:
                         }),
                 "temperature":("FLOAT", {"default": 1.0, "min": 0.0, "max": 999.0, "step": 0.1, }),
                 "seed":  ("INT", {"default": 0, "min": 0, "max": np.iinfo(np.int32).max}), 
-                # "dtype": (["auto", "fp16", "bf16", "fp32"],{"default": "auto"}), 
                 "two_step_cfg": ("BOOLEAN", {"default":False}, ),
                 "use_sampling": ("BOOLEAN", {"default":True}, ),
                 "extend_stride": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 999.0, "step": 0.1, }),
+                "apply_musicgen_with_transformers": ("BOOLEAN", {"default":False}, ),
+                "transformers_audio_continuation": ("BOOLEAN", {"default":False}, ),
                 "device": (["auto", "cuda", "cpu", "mps", "xpu"],{"default": "auto"}), 
+                "transformers_dtype": (["auto", "fp16", "bf16", "fp32"],{"default": "auto"}), 
                     },
                 }
     
@@ -228,7 +230,7 @@ class UL_Audio_facebook_musicgen:
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
   
-    def UL_facebook_musicgen(self, model, prompt, seconds, device, seed, guidance_scale, top_k, top_p, temperature, two_step_cfg, use_sampling, extend_stride, ref_audio_for_melody, musicgen_type, trim_ref_audio, start_time, duration):
+    def UL_facebook_musicgen(self, model, prompt, seconds, device, seed, guidance_scale, top_k, top_p, temperature, two_step_cfg, use_sampling, extend_stride, ref_audio_for_melody, musicgen_type, trim_ref_audio, start_time, duration, apply_musicgen_with_transformers, transformers_audio_continuation, transformers_dtype):
         seed = torch.manual_seed(seed)
         ref_audio_for_melody = get_audio_from_video(ref_audio_for_melody)
         if trim_ref_audio == True:
@@ -239,11 +241,12 @@ class UL_Audio_facebook_musicgen:
             temp_dir = tempfile.gettempdir()
             trim_audio_path = os.path.join(temp_dir,f'trim_audio_facebook_musicgen.wav')
             os.system(
-                f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
+                f'ffmpeg -i "{ref_audio_for_melody}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
-            ref_audio = trim_audio_path
+            ref_audio_for_melody = trim_audio_path
         
         device = get_device_by_name(device)
+        dtype = get_dtype_by_name(transformers_dtype)
         # musicgen_modelpath = os.path.join(folder_paths.models_dir, "audio_checkpoints", "modesl--facebook--musicgen-small")
         # if model == 'Auto_DownLoad':
         #     if not os.access(os.path.join(musicgen_modelpath, "model.safetensors"), os.F_OK):
@@ -291,24 +294,67 @@ class UL_Audio_facebook_musicgen:
             from .music_gen_audiocraft.models import MusicGen
         if not is_module_imported('audio_write'):
             from .music_gen_audiocraft.data.audio import audio_write
-        self.model = MusicGen.get_pretrained(musicgen_modelpath, device)
+        if apply_musicgen_with_transformers == False:
+            self.model = MusicGen.get_pretrained(musicgen_modelpath, device)
         if extend_stride == '0.0':
             extend_stride =None
-        self.model.set_generation_params(use_sampling=use_sampling, duration=seconds, top_k=top_k, top_p=top_p, temperature=temperature, cfg_coef=guidance_scale, two_step_cfg=two_step_cfg, extend_stride=extend_stride)
-        descriptions = [prompt]
-        if musicgen_type == "musicgen_melody":
-            melody, sr = torchaudio.load(ref_audio_for_melody)
-            audio = self.model.generate_with_chroma(descriptions, melody[None].expand(1, -1, -1), sr, progress=True)
+            
+        if (apply_musicgen_with_transformers == True and musicgen_type != "musicgen_melody"):
+            import soundfile as sf
+            from transformers import AutoProcessor, MusicgenForConditionalGeneration
+            processor = AutoProcessor.from_pretrained(musicgen_modelpath)
+            model = MusicgenForConditionalGeneration.from_pretrained(musicgen_modelpath).to(device, dtype)
+            if transformers_audio_continuation == True:
+                audio_continuation_path = os.path.join(sys_temp_dir, 'audio_continuation_temp.wav')
+                os.system(
+                f'ffmpeg -i "{ref_audio_for_melody}" -ac 2 -ar 32000 "{audio_continuation_path}" -y')
+                import librosa
+                signal, sample_rate = librosa.load(audio_continuation_path)
+                signal_array = np.array(signal)
+                print(type(signal_array), signal_array, '\n', sample_rate)
+                inputs = processor(
+                    audio=signal_array,
+                    sampling_rate=sample_rate,
+                    text=[prompt],
+                    padding=True,
+                    return_tensors="pt",
+                ).to(device)
+            else:
+                inputs = processor(
+                    text=[prompt],
+                    padding=True,
+                    return_tensors="pt",
+                ).to(device)
+            audio_values = model.generate(**inputs, do_sample=use_sampling, guidance_scale=guidance_scale, max_new_tokens=256).to(device, dtype)
+            sampling_rate = model.config.audio_encoder.sampling_rate
+            audio_values = audio_values.cpu().numpy()
+            
+            # convert audio_data dtype: float16--->int16
+            max_val = np.max(audio_values)
+            print(max_val)
+            max_16bit = 2**15
+            audio_values = audio_values * max_16bit
+            audio_values = audio_values.astype(np.int16)
+            
+            audio_file = "UL_audio_musicgen.wav"
+            audio_path = os.path.join(output_dir, 'audio', audio_file)
+            sf.write(audio_path, audio_values[0].T, sampling_rate)
+            model.to('cpu')
         else:
-            audio = self.model.generate(descriptions, progress=True)
-        sampling_rate = self.model.sample_rate
-        del self.model
-        output_dir = folder_paths.get_output_directory()
-        audio_file = "UL_audio_musicgen.wav"
-        audio_path = os.path.join(output_dir, 'audio', "UL_audio_musicgen")
-        for idx, one_wav in enumerate(audio):
-            #保存带wav后缀的音频文件
-            audio_write(audio_path, one_wav.cpu(), sampling_rate, strategy="loudness")
+            self.model.set_generation_params(use_sampling=use_sampling, duration=seconds, top_k=top_k, top_p=top_p, temperature=temperature, cfg_coef=guidance_scale, two_step_cfg=two_step_cfg, extend_stride=extend_stride)
+            descriptions = [prompt]
+            if musicgen_type == "musicgen_melody":
+                melody, sr = torchaudio.load(ref_audio_for_melody)
+                audio = self.model.generate_with_chroma(descriptions, melody[None].expand(1, -1, -1), sr, progress=True)
+            else:
+                audio = self.model.generate(descriptions, progress=True)
+            sampling_rate = self.model.sample_rate
+            del self.model
+            audio_file = "UL_audio_musicgen.wav"
+            audio_path = os.path.join(output_dir, 'audio', "UL_audio_musicgen")
+            for idx, one_wav in enumerate(audio):
+                #保存带wav后缀的音频文件
+                audio_write(audio_path, one_wav.cpu(), sampling_rate, strategy="loudness")
 
         result = {
                 "filename": audio_file,
