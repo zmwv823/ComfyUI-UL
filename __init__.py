@@ -64,6 +64,10 @@ else:
 	from .Video.nodes import NODE_CLASS_MAPPINGS as UL_DataProcess_t5_translate_en_ru_zh_Nodes
 	NODE_CLASS_MAPPINGS.update(UL_DataProcess_t5_translate_en_ru_zh_Nodes)
  
+     # Image
+	# from .Image.nodes import NODE_CLASS_MAPPINGS as UL_Image_cv_resnet_carddetection_Nodes
+	# NODE_CLASS_MAPPINGS.update(UL_Image_cv_resnet_carddetection_Nodes)
+ 
 	NODE_DISPLAY_NAME_MAPPINGS = {k:v.TITLE for k,v in NODE_CLASS_MAPPINGS.items()}
 	__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 
