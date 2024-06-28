@@ -145,7 +145,7 @@ class UL_Audio_stable_audio_open:
         # 添加文件名后缀
         audio_file = 'UL_audio'
         audio_file = f"{audio_file}.wav"
-        audio_path = os.path.join(comfy_output_dir, audio_file)
+        audio_path = os.path.join(comfy_output_dir, 'audio', audio_file)
 
         torchaudio.save(audio_path, output, self.sample_rate)
         
@@ -159,7 +159,7 @@ class UL_Audio_stable_audio_open:
             
         result = {
                 "filename": audio_file,
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":prompt
                 }
@@ -304,15 +304,15 @@ class UL_Audio_facebook_musicgen:
         sampling_rate = self.model.sample_rate
         del self.model
         output_dir = folder_paths.get_output_directory()
-        audio_file = "UL_audio.wav"
-        audio_path = os.path.join(output_dir, "UL_audio")
+        audio_file = "UL_audio_musicgen.wav"
+        audio_path = os.path.join(output_dir, 'audio', "UL_audio_musicgen")
         for idx, one_wav in enumerate(audio):
             #保存带wav后缀的音频文件
             audio_write(audio_path, one_wav.cpu(), sampling_rate, strategy="loudness")
 
         result = {
                 "filename": audio_file,
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":prompt
                 }
@@ -455,13 +455,13 @@ class UL_Audio_OpenVoiceV2:
                 
         device = get_device_by_name(device)
         audio_file = 'UL_audio_OpenVoiceV2'
-        audio_path = os.path.join(output_dir, f'{audio_file}.wav')
+        audio_path = os.path.join(output_dir, 'audio', f'{audio_file}.wav')
         print("\033[93m原声：", ori_audio, "\n目标声", ref_audio, "\033[0m")
         OpenVoiceV2_clone(model_path, device, ori_audio, ref_audio, comfy_temp_dir, audio_path, OpenVoiceV2_tau)
             
         result = {
                 "filename": f'{audio_file}.wav',
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":"声音克隆",
                 }
@@ -577,7 +577,7 @@ class UL_Audio_XTTS:
         # dtype = get_dtype_by_name(dtype)
         
         audio_file = 'UL_audio_XTTS'
-        audio_path = os.path.join(output_dir, f'{audio_file}.wav')
+        audio_path = os.path.join(output_dir, 'audio', f'{audio_file}.wav')
         if apply_tts_api == False:
             if not is_module_imported('XttsConfig'):
                 from TTS.tts.configs.xtts_config import XttsConfig
@@ -677,7 +677,7 @@ class UL_Audio_XTTS:
                         tmp_audio = text_audio + AudioSegment.silent(dur_time - text_audio_dur_time)
                     new_audio_seg += tmp_audio
                 
-                audio_path = os.path.join(output_dir, f'{audio_file}.wav')
+                audio_path = os.path.join(output_dir, 'audio', f'{audio_file}.wav')
                 new_audio_seg.export(audio_path, format="wav")
             else:
                 if do_sample == False:
@@ -722,7 +722,7 @@ class UL_Audio_XTTS:
         # print("\033[93m原声：", ori_audio, "\n目标声", ref_audio, "\033[0m")
         result = {
                 "filename": f'{audio_file}.wav',
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":"XTTS声音克隆",
                 }
@@ -825,7 +825,7 @@ class UL_Audio_noise_suppression:
         audio = get_audio_from_video(audio_path)
         device =get_device_by_name(device)
         audio_file = 'UL_audio_denoised.wav'
-        output_audio_path = os.path.join(output_dir, audio_file)
+        output_audio_path = os.path.join(output_dir,  'audio', audio_file)
         if uuid_output_noPreview == True:
             import uuid
             # audio_file = f'UL_audio_denoised_{uuid.uuid1()}'
@@ -838,7 +838,7 @@ class UL_Audio_noise_suppression:
             
         advance_preview = {
                 "filename": audio_file,
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":model_args,
                 }

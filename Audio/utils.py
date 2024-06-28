@@ -46,7 +46,6 @@ class UL_Audio_ChatTTS_Loader:
         return (self.ChatTTS_Loader, )
 
 class UL_Advance_AutoPlay:
-
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
@@ -59,51 +58,14 @@ class UL_Advance_AutoPlay:
     FUNCTION = "UL_Advance_AutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
     TITLE = "UL Advance_AutoPlay"
-
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
-
     OUTPUT_NODE = True
   
     def UL_Advance_AutoPlay(self,audio_preview):
         return {"ui": {"audio":[audio_preview]}}
         
-class UL_VAEDecodeAudio:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": { 
-            "advance_preview_only": ("BOOLEAN",{"default": False}),
-            "samples": ("LATENT", ), 
-            "vae": ("VAE", ),
-            }}
-    
-    RETURN_TYPES = ("AUDIO_PATH",)
-    RETURN_NAMES = ("audio_path",)
-    FUNCTION = "UL_VAEDecodeAudio"
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL VAEDecodeAudio"
-
-    def UL_VAEDecodeAudio(self, vae, samples, advance_preview_only):
-        audio_file = 'UL_audio.wav'
-        audio_path = os.path.join(output_dir, audio_file)
-        audio = vae.decode(samples["samples"]).movedim(-1, 1)
-        sample_rate = 44100
-        torchaudio.save(audio_path, audio[0], sample_rate)
-        if advance_preview_only == True:
-            result = {
-                "filename": audio_file,
-                "subfolder": "",
-                "type": "output",
-                "prompt":"comfy_audio",
-                }
-        else:
-            result = audio_path
-            
-        return (result,)
-        
-    
 class UL_Advance_noAutoPlay:
-
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
@@ -122,6 +84,35 @@ class UL_Advance_noAutoPlay:
   
     def UL_Advance_noAutoPlay(self,audio_preview):
         return {"ui": {"audio":[audio_preview]}}
+        
+class UL_VAEDecodeAudio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "samples": ("LATENT", ), 
+            "vae": ("VAE", ),
+            }}
+    
+    RETURN_TYPES = ("AUDIO_PREVIEW", "AUDIO_PATH",)
+    RETURN_NAMES = ('audio_preview', "audio_path",)
+    FUNCTION = "UL_VAEDecodeAudio"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL VAEDecodeAudio"
+
+    def UL_VAEDecodeAudio(self, vae, samples):
+        audio_file = 'UL_audio_comfy_preview.wav'
+        audio_path = os.path.join(output_dir,  'audio', audio_file)
+        audio = vae.decode(samples["samples"]).movedim(-1, 1)
+        torchaudio.save(audio_path, audio[0], sample_rate=44100)
+        
+        result = {
+                "filename": audio_file,
+                "subfolder": "audio",
+                "type": "output",
+                "prompt":"comfy_audio",
+                }
+            
+        return (result, audio_path)
 
 class UL_Load_Audio:
     @classmethod
@@ -323,8 +314,8 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
     output_dir = folder_paths.get_output_directory()
     # print('#audio_path',folder_paths, )
     # 添加文件名后缀
-    audio_file = "UL_audio"
-    audio_path = os.path.join(output_dir, "UL_audio.wav")
+    audio_file = "UL_audio_ChatTTS"
+    audio_path = os.path.join(output_dir, 'audio', "UL_audio_ChatTTS.wav")
     #保存音频文件，默认不带后缀，得手动添加。
     torchaudio.save(audio_path, torch.from_numpy(wavs[0]), 24000)
     
@@ -333,7 +324,7 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
 
     result = {
                 "filename": f'{audio_file}.wav',
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":text,
                 }
@@ -456,17 +447,17 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
     else:
         vocal_name = 'vocal_UL_audio.wav_10.wav'
         bgm_name = 'instrument_UL_audio.wav_10.wav'
-    vocal_path = os.path.join(output_dir,  vocal_name)
-    bgm_path = os.path.join(output_dir,  bgm_name)
+    vocal_path = os.path.join(output_dir, 'audio', vocal_name)
+    bgm_path = os.path.join(output_dir, 'audio', bgm_name)
     result_a = {
                 "filename": vocal_name,
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":"人声",
                 }
     result_b = {
                 "filename": bgm_name,
-                "subfolder": "",
+                "subfolder": "audio",
                 "type": "output",
                 "prompt":"背景音",
                 }
