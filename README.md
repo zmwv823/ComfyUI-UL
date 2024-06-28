@@ -1,8 +1,8 @@
 # My Personal custom-nodes | For Study Purpose Only | Not Recommeded  |  Will Not Accept Any Issue
 # 个人专属插件  |  仅用于学习  |  不建议使用  |  不接收issue
 # Warning:
-- tensorflow need specified cuda_version to run on gpu, but on windows 2.16.0rc0+(latest at now:2.17.0rc0) will not work on cuda, it's an official issue (tensorflow需要特定版本cuda才能跑到gpu上，但是在windows上2.16.0rc0+(目前最新版本:2.17.0rc0)暂时无法正常调用gpu，这是个官方issue).
-- `2.15.1 cuda:11.8 | 2.16.0rc0+ cuda:12`
+- Tensorflow need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu.
+- Tensorflow需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
