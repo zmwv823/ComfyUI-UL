@@ -50,7 +50,7 @@ class UL_Advance_AutoPlay:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "audio_path": ("AUDIO_PATH",),
+            "audio_preview": ("AUDIO_PREVIEW",),
               }, 
                 }
     
@@ -65,8 +65,8 @@ class UL_Advance_AutoPlay:
 
     OUTPUT_NODE = True
   
-    def UL_Advance_AutoPlay(self,audio_path):
-        return {"ui": {"audio":[audio_path]}}
+    def UL_Advance_AutoPlay(self,audio_preview):
+        return {"ui": {"audio":[audio_preview]}}
         
 class UL_VAEDecodeAudio:
     @classmethod
@@ -107,7 +107,7 @@ class UL_Advance_noAutoPlay:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "audio_path": ("AUDIO_PATH",),
+            "audio_preview": ("AUDIO_PREVIEW",),
               }, 
                 }
     
@@ -120,8 +120,8 @@ class UL_Advance_noAutoPlay:
     OUTPUT_IS_LIST = ()
     OUTPUT_NODE = True
   
-    def UL_Advance_noAutoPlay(self,audio_path):
-        return {"ui": {"audio":[audio_path]}}
+    def UL_Advance_noAutoPlay(self,audio_preview):
+        return {"ui": {"audio":[audio_preview]}}
 
 class UL_Load_Audio:
     @classmethod
@@ -153,25 +153,25 @@ class UL_Load_Audio:
         return m.digest().hex()
     
 
-class UL_PreView_Audio:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required":
-                    {"audio_path": ("AUDIO_PATH",),}
-                }
+# class UL_PreView_Audio:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required":
+#                     {"audio_path": ("AUDIO_PATH",),}
+#                 }
 
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL PreView Audio"
-    FUNCTION = "UL_PreView_Audio"
-    RETURN_TYPES = ()
-    RETURN_NAMES = ()
-    OUTPUT_NODE = True
+#     CATEGORY = "ExtraModels/UL Audio"
+#     TITLE = "UL PreView Audio"
+#     FUNCTION = "UL_PreView_Audio"
+#     RETURN_TYPES = ()
+#     RETURN_NAMES = ()
+#     OUTPUT_NODE = True
 
-    def UL_PreView_Audio(self, audio_path):
-        audio_name = os.path.basename(audio_path)
-        tmp_path = os.path.dirname(audio_path)
-        audio_root = os.path.basename(tmp_path)
-        return {"ui": {"audio":[audio_name,audio_root]}}
+#     def UL_PreView_Audio(self, audio_path):
+#         audio_name = os.path.basename(audio_path)
+#         tmp_path = os.path.dirname(audio_path)
+#         audio_root = os.path.basename(tmp_path)
+#         return {"ui": {"audio":[audio_name,audio_root]}}
  
 class UL_Audio_Stable_Audio_mask_args:
     @classmethod
@@ -204,7 +204,7 @@ NODE_CLASS_MAPPINGS = {
     "UL_Advance_noAutoPlay": UL_Advance_noAutoPlay,
     "UL_Audio_ChatTTS_Loader": UL_Audio_ChatTTS_Loader, 
     "UL_Load_Audio": UL_Load_Audio, 
-    "UL_PreView_Audio": UL_PreView_Audio, 
+    # "UL_PreView_Audio": UL_PreView_Audio, 
     "UL_Audio_Stable_Audio_mask_args": UL_Audio_Stable_Audio_mask_args, 
     "UL_VAEDecodeAudio": UL_VAEDecodeAudio, 
 }
@@ -277,7 +277,7 @@ def OpenVoiceV2_clone(converter_model_path, device, ori_voice_path, ref_voice_pa
     del tone_color_converter
     del model
 
-def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_name, skip_refine_text, speakers, save_speaker, mono2stereo, do_text_normalization, fix_saved_speaker_temperature, advance_preview_only):
+def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, top_P, top_K, use_decoder, refine_temperature, repetition_penalty, infer_max_new_token, refine_max_new_token, speed, save_name, skip_refine_text, speakers, save_speaker, do_text_normalization, fix_saved_speaker_temperature):
     if not is_module_imported('ChatTTS'):
         from . import ChatTTS
     chat = ChatTTS.Chat()
@@ -325,35 +325,25 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
     # 添加文件名后缀
     audio_file = "UL_audio"
     audio_path = os.path.join(output_dir, "UL_audio.wav")
-    stereo_audio_path = os.path.join(output_dir, "UL_audio_stereo.wav")
     #保存音频文件，默认不带后缀，得手动添加。
     torchaudio.save(audio_path, torch.from_numpy(wavs[0]), 24000)
-    if mono2stereo == True:
-        os.system(
-            f'ffmpeg -i "{audio_path}" -ac 2 "{stereo_audio_path}" -y'
-        )
-        audio_file = "UL_audio_stereo"
-        audio_path = stereo_audio_path
     
     if save_speaker == True:
         torch.save(rand_spk, os.path.join(current_directory, f'ChatTTS_Speakers\{save_name}.pt'))
 
-    if advance_preview_only == True:
-        result = {
+    result = {
                 "filename": f'{audio_file}.wav',
                 "subfolder": "",
                 "type": "output",
                 "prompt":text,
                 }
-    else:
-        result = audio_path
         
-    return (result, rand_spk)
+    return (result, rand_spk, audio_path)
 
 # uvr5
 uvr5_weights = os.path.join(folder_paths.models_dir, r'audio_checkpoints\ExtraModels\uvr5')
 
-def uvr5_split(self, audio, model,agg, device, is_half, advance_preview_only, tta):
+def uvr5_split(self, audio, model,agg, device, is_half, tta):
         
         if not is_module_imported('hf_hub_download'):
             from huggingface_hub import hf_hub_download
@@ -380,10 +370,10 @@ def uvr5_split(self, audio, model,agg, device, is_half, advance_preview_only, tt
         new_audio = new_name
         save_root_vocal = output_dir
         save_root_ins = output_dir
-        vocal_AUDIO,bgm_AUDIO = uvr5(model, new_audio, save_root_vocal,save_root_ins,agg, 'wav', device, is_half, tta, advance_preview_only)
-        return (vocal_AUDIO,bgm_AUDIO,)
+        vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path = uvr5(model, new_audio, save_root_vocal,save_root_ins,agg, 'wav', device, is_half, tta)
+        return (vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path)
 
-def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, device, is_half, tta, advance_preview_only):
+def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, device, is_half, tta):
     import ffmpeg
     if not is_module_imported('MDXNetDereverb'):
         from .uvr5.mdxnet import MDXNetDereverb
@@ -468,22 +458,19 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
         bgm_name = 'instrument_UL_audio.wav_10.wav'
     vocal_path = os.path.join(output_dir,  vocal_name)
     bgm_path = os.path.join(output_dir,  bgm_name)
-    if advance_preview_only == True:
-        result_a = {
+    result_a = {
                 "filename": vocal_name,
                 "subfolder": "",
                 "type": "output",
                 "prompt":"人声",
                 }
-        result_b = {
+    result_b = {
                 "filename": bgm_name,
                 "subfolder": "",
                 "type": "output",
                 "prompt":"背景音",
                 }
-    else:
-        result_a, result_b = vocal_path, bgm_path
-    return (result_a, result_b, )
+    return (result_a, result_b, vocal_path, bgm_path)
 
 def noise_suppression(input_audio_path, output_audio_path, device, model):
     if not is_module_imported('pipeline_ali'):
@@ -501,13 +488,12 @@ def noise_suppression(input_audio_path, output_audio_path, device, model):
             
         import ffmpeg
         info = ffmpeg.probe(input_audio_path, cmd="ffprobe")
-        tmp_path = os.path.join(sys_temp_dir, 'UL_audio_denoised.wav')
+        tmp_path = os.path.join(sys_temp_dir, 'UL_audio_denoised_48k_preprocess.wav')
         if info["streams"][0]["sample_rate"] != "48000":
             # -i输入input， -vn表示vedio not，即输出不包含视频，-acodec重新音频编码，-ac 1单声道, -ac 2双声道, ar 48000采样率48khz, -y操作自动确认.
             os.system(f'ffmpeg -i "{input_audio_path}" -vn -acodec pcm_s16le -ac 1 -ar 48000 "{tmp_path}" -y')
             input_audio_path = tmp_path
             
-    print(input_audio_path, output_audio_path)
     ans = pipeline_ali(Tasks.acoustic_noise_suppression,model=noise_suppression_model_path, device=device)
     ans(input_audio_path,output_path=output_audio_path)
     

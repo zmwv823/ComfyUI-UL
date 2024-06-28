@@ -1,1 +1,6 @@
-Accept any resolution image input, but will resized to < = 768, output images will limited to < = 768. (Official method).
+Tonight the stars are dazzling and the moon majestic.
+It must be a special day.
+But just what day could it be?
+I know, I know.
+It's your birthday.
+It really is a great day.

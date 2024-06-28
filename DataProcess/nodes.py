@@ -1,11 +1,10 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import folder_paths
-import tempfile
 import torch
 from ..UL_common.common import get_device_by_name, get_dtype_by_name, is_module_imported
-from .utils import nlp_csanmt_translation_zh2en, SavedModel_Translator, t5_translate_en_ru_zh, nllb_200_translator
-from ..Audio.utils import noise_suppression, get_audio_from_video
+from .utils import nlp_csanmt_translation_zh2en, SavedModel_Translator, t5_translate_en_ru_zh, nllb_200_translator, write_to_result
+from ..Audio.utils import get_audio_from_video
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 temp_txt_path = os.path.join(current_directory, "temp_dir", "Translation.txt")
@@ -208,7 +207,7 @@ class UL_DataProcess_Summarization:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "data": ("DATA", ),
+                "data_path": ("DATA_PATH", ),
                 "use_data": ("BOOLEAN", {"default": False}),
                 "model": (['utrobinmv/t5_summary_en_ru_zh_base_2048', 'csebuetnlp/mT5_multilingual_XLSum', 'csebuetnlp/mT5_m2o_chinese_simplified_crossSum'] , {"default": "csebuetnlp/mT5_multilingual_XLSum"}),
                 "prompt": ("STRING", {"default": "Videos that say approved vaccines are dangerous and cause autism, cancer or infertility are among those that will be taken down, the company said.  The policy includes the termination of accounts of anti-vaccine influencers.  Tech giants have been criticised for not doing more to counter false health information on their sites.  In July, US President Joe Biden said social media platforms were largely responsible for people's scepticism in getting vaccinated by spreading misinformation, and appealed for them to address the issue.  YouTube, which is owned by Google, said 130,000 videos were removed from its platform since last year, when it implemented a ban on content spreading misinformation about Covid vaccines.  In a blog post, the company said it had seen false claims about Covid jabs 'spill over into misinformation about vaccines in general'. The new policy covers long-approved vaccines, such as those against measles or hepatitis B.  'We're expanding our medical misinformation policies on YouTube with new guidelines on currently administered vaccines that are approved and confirmed to be safe and effective by local health authorities and the WHO,' the post said, referring to the World Health Organization.", "multiline": True}),
@@ -229,7 +228,7 @@ class UL_DataProcess_Summarization:
     FUNCTION = "UL_DataProcess_Summarization"
     TITLE = "UL DataProcess Summarization"
 
-    def UL_DataProcess_Summarization(self, prompt, device, model, summary_type, target_language, max_length, num_beams, no_repeat_ngram_size, output_max_length, use_T5, data, use_data):
+    def UL_DataProcess_Summarization(self, prompt, device, model, summary_type, target_language, max_length, num_beams, no_repeat_ngram_size, output_max_length, use_T5, data_path, use_data):
         device = get_device_by_name(device)
         if model == "utrobinmv/t5_summary_en_ru_zh_base_2048":
             Summarizer_path = os.path.join(folder_paths.models_dir, r'prompt_generator\models--utrobinmv--t5_summary_en_ru_zh_base_2048')
@@ -249,21 +248,21 @@ class UL_DataProcess_Summarization:
                 Summarizer_path = model
         
         if use_data == True:
-            if "txt" in data:
-                with open(data, "r", encoding="UTF-8") as f:  
+            if "txt" in data_path:
+                with open(data_path, "r", encoding="UTF-8") as f:  
                     prompt = f.read()
-            elif "pdf" in data:
+            elif "pdf" in data_path:
                 import fitz
-                with fitz.open(data) as doc:
+                with fitz.open(data_path) as doc:
                     text = ""
                     for page in doc:
                         text += page.get_text()
                         prompt = text
-            elif "srt" in data:
-                with open(data, "r", encoding="UTF-8") as f:  
+            elif "srt" in data_path:
+                with open(data_path, "r", encoding="UTF-8") as f:  
                     prompt = f.read()
-            elif "ass" in data:
-                with open(data, "r", encoding="UTF-8") as f:  
+            elif "ass" in data_path:
+                with open(data_path, "r", encoding="UTF-8") as f:  
                     prompt = f.read()
                 
         if use_T5 == False:
@@ -336,17 +335,23 @@ class UL_DataProcess_Faster_Whisper:
         return {
             "required": { 
                 "audio" : ("AUDIO_PATH",),
-                "whisper_type": (["stable_whisper","faster_whisper"],{"default":"stable_whisper"}),
-                "faster_whisper_model": (["Systran/faster-whisper-medium","Systran/faster-whisper-large-v3", "Systran/faster-whisper-large-v2"],{"default":"Systran/faster-whisper-large-v3"}),
+                "whisper_type": (["stable_whisper","faster_whisper","faster_whisper_whisperX"],{"default":"faster_whisper_whisperX"}),
+                "faster_whisper_model": (["Systran/faster-whisper-medium","Systran/faster-whisper-large-v3", "Systran/faster-whisper-large-v2", "Systran/faster-whisper-large-v1"],{"default":"Systran/faster-whisper-large-v3"}),
                 "stable_whisper_model": (["small","medium","large-v2","large-v3"],{"default":"medium"}),
                 "target_lanuage": (["source", "zh",  "yue", "en", "ru", "ja", "ko", "es", "fr", "it", "uk", "hi", "ar", "af", "am", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs", "cy", "da", "de", "el", "et", "eu", "fa", "fi", "fo", "gl", "gu", "ha", "haw", "he", "hr", "ht", "hu", "hy", "id", "is", "jw", "ka", "kk", "km", "kn", "la", "lb", "ln", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "ur", "uz", "vi", "yi", "yo"],{"default": "source"}), 
                 "word_timestamps": ("BOOLEAN", {"default": True},),
                 "vad_filter": ("BOOLEAN", {"default": True},),
-                "faster_whisper_min_silence_duration_ms": ("INT", {"default": 500,"min": 0,"max": 9999999999999,"step": 1},),
-                "faster_whisper_beam_size": ("INT", {"default": 16}),
+                "whisperX_batch_size": ("INT", {"default": 16}),
+                "whisperX_task": (["transcribe", "translate"],{"default": "transcribe"}), 
+                "whisperX_keep_speaker": ("BOOLEAN", {"default": False},),
+                "whisperX_diarize_max_speakers": ("INT", {"default": 5, "min": 1,"max": 9999999999999,"step": 1}),
+                "whisperX_highlight_words": ("BOOLEAN", {"default": False},),
+                "whisperX_max_line_count": ("INT", {"default": 2, "min": 1,"max": 9999999999999,"step": 1}),
                 "stable_whisper_cpu_preload": ("BOOLEAN", {"default": True},),
-                "stable_whisper_alignment": ("BOOLEAN", {"default": True},),
                 "stable_whisper_demucs_denoiser": ("BOOLEAN", {"default": False},),
+                "faster_whisper_min_silence_duration_ms": ("INT", {"default": 500,"min": 0,"max": 9999999999999,"step": 1},),
+                "faster_whisper_beam_size": ("INT", {"default": 5}),
+                "faster_whisper_chunk_length": ("INT", {"default": 30,"min": 0,"max": 30,"step": 1}),
                 "save_subtitles_to_folder": ("BOOLEAN", {"default": False},),
                 "folder": ("STRING", {"default": r"C:\Users\pc\Desktop\ref_audio"}),
                 "save_other_formats": ("BOOLEAN", {"default": False},),
@@ -361,7 +366,7 @@ class UL_DataProcess_Faster_Whisper:
     CATEGORY = "ExtraModels/UL DataProcess"
     TITLE = "UL DataProcess Faster Whisper"
     
-    def UL_DataProcess_Faster_Whisper(self,audio, faster_whisper_model, device, faster_whisper_dtype, target_lanuage, word_timestamps, whisper_type, faster_whisper_beam_size, stable_whisper_alignment, vad_filter, faster_whisper_min_silence_duration_ms, stable_whisper_model, stable_whisper_cpu_preload, save_subtitles_to_folder, folder, save_other_formats, stable_whisper_demucs_denoiser):
+    def UL_DataProcess_Faster_Whisper(self,audio, faster_whisper_model, device, faster_whisper_dtype, target_lanuage, word_timestamps, whisper_type, faster_whisper_beam_size, vad_filter, faster_whisper_min_silence_duration_ms, stable_whisper_model, stable_whisper_cpu_preload, save_subtitles_to_folder, folder, save_other_formats, stable_whisper_demucs_denoiser, faster_whisper_chunk_length, whisperX_task, whisperX_keep_speaker, whisperX_highlight_words, whisperX_max_line_count, whisperX_batch_size, whisperX_diarize_max_speakers):
         if whisper_type != 'stable_whisper':
             if faster_whisper_model == 'Systran/faster-whisper-medium':
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-medium')
@@ -372,6 +377,12 @@ class UL_DataProcess_Faster_Whisper:
             elif faster_whisper_model == 'Systran/faster-whisper-large-v2':
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-faster-whisper-large-v2')
                 # model_path = r"C:\Users\pc\Desktop\models--Systran--faster-whisper-large-v2"
+                if not os.access(os.path.join(model_path, "model.bin"), os.F_OK):
+                    model_path = faster_whisper_model
+                    
+            elif faster_whisper_model == 'Systran/faster-whisper-large-v1':
+                model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-faster-whisper-large-v1')
+                # model_path = r"C:\Users\pc\Desktop\models--Systran--faster-whisper-large-v1"
                 if not os.access(os.path.join(model_path, "model.bin"), os.F_OK):
                     model_path = faster_whisper_model
                     
@@ -396,14 +407,14 @@ class UL_DataProcess_Faster_Whisper:
                     model_path = stable_whisper_model
                     
             if stable_whisper_model == "large-v2":
-                model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v2.pt')
-                # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v2.pt"
+                # model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v2.pt')
+                model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v2.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
                     
             if stable_whisper_model == "large-v3":
-                model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v3.pt')
-                # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v3.pt"
+                # model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v3.pt')
+                model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v3.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
 
@@ -413,8 +424,8 @@ class UL_DataProcess_Faster_Whisper:
         dirname, filename = os.path.split(audio)
         srt_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
         # srt_path = os.path.join(os.path.expanduser("~"), r"Desktop\ref_audio", srt_name)
-        sys_temp_dir = tempfile.gettempdir()
-        temp_audio = os.path.join(sys_temp_dir, srt_name)
+        # sys_temp_dir = tempfile.gettempdir()
+        # temp_audio = os.path.join(sys_temp_dir, srt_name)
         
         audio_save_path = get_audio_from_video(audio_save_path)
             
@@ -428,7 +439,7 @@ class UL_DataProcess_Faster_Whisper:
             if not is_module_imported('load_model'):
                 from .stable_whisper import load_model
             # transribe using whisper
-            self.model_stage_a = load_model(model_path, cpu_preload=stable_whisper_cpu_preload, device=model_device)
+            self.model = load_model(model_path, cpu_preload=stable_whisper_cpu_preload, device=model_device)
             
             if target_lanuage == "source":
                 target_lanuage = None
@@ -441,33 +452,18 @@ class UL_DataProcess_Faster_Whisper:
             else:
                 denoiser = None
                 
-            result = self.model_stage_a.transcribe_minimal(audio_save_path, word_timestamps=word_timestamps, vad=True, denoiser=denoiser, task=extra_task, language=target_lanuage)
-            if stable_whisper_alignment == False:
-                if save_subtitles_to_folder == True:
-                    result.to_srt_vtt(folder+f'\{srt_name}.srt') #SRT
-                    result.to_ass(folder+f'\{srt_name}.ass') #ASS
-                    if save_other_formats == True:
-                        result.to_srt_vtt(folder+f'\{srt_name}.vtt') #VTT
-                        result.to_tsv(folder+f'\{srt_name}.tsv') #TSV
-                        result.to_txt(folder+f'\{srt_name}.txt') #txt
-                        result.save_as_json(folder+f'\{srt_name}.json') #json
-            del self.model_stage_a
+            result = self.model.transcribe(audio_save_path, word_timestamps=word_timestamps, vad=vad_filter, denoiser=denoiser, task=extra_task, language=target_lanuage)
+            if save_subtitles_to_folder == True:
+                result.to_srt_vtt(folder+f'\{srt_name}.srt') #SRT
+                result.to_ass(folder+f'\{srt_name}.ass') #ASS
+                if save_other_formats == True:
+                    result.to_srt_vtt(folder+f'\{srt_name}.vtt') #VTT
+                    result.to_tsv(folder+f'\{srt_name}.tsv') #TSV
+                    result.to_txt(folder+f'\{srt_name}.txt') #txt
+                    result.save_as_json(folder+f'\{srt_name}.json') #json
+            del self.model
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-            if stable_whisper_alignment == True:
-                self.model_stage_b = load_model(model_path, cpu_preload=stable_whisper_cpu_preload, device=model_device)
-                result = self.model_stage_b.align(audio_save_path, result, language=result.language)
-                if save_subtitles_to_folder == True:
-                    result.to_srt_vtt(folder+f'\{srt_name}.srt') #srt
-                    result.to_ass(folder+f'\{srt_name}.ass') #ASS
-                    if save_other_formats == True:
-                        result.to_srt_vtt(folder+f'\{srt_name}.vtt') #VTT
-                        result.to_tsv(folder+f'\{srt_name}.tsv') #TSV
-                        result.to_txt(folder+f'\{srt_name}.txt') #txt
-                        result.save_as_json(folder+f'\{srt_name}.json') #json
-                del self.model_stage_b
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
             
             result = result.to_dict()
             segments = result['segments']
@@ -495,15 +491,135 @@ class UL_DataProcess_Faster_Whisper:
             # self.model.to('cpu', torch.float32)
             return (result["text"].strip(), segments_alignment, words_alignment)
         
+        elif whisper_type == 'faster_whisper_whisperX':
+            if target_lanuage == 'source':
+                target_lanuage = None
+            
+            PYANNOTE_CONFIG_PATH = os.path.join(current_directory, 'whisperX_models\pyannote_config.yaml')
+            if not is_module_imported('whisperx'):
+                from . import whisperx
+            if not is_module_imported('WriteTXT'):
+                from .whisperx.utils import WriteTXT
+            if not is_module_imported('WriteSRT'):
+                from .whisperx.utils import WriteSRT
+            import gc
+            # No language specified--Depending on your exact usage, you can pass it to load_model() or the transcribe() function. Simply specify language=
+            model = whisperx.load_model(model_path, model_device, compute_type=faster_whisper_dtype, language=target_lanuage, task=whisperX_task)
+            audio = whisperx.load_audio(audio_save_path)
+            result = model.transcribe(audio, batch_size=whisperX_batch_size, language=target_lanuage, chunk_size=faster_whisper_chunk_length, print_progress=True, combined_progress=True)
+            gc.collect
+            torch.cuda.empty_cache()
+            del model
+            if result["language"] == 'en':
+                # ALIGN_MODEL_DIR = r"C:\Users\pc\Desktop\models--facebook--wav2vec2-base-960h"
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--facebook--wav2vec2-base-960h")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "wav2vec2_fairseq_base_ls960_asr_ls960.pth"), os.F_OK):
+                    ALIGN_MODEL_DIR = "facebook/wav2vec2-base-960h"
+            elif result["language"] == 'zh':
+                # ALIGN_MODEL_DIR = r"C:\Users\pc\Desktop\models--jonatasgrosman--wav2vec2-large-xlsr-53-chinese-zh-cn"
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--jonatasgrosman--wav2vec2-large-xlsr-53-chinese-zh-cn")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "pytorch_model.bin"), os.F_OK):
+                    ALIGN_MODEL_DIR = "jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn"
+            elif result["language"] == 'ru':
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--jonatasgrosman--wav2vec2-large-xlsr-53-russian")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "pytorch_model.bin"), os.F_OK):
+                    ALIGN_MODEL_DIR = "jonatasgrosman/wav2vec2-large-xlsr-53-russian"
+            elif result["language"] == 'ja':
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--jonatasgrosman--wav2vec2-large-xlsr-53-japanese")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "pytorch_model.bin"), os.F_OK):
+                    ALIGN_MODEL_DIR = "jonatasgrosman/wav2vec2-large-xlsr-53-japanese"
+            elif result["language"] == 'ko':
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--jonatasgrosman--wav2vec2-large-xlsr-korean")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "pytorch_model.bin"), os.F_OK):
+                    ALIGN_MODEL_DIR = "kresnik/wav2vec2-large-xlsr-korean"
+            elif result["language"] == 'ar':
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\models--jonatasgrosman--wav2vec2-large-xlsr-53-arabic")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR, "pytorch_model.bin"), os.F_OK):
+                    ALIGN_MODEL_DIR = "jonatasgrosman/wav2vec2-large-xlsr-53-arabic"
+            elif result["language"] == 'es':
+                ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\wav2vec2_voxpopuli_base_10k_asr_es")
+                if not os.access(os.path.join(ALIGN_MODEL_DIR,'wav2vec2_voxpopuli_base_10k_asr_es.pt'), os.F_OK):
+                    ALIGN_MODEL_DIR = "VOXPOPULI_ASR_BASE_10K_ES"
+            
+            model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=model_device, model_dir=ALIGN_MODEL_DIR)
+            aligned_result = whisperx.align(result["segments"], model_a, metadata, audio, model_device, return_char_alignments=False)
+            
+            if save_subtitles_to_folder == True:
+                aligned_result["language"] = result["language"]
+                srt_path = os.path.join(folder, f'{srt_name}_noDiarization.srt')
+                with open(srt_path, "w", encoding="utf-8") as srt:
+                    writesrt = WriteSRT(srt_path)
+                    writesrt.write_result(aligned_result, srt, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                if save_other_formats == True:
+                    from .whisperx.utils import WriteTSV, WriteJSON, WriteVTT
+                    tsv_noDiarization_path = os.path.join(folder, f'{srt_name}_noDiarization.tsv')
+                    json_noDiarization_path = os.path.join(folder, f'{srt_name}_noDiarization.json')
+                    vtt_noDiarization_path = os.path.join(folder, f'{srt_name}_noDiarization.vtt')
+                    txt_noDiarization_path = os.path.join(folder, f'{srt_name}_noDiarization.txt')
+                    with open(tsv_noDiarization_path, "w", encoding="utf-8") as tsv_noDiarization:
+                        writetsv = WriteTSV(tsv_noDiarization_path)
+                        writetsv.write_result(aligned_result, tsv_noDiarization, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(json_noDiarization_path, "w", encoding="utf-8") as json_noDiarization:
+                        writejson = WriteJSON(json_noDiarization_path)
+                        writejson.write_result(aligned_result, json_noDiarization, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(vtt_noDiarization_path, "w", encoding="utf-8") as vtt_noDiarization:
+                        writevtt = WriteVTT(vtt_noDiarization_path)
+                        writevtt.write_result(aligned_result, vtt_noDiarization, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(txt_noDiarization_path, "w", encoding="utf-8") as txt_noDiarization:
+                        writetxt = WriteTXT(txt_noDiarization_path)
+                        writetxt.write_result(aligned_result, txt_noDiarization, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+            gc.collect
+            torch.cuda.empty_cache()
+            del model_a
+            
+            diarize_model = whisperx.DiarizationPipeline(model_name=PYANNOTE_CONFIG_PATH, device=model_device)
+            diarize_segments = diarize_model(audio, min_speakers=1, max_speakers=whisperX_diarize_max_speakers)
+            diarize_result = whisperx.assign_word_speakers(diarize_segments, aligned_result)
+            
+            if save_subtitles_to_folder == True:
+                diarize_result["language"] = result["language"]
+                srt_path = os.path.join(folder, f'{srt_name}.srt')
+                write_to_result(diarize_result, srt_path, whisperX_keep_speaker)
+                if save_other_formats == True:
+                    tsv_path = os.path.join(folder, f'{srt_name}.tsv')
+                    json_path = os.path.join(folder, f'{srt_name}.json')
+                    vtt_path = os.path.join(folder, f'{srt_name}.vtt')
+                    txt_path = os.path.join(folder, f'{srt_name}.txt')
+                    ori_srt_path = os.path.join(folder, f'{srt_name}_ori.srt')
+                    with open(tsv_path, "w", encoding="utf-8") as tsv:
+                        writetsv = WriteTSV(tsv_path)
+                        writetsv.write_result(diarize_result, tsv, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(json_path, "w", encoding="utf-8") as json:
+                        writejson = WriteJSON(json_path)
+                        writejson.write_result(diarize_result, json, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(vtt_path, "w", encoding="utf-8") as vtt:
+                        writevtt = WriteVTT(vtt_path)
+                        writevtt.write_result(diarize_result, vtt, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(txt_path, "w", encoding="utf-8") as txt:
+                        writetxt = WriteTXT(txt_path)
+                        writetxt.write_result(diarize_result, txt, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
+                    with open(ori_srt_path, 'w', encoding='utf-8') as ori_srt:
+                        writesrt = WriteSRT(ori_srt_path)
+                        writesrt.write_result(diarize_result, file=ori_srt, options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words":whisperX_highlight_words})
+            with open(temp_txt_path, "w", encoding="utf-8") as txt:
+                writetxt=WriteTXT(temp_txt_path)  #output file directory
+                writetxt.write_result(diarize_result, file=txt,options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words": whisperX_highlight_words})
+            with open(temp_txt_path, 'r', encoding='utf-8') as f:
+                result = f.read()
+            gc.collect
+            torch.cuda.empty_cache()
+            del diarize_model
+            return(result, )
+            
         else:
             if not is_module_imported('WhisperModel'):
                 from faster_whisper import WhisperModel
             model = WhisperModel(model_path, device="cuda", compute_type=faster_whisper_dtype)
             
             if target_lanuage == "source":
-                segments, info = model.transcribe(audio_save_path, beam_size=faster_whisper_beam_size, word_timestamps=word_timestamps, vad_filter=vad_filter, vad_parameters=dict(min_silence_duration_ms=faster_whisper_min_silence_duration_ms),)
+                segments, info = model.transcribe(audio_save_path, chunk_length=faster_whisper_chunk_length, beam_size=faster_whisper_beam_size, word_timestamps=word_timestamps, vad_filter=vad_filter, vad_parameters=dict(min_silence_duration_ms=faster_whisper_min_silence_duration_ms),)
             else:
-                segments, info = model.transcribe(audio_save_path, beam_size=faster_whisper_beam_size,language=target_lanuage, word_timestamps=word_timestamps, vad_filter=vad_filter, vad_parameters=dict(min_silence_duration_ms=faster_whisper_min_silence_duration_ms),)
+                segments, info = model.transcribe(audio_save_path, chunk_length=faster_whisper_chunk_length, beam_size=faster_whisper_beam_size,language=target_lanuage, word_timestamps=word_timestamps, vad_filter=vad_filter, vad_parameters=dict(min_silence_duration_ms=faster_whisper_min_silence_duration_ms),)
                 
             results= []
             for s in segments:
@@ -527,6 +643,7 @@ class UL_DataProcess_Faster_Whisper:
                 
             del model
             return (result, )
+                
 
 # Node class and display name mappings
 NODE_CLASS_MAPPINGS = {

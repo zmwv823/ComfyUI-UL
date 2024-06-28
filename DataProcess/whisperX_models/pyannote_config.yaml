@@ -1,0 +1,21 @@
+version: 3.1.0
+
+pipeline:
+  name: pyannote.audio.pipelines.SpeakerDiarization
+  params:
+    clustering: AgglomerativeClustering
+    #embedding: D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\DataProcess\offline_whisperx\models\pyannote\wespeaker-voxceleb-resnet34-LM\pytorch_model.bin
+    embedding: .\custom_nodes\ComfyUI-UL\DataProcess\whisperX_models\pyannote\wespeaker-voxceleb-resnet34-LM\pytorch_model.bin
+    embedding_batch_size: 32
+    embedding_exclude_overlap: true
+    #segmentation: D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\DataProcess\offline_whisperx\models\pyannote\segmentation-3.0\pytorch_model.bin
+    segmentation: .\custom_nodes\ComfyUI-UL\DataProcess\whisperX_models\pyannote\\segmentation-3.0\pytorch_model.bin
+    segmentation_batch_size: 32
+
+params:
+  clustering:
+    method: centroid
+    min_cluster_size: 12
+    threshold: 0.7045654963945799
+  segmentation:
+    min_duration_off: 0.0

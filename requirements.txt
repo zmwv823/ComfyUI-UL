@@ -102,6 +102,9 @@ fitz
 PyMuPDF
 pysubs2
 moviepy
+faster-whisper
+# whisperx
+pyannote-audio
 
 #XTTS
 # core deps

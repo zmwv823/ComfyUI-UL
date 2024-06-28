@@ -143,7 +143,7 @@ function previewAudio(node, file, type) {
 }
 
 app.registerExtension({
-    name: "UL.Audio_Previewer",
+    name: "UL.PreView_Audio",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         if (nodeData?.name == "UL_PreView_Audio") {
             nodeType.prototype.onExecuted = function (data) {
