@@ -54,6 +54,8 @@
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 ├─ExtraModels
 │  ├─models--facebook--encodec_32khz
+│  ├─models--facebook--wav2vec2-base-960h
+│  ├─models--jonatasgrosman--wav2vec2-large-xlsr-53-chinese-zh-cn
 │  ├─models--Systran--faster-whisper-faster-whisper-large-v2
 │  ├─models--Systran--faster-whisper-large-v3
 │  ├─models--Systran--faster-whisper-medium
@@ -65,12 +67,12 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 │  │  └─img
 │  ├─modelscope--damo--speech_frcrn_ans_cirm_16k
 │  ├─stable_whisper_model
-│  └─uvr5
-│      └─uvr5_weights
-│          └─Onnx_dereverb_By_FoxJoy
+│  ├─uvr5
+│  │  └─uvr5_weights
+│  │      └─Onnx_dereverb_By_FoxJoy
+│  └─wav2vec2_voxpopuli_base_10k_asr_es
 ├─models--coqui--XTTS-v1
 ├─models--coqui--XTTS-v2
-│  └─2.0.3
 ├─models--Dzkaka--ChatTTS
 │  ├─asset
 │  └─config
@@ -87,13 +89,13 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 ```
 ### UL_VAEDecodeAudio: Audio preview node for comfyui official audio_output--官方音频输出预览节点。
 - ![](./Audio/assets/stable_audio_open-preview-wf.png)
-### **Some code from github repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [AIFSH/ComfyUI-GPT_SoVITS](https://github.com/AIFSH/ComfyUI-GPT_SoVITS)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)**
+### **Some code copy from github repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [AIFSH/ComfyUI-GPT_SoVITS](https://github.com/AIFSH/ComfyUI-GPT_SoVITS)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)**  |  [AIFSH/ComfyUI-XTTS](https://github.com/AIFSH/ComfyUI-XTTS)
 - ![](./Audio/assets/Audio-wf.png)
 ## 4、[DataProcess](./DataProcess/README.md)
 - Translators--翻译机。
 - Docment summarization--文档总结。
 - Make subtitle with faster-whisper--使用faster-whisper制作字幕。
-- ![](./DataProcess/assets/DataProcess-wf.png)
+- ![](./DataProcess/assets/DataProcess-wf.png)v
 ### Models:
 - Manual model path, ignore it if auto download--手动放置模型位置，自动下载模型可无视。
 ```
