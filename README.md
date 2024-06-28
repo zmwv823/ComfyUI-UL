@@ -53,39 +53,39 @@
 ```
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 ├─ExtraModels
-│  ├─models--facebook--encodec_32khz
-│  ├─models--facebook--wav2vec2-base-960h
-│  ├─models--jonatasgrosman--wav2vec2-large-xlsr-53-chinese-zh-cn
-│  ├─models--Systran--faster-whisper-faster-whisper-large-v2
-│  ├─models--Systran--faster-whisper-large-v3
-│  ├─models--Systran--faster-whisper-medium
-│  ├─modelscope--damo--cv_dut-raft_video-stabilization_base
+│  ├─models--facebook--encodec_32khz #facebook/musicgen立体声音频编码模型
+│  ├─models--facebook--wav2vec2-base-960h #whisperx英文字幕对齐模型
+│  ├─models--jonatasgrosman--wav2vec2-large-xlsr-53-chinese-zh-cn #whisperx中文字幕对齐模型
+│  ├─models--Systran--faster-whisper-faster-whisper-large-v2 #faster—whisper字幕生成-大v2
+│  ├─models--Systran--faster-whisper-large-v3 #faster—whisper字幕生成-大v3
+│  ├─models--Systran--faster-whisper-medium #faster—whisper字幕生成-中
+│  ├─modelscope--damo--cv_dut-raft_video-stabilization_base #视频防抖
 │  │  ├─ckpt
 │  │  └─img
-│  ├─modelscope--damo--speech_dfsmn_ans_psm_48k_causal
+│  ├─modelscope--damo--speech_dfsmn_ans_psm_48k_causal #单麦48k降噪
 │  │  ├─examples
 │  │  └─img
-│  ├─modelscope--damo--speech_frcrn_ans_cirm_16k
-│  ├─stable_whisper_model
-│  ├─uvr5
+│  ├─modelscope--damo--speech_frcrn_ans_cirm_16k #单麦16k降噪
+│  ├─stable_whisper_model #stable—whisper字幕生成单文件模型-包含大中小基础等模型
+│  ├─uvr5 #人声、旋律分离
 │  │  └─uvr5_weights
 │  │      └─Onnx_dereverb_By_FoxJoy
-│  └─wav2vec2_voxpopuli_base_10k_asr_es
+│  └─wav2vec2_voxpopuli_base_10k_asr_es #whisperx西班牙语字幕对齐模型
 ├─models--coqui--XTTS-v1
-├─models--coqui--XTTS-v2
-├─models--Dzkaka--ChatTTS
+├─models--coqui--XTTS-v2 #文本转语音加音色克隆
+├─models--Dzkaka--ChatTTS #文本转语音
 │  ├─asset
 │  └─config
-├─models--facebook--musicgen-stereo-medium
-├─models--facebook--musicgen-stereo-melody
-├─models--facebook--musicgen-stereo-small
-└─models--myshell-ai--OpenVoiceV2
+├─models--facebook--musicgen-stereo-medium #立体声音乐生成-中
+├─models--facebook--musicgen-stereo-melody #立体声旋律生成
+├─models--facebook--musicgen-stereo-small #立体声音乐生成-小
+└─models--myshell-ai--OpenVoiceV2 #音色克隆
     └─checkpoints
         └─converter
 ```
 ```
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
-├─models--t5-base
+├─models--t5-base #文本编码模型text-encoder (stable-audio-open、facebook/musicgen)
 ```
 ### UL_VAEDecodeAudio: Audio preview node for comfyui official audio_output--官方音频输出预览节点。
 - ![](./Audio/assets/stable_audio_open-preview-wf.png)
@@ -100,19 +100,19 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 - Manual model path, ignore it if auto download--手动放置模型位置，自动下载模型可无视。
 ```
 D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
-├─models--csebuetnlp--mT5_multilingual_XLSum
-├─models--facebook--nllb-200-distilled-1.3B
-├─models--facebook--nllb-200-distilled-600M
-├─models--utrobinmv--t5_summary_en_ru_zh_base_2048
-├─models--utrobinmv--t5_translate_en_ru_zh_base_200
-├─models--utrobinmv--t5_translate_en_ru_zh_large_1024
-├─models--utrobinmv--t5_translate_en_ru_zh_small_1024
-├─modelscope--damo--nlp_csanmt_translation_en2zh_base
+├─models--csebuetnlp--mT5_multilingual_XLSum #文档总结模型
+├─models--facebook--nllb-200-distilled-1.3B #多语言互译1.3B模型
+├─models--facebook--nllb-200-distilled-600M #多语言互译600M模型
+├─models--utrobinmv--t5_summary_en_ru_zh_base_2048 #中英俄文档总结基础模型
+├─models--utrobinmv--t5_translate_en_ru_zh_base_200 #中英俄互译基础模型
+├─models--utrobinmv--t5_translate_en_ru_zh_large_1024 #中英俄互译大模型
+├─models--utrobinmv--t5_translate_en_ru_zh_small_1024 #中英俄互译小模型
+├─modelscope--damo--nlp_csanmt_translation_en2zh_base #阿里达摩院中英互译基础模型
 │  ├─CSANMT
 │  │  └─variables
 │  ├─resources
 │  └─tf_ckpts
-├─modelscope--damo--nlp_csanmt_translation_zh2en
+├─modelscope--damo--nlp_csanmt_translation_zh2en #阿里达摩院中英互译完整模型
 │  ├─CSANMT
 │  │  └─variables
 │  ├─resources
