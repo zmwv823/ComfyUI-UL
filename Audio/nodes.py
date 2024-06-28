@@ -294,10 +294,14 @@ class UL_Audio_facebook_musicgen:
             from .music_gen_audiocraft.models import MusicGen
         if not is_module_imported('audio_write'):
             from .music_gen_audiocraft.data.audio import audio_write
+            
         if apply_musicgen_with_transformers == False:
             self.model = MusicGen.get_pretrained(musicgen_modelpath, device)
+            
         if extend_stride == '0.0':
             extend_stride =None
+        if transformers_audio_continuation == True:
+            dtype = None
             
         if (apply_musicgen_with_transformers == True and musicgen_type != "musicgen_melody"):
             import soundfile as sf
@@ -305,16 +309,11 @@ class UL_Audio_facebook_musicgen:
             processor = AutoProcessor.from_pretrained(musicgen_modelpath)
             model = MusicgenForConditionalGeneration.from_pretrained(musicgen_modelpath).to(device, dtype)
             if transformers_audio_continuation == True:
-                audio_continuation_path = os.path.join(sys_temp_dir, 'audio_continuation_temp.wav')
-                os.system(
-                f'ffmpeg -i "{ref_audio_for_melody}" -ac 2 -ar 32000 "{audio_continuation_path}" -y')
                 import librosa
-                signal, sample_rate = librosa.load(audio_continuation_path)
-                signal_array = np.array(signal)
-                print(type(signal_array), signal_array, '\n', sample_rate)
+                y, sr = librosa.load(ref_audio_for_melody, sr=32000, mono=False)
                 inputs = processor(
-                    audio=signal_array,
-                    sampling_rate=sample_rate,
+                    audio=y,
+                    sampling_rate=sr,
                     text=[prompt],
                     padding=True,
                     return_tensors="pt",
