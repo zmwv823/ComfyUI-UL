@@ -26,7 +26,7 @@
 - Original Github Repo: [2Noise/ChatTTS](https://github.com/2noise/ChatTTS)
 - Original Huggingface Repo: [2Noise/ChatTTS](https://huggingface.co/2Noise/ChatTTS)
 - (TTS) Text to audio---文本转语音。
-### facebook--musicgen-small: need ffmpeg--需要ffmpeg。
+### facebook--musicgen-small: need ffmpeg (transformers_audio_continuation not work)--需要ffmpeg (transformers_audio_continuation选项没能跑通)。
 - Original Huggingface Repo: [facebook--musicgen-small](https://huggingface.co/facebook/musicgen-small)
 - Generate music---生成音乐。
 - Generate melody with ref_audio---使用参考音频生成旋律。
@@ -46,8 +46,11 @@
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression---人声降噪。
+### Audio preview (there is bug in autoplay_node---自动播放节点有bug): 
+- Support for comfyui official audio_output (99% generated sound with stable-audio-open is junk, i don't want to save with comfy_audio_save_node)---官方音频输出预览节点(用stable-audio-open生成的99%音频都是无价值的，所以不想用官方节点保存)。
+- ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### Models:
-- Manual model path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
+- Manual place model_path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
 ```
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 ├─ExtraModels
@@ -85,8 +88,6 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 ├─models--t5-base #t5-text-encoder文本编码模型(stable-audio-open、facebook/musicgen)
 ```
-### Audio preview: support for comfyui official audio_output (99% generated sound is junk, i don't want to save with comfy_audio_save_node)---官方音频输出预览节点(99%生成的音频都是无价值的，所以不想用官方节点保存)。
-- ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### Some code copy from github repo: 
 **[shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)  |  [AIFSH/ComfyUI-XTTS](https://github.com/AIFSH/ComfyUI-XTTS)**
 - ![](./Audio/assets/Audio-wf.png)
@@ -104,7 +105,7 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 - **Extra:** faster-whisper and whisperX load the same models, stable-whisper load single_file models---faster-whisper和whisperX使用相同的模型，stable-whisper使用单文件模型.
 - ![](./DataProcess/assets/DataProcess-wf.png)
 ### Models:
-- Manual model path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
+- Manual place model_path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
 ```
 D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
 ├─models--csebuetnlp--mT5_multilingual_XLSum #summerization文档总结模型
