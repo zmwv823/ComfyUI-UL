@@ -3,7 +3,6 @@
 # Warning:
 - **Tensorflow** need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu---**Tensorflow** 需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
 - **[mono2stereo--function (Deprecated)]()** and **[audio_input--function]()** need ffmpeg in system env---**单声道转双声道(已废弃)** 和 **音频输入**需要ffmpeg在系统环境变量中。
-- **UL Audio_Preview node** need search manually by double click left key of mouse---**UL Audio_Preview节点**需要双击鼠标左键手动搜索。
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
