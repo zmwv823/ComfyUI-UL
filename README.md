@@ -3,6 +3,7 @@
 # Warning:
 - **Tensorflow** need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu---**Tensorflow** 需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
 - **[mono2stereo--function (Deprecated)]()** and **[audio_input--function]()** need ffmpeg in system env---**单声道转双声道(已废弃)** 和 **音频输入**需要ffmpeg在系统环境变量中。
+- **Deepspeed** need specified **os、cuda version and torch version**, deepspeed package in this node folder just for **windows with cu12 torch2.2+**, you have to delete it in this node_folder and pip install suitable deepspeed depend on your case---**Deepspeed** 需要**特定os、cuda版本和torch版本**，本插件内的Deepspeed包**仅适用于windows+cu12+torch2.2+**，你需要手动删除插件内deepspeed然后pip安装适合你自己的deepspeed包.----->`ComfyUI-UL\Audio\site_packages`
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
@@ -30,7 +31,7 @@
 - Original Huggingface Repo: [facebook--musicgen-small](https://huggingface.co/facebook/musicgen-small)
 - Generate music---生成音乐。
 - Generate melody with ref_audio---使用参考音频生成旋律。
-##### 2 ways to implementation:
+##### 2 ways to implementation---两种实现方法:
 - Audiocraft: fp32 only---仅fp32.
 - Transformers: much less control, such as without generation_length (seconds) control---可控参数很少，例如无法控制生成长度.
 ### OpenVoiceV2: need ffmpeg--需要ffmpeg。
