@@ -41,13 +41,13 @@
 - Latin song with rhythmic percussion and fiery melodies. bpm: 105.
 - Country track with twangy guitars and heartfelt storytelling. bpm: 85.
 - Indian music with traditional instruments and intricate rhythms. bpm: 95.
-## musicgen-songstarter:
+### musicgen-songstarter:
 - musicgen-songstarter-v0.1 is a musicgen-melody fine-tuned on a dataset of melody loops from my Splice sample library. It's intended to be used to generate song ideas that are useful for music producers. It generates stereo audio in 32khz.
-### Prompt Format:
+##### Prompt Format:
 - {tag_1}, {tag_1}, ..., {tag_n}, {key}, {bpm} bpm
-#### For example:
+##### For example:
 - hip hop, soul, piano, chords, jazz, neo jazz, G# minor, 140 bpm
-#### The training dataset had the following tags in it:
+##### The training dataset had the following tags in it:
 hip hop
 trap
 soul
@@ -208,7 +208,7 @@ brazilian
 music box
 glitch
 clarinet
-## Example prompts for musicgen-songstarter:
+##### Example prompts for musicgen-songstarter:
 - trap, synthesizer, songstarters, dark, G# minor, 140 bpm.
 - acoustic, guitar, melody, trap, D minor, 90 bpm.
 - music, mallets, bells, melody, dancehall, african, afropop & afrobeats.

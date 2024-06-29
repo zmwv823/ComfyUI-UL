@@ -30,6 +30,9 @@
 - Original Huggingface Repo: [facebook--musicgen-small](https://huggingface.co/facebook/musicgen-small)
 - Generate music---生成音乐。
 - Generate melody with ref_audio---使用参考音频生成旋律。
+##### 2 ways to implementation:
+- Audiocraft: fp32 only---仅fp32.
+- Transformers: much less control, such as without generation_length (seconds) control---可控参数很少，例如无法控制生成长度.
 ### OpenVoiceV2: need ffmpeg--需要ffmpeg。
 - Original Github Repo: [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice)
 - Original Huggingface Repo: [myshell-ai/OpenVoiceV2](https://huggingface.co/myshell-ai/OpenVoiceV2)
