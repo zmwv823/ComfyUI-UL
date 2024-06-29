@@ -3,7 +3,6 @@ import json
 import torch
 import torchaudio
 import shutil
-import tempfile
 import folder_paths
 import hashlib
 from einops import rearrange
@@ -11,9 +10,10 @@ from ..UL_common.common import is_module_imported
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 input_path = folder_paths.get_input_directory()
-temp_dir = folder_paths.get_temp_directory()
+comfy_temp_dir = folder_paths.get_temp_directory()
 output_dir = folder_paths.get_output_directory()
-sys_temp_dir = tempfile.gettempdir()
+# import tempfile
+# sys_temp_dir = tempfile.gettempdir()
 
 class UL_Audio_ChatTTS_Loader:
     @classmethod
@@ -45,173 +45,173 @@ class UL_Audio_ChatTTS_Loader:
         self.ChatTTS_Loader = ChatTTS_model + '|' + speakers + '|' + device + '|' + str(fix_saved_speaker_temperature)
         return (self.ChatTTS_Loader, )
 
-# class UL_Advance_AutoPlay:
-#     @classmethod
-#     def INPUT_TYPES(s):
-#         return {"required": {
-#             "audio_preview": ("AUDIO_PREVIEW",),
-#               }, 
-#                 }
-    
-#     RETURN_TYPES = ()
-#     RETURN_NAMES = ()
-#     FUNCTION = "UL_Advance_AutoPlay"
-#     CATEGORY = "ExtraModels/UL Audio"
-#     TITLE = "UL Advance_AutoPlay"
-#     INPUT_IS_LIST = False
-#     OUTPUT_IS_LIST = ()
-#     OUTPUT_NODE = True
-  
-#     def UL_Advance_AutoPlay(self,audio_preview):
-#         return {"ui": {"audio":[audio_preview]}}
-
 class UL_Audio_Preview_AutoPlay:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
+            "audio_preview": ("AUDIO_PREVIEW",),
               }, 
-                 "optional": {
-                            "audio_preview": ("AUDIO_PREVIEW",),
-                            "audio": ("AUDIO", ),
-                            "vhs_audio": ("VHS_AUDIO", )
-                        },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
     
     RETURN_TYPES = ()
     RETURN_NAMES = ()
-    FUNCTION = "UL_Audio_Preview_AutoPlay"
+    FUNCTION = "UL_Preview_AutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio_Preview_AutoPlay"
+    TITLE = "UL Advance_AutoPlay"
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
     OUTPUT_NODE = True
   
-    def UL_Audio_Preview_AutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
-        audio_file = 'UL_audio_preview.wav'
-        audio_path = os.path.join(output_dir,  'audio', audio_file)
-        
-        result = list()
-        result.append({
-                "filename": audio_file,
-                "subfolder": "audio",
-                "type": "output",
-                "prompt":"comfy_audio",
-                })
-        result = result[0]
-        
-        if select_input == 'audio_preview':
-            result = audio_preview
-        elif select_input == 'audio':
-            metadata = {}
-            disable_metadata = True
-            if not disable_metadata:
-                if prompt is not None:
-                    metadata["prompt"] = json.dumps(prompt)
-                if extra_pnginfo is not None:
-                    for x in extra_pnginfo:
-                        metadata[x] = json.dumps(extra_pnginfo[x])
-            for waveform in enumerate(audio["waveform"]):
-                import io
-                from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
-                buff = io.BytesIO()
-                buff = insert_or_replace_vorbis_comment(buff, metadata)
-                torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
-                with open(audio_path, 'wb') as f:
-                    f.write(buff.getbuffer())
-        else:
-            with open(audio_path, 'wb') as f:
-                f.write(vhs_audio())
-        # print(result)
-        return {"ui": {"audio":[result]}}
+    def UL_Preview_AutoPlay(self,audio_preview):
+        return {"ui": {"audio":[audio_preview]}}
 
-class UL_Audio_Preview_noAutoPlay:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
-              }, 
-                 "optional": {
-                            "audio_preview": ("AUDIO_PREVIEW",),
-                            "audio": ("AUDIO", ),
-                            "vhs_audio": ("VHS_AUDIO", )
-                        },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
-                }
-    
-    RETURN_TYPES = ()
-    RETURN_NAMES = ()
-    FUNCTION = "UL_Audio_Preview_noAutoPlay"
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Audio_Preview_noAutoPlay"
-    INPUT_IS_LIST = False
-    OUTPUT_IS_LIST = ()
-    OUTPUT_NODE = True
-  
-    def UL_Audio_Preview_noAutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
-        audio_file = 'UL_audio_preview.wav'
-        audio_path = os.path.join(output_dir,  'audio', audio_file)
-        
-        result = list()
-        if select_input == 'audio':
-            prompt = 'Audio from comfy audio.'
-        if select_input == 'vhs_audio':
-            prompt = 'Audio from comfy vhs_audio.'
-        result.append({
-                "filename": audio_file,
-                "subfolder": "audio",
-                "type": "output",
-                "prompt":prompt,
-                })
-        result = result[0]
-        
-        if select_input == 'audio_preview':
-            result = audio_preview
-        elif select_input == 'audio':
-            # save audio from comfy_audio
-            metadata = {}
-            disable_metadata = True
-            if not disable_metadata:
-                if prompt is not None:
-                    metadata["prompt"] = json.dumps(prompt)
-                if extra_pnginfo is not None:
-                    for x in extra_pnginfo:
-                        metadata[x] = json.dumps(extra_pnginfo[x])
-            for waveform in enumerate(audio["waveform"]):
-                import io
-                from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
-                buff = io.BytesIO()
-                buff = insert_or_replace_vorbis_comment(buff, metadata)
-                torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
-                with open(audio_path, 'wb') as f:
-                    f.write(buff.getbuffer())
-        else:
-            # save audio from vhs_audio
-            with open(audio_path, 'wb') as f:
-                f.write(vhs_audio())
-        # print(result)
-        return {"ui": {"audio":[result]}}
-        
-# class UL_Advance_noAutoPlay:
+# class UL_Audio_Preview_AutoPlay:
 #     @classmethod
 #     def INPUT_TYPES(s):
 #         return {"required": {
-#             "audio_preview": ("AUDIO_PREVIEW",),
+#                 "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
 #               }, 
+#                  "optional": {
+#                             "audio_preview": ("AUDIO_PREVIEW",),
+#                             "audio": ("AUDIO", ),
+#                             "vhs_audio": ("VHS_AUDIO", )
+#                         },
+#                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
 #                 }
     
 #     RETURN_TYPES = ()
 #     RETURN_NAMES = ()
-#     FUNCTION = "UL_Advance_noAutoPlay"
+#     FUNCTION = "UL_Audio_Preview_AutoPlay"
 #     CATEGORY = "ExtraModels/UL Audio"
-#     TITLE = "UL Advance_noAutoPlay"
+#     TITLE = "UL Audio_Preview_AutoPlay"
 #     INPUT_IS_LIST = False
 #     OUTPUT_IS_LIST = ()
 #     OUTPUT_NODE = True
   
-#     def UL_Advance_noAutoPlay(self,audio_preview):
-#         return {"ui": {"audio":[audio_preview]}}
+#     def UL_Audio_Preview_AutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
+#         audio_file = 'UL_audio_preview.wav'
+#         audio_path = os.path.join(output_dir,  'audio', audio_file)
+        
+#         result = list()
+#         result.append({
+#                 "filename": audio_file,
+#                 "subfolder": "audio",
+#                 "type": "output",
+#                 "prompt":"comfy_audio",
+#                 })
+#         result = result[0]
+        
+#         if select_input == 'audio_preview':
+#             result = audio_preview
+#         elif select_input == 'audio':
+#             metadata = {}
+#             disable_metadata = True
+#             if not disable_metadata:
+#                 if prompt is not None:
+#                     metadata["prompt"] = json.dumps(prompt)
+#                 if extra_pnginfo is not None:
+#                     for x in extra_pnginfo:
+#                         metadata[x] = json.dumps(extra_pnginfo[x])
+#             for waveform in enumerate(audio["waveform"]):
+#                 import io
+#                 from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
+#                 buff = io.BytesIO()
+#                 buff = insert_or_replace_vorbis_comment(buff, metadata)
+#                 torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
+#                 with open(audio_path, 'wb') as f:
+#                     f.write(buff.getbuffer())
+#         else:
+#             with open(audio_path, 'wb') as f:
+#                 f.write(vhs_audio())
+#         # print(result)
+#         return {"ui": {"audio":[result]}}
+
+# class UL_Audio_Preview_noAutoPlay:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required": {
+#                 "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
+#               }, 
+#                  "optional": {
+#                             "audio_preview": ("AUDIO_PREVIEW",),
+#                             "audio": ("AUDIO", ),
+#                             "vhs_audio": ("VHS_AUDIO", )
+#                         },
+#                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+#                 }
+    
+#     RETURN_TYPES = ()
+#     RETURN_NAMES = ()
+#     FUNCTION = "UL_Audio_Preview_noAutoPlay"
+#     CATEGORY = "ExtraModels/UL Audio"
+#     TITLE = "UL Audio_Preview_noAutoPlay"
+#     INPUT_IS_LIST = False
+#     OUTPUT_IS_LIST = ()
+#     OUTPUT_NODE = True
+  
+#     def UL_Audio_Preview_noAutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
+#         audio_file = 'UL_audio_preview.wav'
+#         audio_path = os.path.join(output_dir,  'audio', audio_file)
+        
+#         result = list()
+#         if select_input == 'audio':
+#             prompt = 'Audio from comfy audio.'
+#         if select_input == 'vhs_audio':
+#             prompt = 'Audio from comfy vhs_audio.'
+#         result.append({
+#                 "filename": audio_file,
+#                 "subfolder": "audio",
+#                 "type": "output",
+#                 "prompt":prompt,
+#                 })
+#         result = result[0]
+        
+#         if select_input == 'audio_preview':
+#             result = audio_preview
+#         elif select_input == 'audio':
+#             # save audio from comfy_audio
+#             metadata = {}
+#             disable_metadata = True
+#             if not disable_metadata:
+#                 if prompt is not None:
+#                     metadata["prompt"] = json.dumps(prompt)
+#                 if extra_pnginfo is not None:
+#                     for x in extra_pnginfo:
+#                         metadata[x] = json.dumps(extra_pnginfo[x])
+#             for waveform in enumerate(audio["waveform"]):
+#                 import io
+#                 from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
+#                 buff = io.BytesIO()
+#                 buff = insert_or_replace_vorbis_comment(buff, metadata)
+#                 torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
+#                 with open(audio_path, 'wb') as f:
+#                     f.write(buff.getbuffer())
+#         else:
+#             # save audio from vhs_audio
+#             with open(audio_path, 'wb') as f:
+#                 f.write(vhs_audio())
+#         # print(result)
+#         return {"ui": {"audio":[result]}}
+        
+class UL_Audio_Preview_noAutoPlay:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "audio_preview": ("AUDIO_PREVIEW",),
+              }, 
+                }
+    
+    RETURN_TYPES = ()
+    RETURN_NAMES = ()
+    FUNCTION = "UL_Preview_noAutoPlay"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL Advance_noAutoPlay"
+    INPUT_IS_LIST = False
+    OUTPUT_IS_LIST = ()
+    OUTPUT_NODE = True
+  
+    def UL_Preview_noAutoPlay(self,audio_preview):
+        return {"ui": {"audio":[audio_preview]}}
 
 class UL_Load_Audio:
     @classmethod
@@ -219,7 +219,7 @@ class UL_Load_Audio:
         files = [f for f in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, f)) and f.split('.')[-1] in ["wav", "mp3", "flac", "m4a", "ogg", "mp4", "mkv", "avi", "ts", "rm", "rmvb", "flv"]]
         return {"required":
                     {"audio": (sorted(files),)},
-                    # "part_load": ("BOOLEAN",{"default": False}),
+                    # "trim_audio": ("BOOLEAN",{"default": False}),
                     # "start_time": ("FLOAT" , {"default": 0, "min": 0, "max": 10000000, "step": 0.01}),
                     # "duration": ("FLOAT" , {"default": 0, "min": 0, "max": 10000000, "step": 0.01}),
                 }
@@ -454,7 +454,7 @@ def uvr5_split(self, audio, model,agg, device, is_half, tta):
                 )
         
         old_name = audio
-        new_name = os.path.join(sys_temp_dir, 'UL_audio.wav')
+        new_name = os.path.join(comfy_temp_dir, 'UL_audio_uvr5.wav')
         shutil.copy(old_name, new_name)
         new_audio = new_name
         save_root_vocal = os.path.join(output_dir, 'audio')
@@ -509,13 +509,13 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
         
     if need_reformat == 1:
         src_audio = inp_path
-        dsc_audio = os.path.join(sys_temp_dir, 'input_audio.wav')
+        dsc_audio = os.path.join(comfy_temp_dir, 'input_audio_uvr5.wav')
         shutil.copy(src_audio, dsc_audio)
         # tmp_path = "%s/%s.reformatted.wav" % (
         #     input_path,
         #     os.path.basename(inp_path),
         # )
-        tmp_path = os.path.join(sys_temp_dir, 'inputUL_audio.wav')
+        tmp_path = os.path.join(comfy_temp_dir, 'inputUL_audio_uvr5.wav')
         os.system(
             f'ffmpeg -i "{dsc_audio}" -vn -acodec pcm_s16le -ac 2 -ar 44100 "{tmp_path}" -y'
         )
@@ -540,11 +540,11 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
     if need_reformat == 1:
-        vocal_name = 'vocal_inputUL_audio.wav_10.wav'
-        bgm_name = 'instrument_inputUL_audio.wav_10.wav'
+        vocal_name = 'vocal_inputUL_audio_uvr5.wav_10.wav'
+        bgm_name = 'instrument_inputUL_audio_uvr5.wav_10.wav'
     else:
-        vocal_name = 'vocal_UL_audio.wav_10.wav'
-        bgm_name = 'instrument_UL_audio.wav_10.wav'
+        vocal_name = 'vocal_UL_audio_uvr5.wav_10.wav'
+        bgm_name = 'instrument_UL_audio_uvr5.wav_10.wav'
     vocal_path = os.path.join(output_dir, 'audio', vocal_name)
     bgm_path = os.path.join(output_dir, 'audio', bgm_name)
     result_a = {
@@ -577,7 +577,7 @@ def noise_suppression(input_audio_path, output_audio_path, device, model):
             
         import ffmpeg
         info = ffmpeg.probe(input_audio_path, cmd="ffprobe")
-        tmp_path = os.path.join(sys_temp_dir, 'UL_audio_denoised_48k_preprocess.wav')
+        tmp_path = os.path.join(comfy_temp_dir, 'UL_audio_denoised_48k_preprocess.wav')
         if info["streams"][0]["sample_rate"] != "48000":
             # -i输入input， -vn表示vedio not，即输出不包含视频，-acodec重新音频编码，-ac 1单声道, -ac 2双声道, ar 48000采样率48khz, -y操作自动确认.
             os.system(f'ffmpeg -i "{input_audio_path}" -vn -acodec pcm_s16le -ac 1 -ar 48000 "{tmp_path}" -y')
@@ -597,7 +597,7 @@ def get_audio_from_video(input_video_path):
     match = ['.mp3','.wav','.m4a','.ogg','.flac']
     dirname, filename = os.path.split(input_video_path)
     file_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
-    temp_audio = os.path.join(sys_temp_dir, f'{file_name}.wav')
+    temp_audio = os.path.join(comfy_temp_dir, f'{file_name}.wav')
     
     if not any(c in input_video_path for c in match):
         if '.avi' in input_video_path:

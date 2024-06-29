@@ -9,7 +9,6 @@ import hashlib
 
 comfyui_models_dir = folder_paths.models_dir
 current_directory = os.path.dirname(os.path.abspath(__file__))
-temp_txt_path = os.path.join(current_directory, "temp_dir", "AnyText_temp.txt")
 input_path = folder_paths.get_input_directory()
     
 class UL_DataProcess_Create_SavedModel:
@@ -315,8 +314,8 @@ def convert_time_format(start_time, end_time):
 def write_to_result(result, file_path, keep_speaker):
     mode = "w"
     with open(file_path, mode, encoding="utf-8") as f:
-        f.write("WEBVTT")
-        f.write("\n\n")
+        # f.write("WEBVTT")
+        # f.write("\n\n")
         if keep_speaker == True:
             for segment in result["segments"]:
                 f.write(f'{convert_time_format(segment["start"],segment["end"])}')

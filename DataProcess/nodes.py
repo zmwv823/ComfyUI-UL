@@ -96,7 +96,7 @@ class UL_DataProcess_nlp_csanmt_translation_zh2en_translator:
     RETURN_NAMES = ("text",)
     CATEGORY = "ExtraModels/UL DataProcess"
     FUNCTION = "UL_DataProcess_nlp_csanmt_translation_zh2en_translator"
-    TITLE = "UL DataProcess-阿里damo中英互译"
+    TITLE = "UL DataProcess-nlp阿里达摩院中英互译"
 
     def UL_DataProcess_nlp_csanmt_translation_zh2en_translator(self, prompt, Batch_prompt, if_Batch, device, Batch_Newline, model):
         device = get_device_by_name(device)
@@ -539,7 +539,7 @@ class UL_DataProcess_Faster_Whisper:
             elif result["language"] == 'es':
                 ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\wav2vec2_voxpopuli_base_10k_asr_es")
                 if not os.access(os.path.join(ALIGN_MODEL_DIR,'wav2vec2_voxpopuli_base_10k_asr_es.pt'), os.F_OK):
-                    ALIGN_MODEL_DIR = "facebook/wav2vec2-base-960h"
+                    ALIGN_MODEL_DIR = None
             
             model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=model_device, model_dir=ALIGN_MODEL_DIR)
             aligned_result = whisperx.align(result["segments"], model_a, metadata, audio, model_device, return_char_alignments=False)

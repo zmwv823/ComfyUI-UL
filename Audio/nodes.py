@@ -3,7 +3,6 @@ import torch
 import torchaudio
 import numpy as np
 import folder_paths
-import tempfile
 from pydub import AudioSegment
 import audiotsm
 # import time
@@ -16,7 +15,8 @@ from .utils import stable_audio_open_generate, stable_audio_open_load_model, Run
 current_directory = os.path.dirname(os.path.abspath(__file__))
 comfy_temp_dir = folder_paths.get_temp_directory()
 output_dir = folder_paths.get_output_directory()
-sys_temp_dir = tempfile.gettempdir()
+# import tempfile
+# sys_temp_dir = tempfile.gettempdir()
 
 # https://huggingface.co/stabilityai/stable-audio-open-1.0
 
@@ -238,8 +238,7 @@ class UL_Audio_facebook_musicgen:
             # dirname, filename = os.path.split(ref_audio)
             # 去除音频名字后缀，后续统一改为.wav
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
-            temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'trim_audio_facebook_musicgen.wav')
+            trim_audio_path = os.path.join(comfy_temp_dir,f'trim_audio_facebook_musicgen.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio_for_melody}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -483,8 +482,7 @@ class UL_Audio_OpenVoiceV2:
         if trim_ref_audio == True:
             # dirname, filename = os.path.split(ref_audio)
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
-            temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'trim_auido_OpenVoiceV2.wav')
+            trim_audio_path = os.path.join(comfy_temp_dir,f'trim_auido_OpenVoiceV2.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -521,9 +519,13 @@ class UL_Audio_XTTS:
             audio.export(tmp_path, format="wav")
             
             clone_path = f"{temp_folder}/cloned_{wav_name}"
-            reader = audiotsm.io.wav.WavReader(tmp_path)
+            if not is_module_imported('WavReader'):
+                from audiotsm.io.wav import WavReader
+            if not is_module_imported('WavWriter'):
+                from audiotsm.io.wav import WavWriter
+            reader = WavReader(tmp_path)
             
-            writer = audiotsm.io.wav.WavWriter(clone_path,channels=reader.channels,
+            writer = WavWriter(clone_path,channels=reader.channels,
                                             samplerate=reader.samplerate)
             wsloa = audiotsm.wsola(channels=reader.channels,speed=ratio)
             wsloa.run(reader=reader,writer=writer)
@@ -601,8 +603,7 @@ class UL_Audio_XTTS:
         if trim_ref_audio == True:
             # dirname, filename = os.path.split(ref_audio)
             # new_name = str(filename).replace(".mp3", "").replace(".wav", "").replace(".ogg", "").replace(".m4a", "").replace(".flac", "")
-            temp_dir = tempfile.gettempdir()
-            trim_audio_path = os.path.join(temp_dir,f'trim_audio_XTTS.wav')
+            trim_audio_path = os.path.join(comfy_temp_dir,f'trim_audio_XTTS.wav')
             os.system(
                 f'ffmpeg -i "{ref_audio}" -ss "{start_time}" -t "{duration}" "{trim_audio_path}" -y'
             )
@@ -634,7 +635,6 @@ class UL_Audio_XTTS:
             model.load_checkpoint(
                                 config, 
                                 checkpoint_dir=model_path, 
-                                # eval=True, 
                                 use_deepspeed=use_deepspeed,
                                 )
             model.to(device)
@@ -653,14 +653,14 @@ class UL_Audio_XTTS:
                     for i,text_sub in enumerate(text_subtitles):
                         sub_start_time = text_sub.start.total_seconds() * 1000
                         end_time = text_sub.end.total_seconds() * 1000
-                        speaker = 'SPK'+text_sub.content[0]
+                        speaker = 'SPK'+text_sub.content[:10]
                         try:
                             spk_aduio_dict[speaker] += audio_seg[start_time:end_time]
                         except:
                             spk_aduio_dict[speaker] = audio_seg[start_time:end_time]
                     for speaker in spk_aduio_dict.keys():
                         speaker_audio_seg = spk_aduio_dict[speaker]
-                        speaker_audio = os.path.join(sys_temp_dir, f"{speaker}.wav")
+                        speaker_audio = os.path.join(comfy_temp_dir, f"{speaker}.wav")
                         speaker_audio_seg.export(speaker_audio,format='wav')
                         gpt_embedding_dict[speaker] = model.get_conditioning_latents(audio_path=[speaker_audio])
                 else:
@@ -676,8 +676,8 @@ class UL_Audio_XTTS:
                         
                     new_text = text_sub.content
                     if enable_mutiple_speaker_for_subtitle:
-                        speaker = "SPK" + new_text[0]
-                        new_text = new_text[1:]
+                        speaker = "SPK" + new_text[:10]
+                        new_text = new_text[13:]
                     else:
                         speaker = "SPK0"
                     gpt_cond_latent,speaker_embedding = gpt_embedding_dict[speaker]
@@ -693,7 +693,7 @@ class UL_Audio_XTTS:
                                         speaker_embedding,
                                         temperature=temperature, # Add custom parameters here
                                         length_penalty=length_penalty,
-                                        repetition_penalty=repetition_penalty,
+                                        repetition_penalty=float(repetition_penalty),
                                         top_k=top_k,
                                         top_p=top_p,
                                         speed=speed,
@@ -702,7 +702,7 @@ class UL_Audio_XTTS:
                                         num_beams=num_beams,
                                     )
             
-                    wav_path = os.path.join(sys_temp_dir, f"{i}_xtts.wav")
+                    wav_path = os.path.join(comfy_temp_dir, f"{i}_xtts.wav")
                     torchaudio.save(wav_path, torch.tensor(outputs["wav"]).unsqueeze(0), 24000, bits_per_sample=16)
                 
                     text_audio = AudioSegment.from_file(wav_path)
@@ -716,7 +716,7 @@ class UL_Audio_XTTS:
                     ratio = text_audio_dur_time / dur_time
                     if text_audio_dur_time > dur_time:
                         tmp_audio = self.map_vocal(audio=text_audio,ratio=ratio,dur_time=dur_time,
-                                                        wav_name=f"map_{i}_refer.wav",temp_folder=sys_temp_dir)
+                                                        wav_name=f"map_{i}_refer.wav",temp_folder=comfy_temp_dir)
                         tmp_audio += AudioSegment.silent(dur_time - tmp_audio.duration_seconds*1000)
                     else:
                         tmp_audio = text_audio + AudioSegment.silent(dur_time - text_audio_dur_time)
@@ -735,7 +735,7 @@ class UL_Audio_XTTS:
                                     speaker_embedding,
                                     temperature=temperature, # Add custom parameters here
                                     length_penalty=length_penalty,
-                                    repetition_penalty=repetition_penalty,
+                                    repetition_penalty=float(repetition_penalty),
                                     top_k=top_k,
                                     top_p=top_p,
                                     speed=speed,
@@ -874,7 +874,7 @@ class UL_Audio_noise_suppression:
         if uuid_output_noPreview == True:
             import uuid
             # audio_file = f'UL_audio_denoised_{uuid.uuid1()}'
-            output_audio_path = os.path.join(sys_temp_dir, f'UL_audio_denoised_{uuid.uuid1()}.wav')
+            output_audio_path = os.path.join(comfy_temp_dir, f'UL_audio_denoised_{uuid.uuid1()}.wav')
         noise_suppression(audio, output_audio_path, device, model)
         if model == 'damo/speech_frcrn_ans_cirm_16k':
             model_args = 'FRCRN语音降噪-单麦-16k'

@@ -3,6 +3,7 @@
 # Warning:
 - **Tensorflow** need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu---**Tensorflow** 需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
 - **[mono2stereo--function (Deprecated)]()** and **[audio_input--function]()** need ffmpeg in system env---**单声道转双声道(已废弃)** 和 **音频输入**需要ffmpeg在系统环境变量中。
+- **UL Audio_Preview node** need search manually by double click left key of mouse---**UL Audio_Preview节点**需要双击鼠标左键手动搜索。
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
@@ -34,7 +35,7 @@
 - Original Github Repo: [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice)
 - Original Huggingface Repo: [myshell-ai/OpenVoiceV2](https://huggingface.co/myshell-ai/OpenVoiceV2)
 - Voice clone---音色克隆。
-### XTTS v2: need ffmpeg--需要ffmpeg。
+### XTTS v2: need ffmpeg (After something, srt_function is down on my pc, seems audiotsm doesn't work well)--需要ffmpeg(现在srt_function在我电脑上失效了，貌似是audiotsm的问题)。
 - Original Github Repo: [coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 - Original Huggingface Repo: [coqui/XTTS-v2](https://huggingface.co/coqui/XTTS-v2)
 - (TTS) Text to voice + Voice clone---文本转语音和音色克隆。
@@ -46,9 +47,6 @@
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression---人声降噪。
-### Audio preview (there is bug in autoplay_node---自动播放节点有bug): 
-- Support for comfyui official audio_output (99% generated sound with stable-audio-open is junk, i don't want to save with comfy_audio_save_node)---官方音频输出预览节点(用stable-audio-open生成的99%音频都是无价值的，所以不想用官方节点保存)。
-- ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### Models:
 - Manual place model_path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
 ```

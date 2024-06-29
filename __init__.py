@@ -7,6 +7,7 @@ fonts_path = os.path.join(folder_paths.models_dir, 'fonts')
 translator_path = os.path.join(folder_paths.models_dir, 'prompt_generator')
 audio_checkpoints = os.path.join(folder_paths.models_dir, 'audio_checkpoints')
 audio_output_path = os.path.join(folder_paths.get_output_directory(), 'audio')
+comfy_temp_dir = folder_paths.get_temp_directory()
 if not is_folder_exist(fonts_path):
     os.makedirs(fonts_path)
 if not is_folder_exist(translator_path):
@@ -15,6 +16,8 @@ if not is_folder_exist(audio_checkpoints):
     os.makedirs(audio_checkpoints)
 if not is_folder_exist(audio_output_path):
     os.makedirs(audio_output_path)
+if not is_folder_exist(comfy_temp_dir):
+    os.makedirs(comfy_temp_dir)
 
 # only import if running as a custom node
 try:
