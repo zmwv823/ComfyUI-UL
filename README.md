@@ -19,7 +19,7 @@
 
 ## 3、[Audio](./Audio/README.md)
 ### Warning: 
-- **[mono2stereo--function]()** and **[audio_input--function]()** need ffmpeg in system env--**单声道转双声道** 和 **音频输入**需要ffmpeg在系统环境变量中。
+- **[mono2stereo--function(deprecated)]()** and **[audio_input--function]()** need ffmpeg in system env--**单声道转双声道(已废弃)** 和 **音频输入**需要ffmpeg在系统环境变量中。
 ### stable-audio-open-1.0:
 - Original Github Repo: [stable-audio-open-1.0](https://github.com/Stability-AI/stable-audio-tools)
 - Original Huggingface Repo: [stable-audio-open-1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0)

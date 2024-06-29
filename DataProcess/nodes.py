@@ -407,14 +407,14 @@ class UL_DataProcess_Faster_Whisper:
                     model_path = stable_whisper_model
                     
             if stable_whisper_model == "large-v2":
-                # model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v2.pt')
-                model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v2.pt"
+                model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v2.pt')
+                # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v2.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
                     
             if stable_whisper_model == "large-v3":
-                # model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v3.pt')
-                model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v3.pt"
+                model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\stable_whisper_model\large-v3.pt')
+                # model_path = r"C:\Users\pc\Desktop\stable_whisper_model\large-v3.pt"
                 if not os.access(model_path, os.F_OK):
                     model_path = stable_whisper_model
 
@@ -539,7 +539,7 @@ class UL_DataProcess_Faster_Whisper:
             elif result["language"] == 'es':
                 ALIGN_MODEL_DIR = os.path.join(folder_paths.models_dir, "audio_checkpoints\ExtraModels\wav2vec2_voxpopuli_base_10k_asr_es")
                 if not os.access(os.path.join(ALIGN_MODEL_DIR,'wav2vec2_voxpopuli_base_10k_asr_es.pt'), os.F_OK):
-                    ALIGN_MODEL_DIR = "VOXPOPULI_ASR_BASE_10K_ES"
+                    ALIGN_MODEL_DIR = "facebook/wav2vec2-base-960h"
             
             model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=model_device, model_dir=ALIGN_MODEL_DIR)
             aligned_result = whisperx.align(result["segments"], model_a, metadata, audio, model_device, return_char_alignments=False)
