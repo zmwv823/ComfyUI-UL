@@ -45,74 +45,173 @@ class UL_Audio_ChatTTS_Loader:
         self.ChatTTS_Loader = ChatTTS_model + '|' + speakers + '|' + device + '|' + str(fix_saved_speaker_temperature)
         return (self.ChatTTS_Loader, )
 
-class UL_Advance_AutoPlay:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "audio_preview": ("AUDIO_PREVIEW",),
-              }, 
-                }
+# class UL_Advance_AutoPlay:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required": {
+#             "audio_preview": ("AUDIO_PREVIEW",),
+#               }, 
+#                 }
     
-    RETURN_TYPES = ()
-    RETURN_NAMES = ()
-    FUNCTION = "UL_Advance_AutoPlay"
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_AutoPlay"
-    INPUT_IS_LIST = False
-    OUTPUT_IS_LIST = ()
-    OUTPUT_NODE = True
+#     RETURN_TYPES = ()
+#     RETURN_NAMES = ()
+#     FUNCTION = "UL_Advance_AutoPlay"
+#     CATEGORY = "ExtraModels/UL Audio"
+#     TITLE = "UL Advance_AutoPlay"
+#     INPUT_IS_LIST = False
+#     OUTPUT_IS_LIST = ()
+#     OUTPUT_NODE = True
   
-    def UL_Advance_AutoPlay(self,audio_preview):
-        return {"ui": {"audio":[audio_preview]}}
-        
-class UL_Advance_noAutoPlay:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "audio_preview": ("AUDIO_PREVIEW",),
-              }, 
-                }
-    
-    RETURN_TYPES = ()
-    RETURN_NAMES = ()
-    FUNCTION = "UL_Advance_noAutoPlay"
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_noAutoPlay"
-    INPUT_IS_LIST = False
-    OUTPUT_IS_LIST = ()
-    OUTPUT_NODE = True
-  
-    def UL_Advance_noAutoPlay(self,audio_preview):
-        return {"ui": {"audio":[audio_preview]}}
-        
-class UL_VAEDecodeAudio:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "samples": ("LATENT", ), 
-            "vae": ("VAE", ),
-            }}
-    
-    RETURN_TYPES = ("AUDIO_PREVIEW", "AUDIO_PATH",)
-    RETURN_NAMES = ('audio_preview', "audio_path",)
-    FUNCTION = "UL_VAEDecodeAudio"
-    CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL VAEDecodeAudio"
+#     def UL_Advance_AutoPlay(self,audio_preview):
+#         return {"ui": {"audio":[audio_preview]}}
 
-    def UL_VAEDecodeAudio(self, vae, samples):
-        audio_file = 'UL_audio_comfy_preview.wav'
+class UL_Audio_Preview_AutoPlay:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
+              }, 
+                 "optional": {
+                            "audio_preview": ("AUDIO_PREVIEW",),
+                            "audio": ("AUDIO", ),
+                            "vhs_audio": ("VHS_AUDIO", )
+                        },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+    
+    RETURN_TYPES = ()
+    RETURN_NAMES = ()
+    FUNCTION = "UL_Audio_Preview_AutoPlay"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL Audio_Preview_AutoPlay"
+    INPUT_IS_LIST = False
+    OUTPUT_IS_LIST = ()
+    OUTPUT_NODE = True
+  
+    def UL_Audio_Preview_AutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
+        audio_file = 'UL_audio_preview.wav'
         audio_path = os.path.join(output_dir,  'audio', audio_file)
-        audio = vae.decode(samples["samples"]).movedim(-1, 1)
-        torchaudio.save(audio_path, audio[0], sample_rate=44100)
         
-        result = {
+        result = list()
+        result.append({
                 "filename": audio_file,
                 "subfolder": "audio",
                 "type": "output",
                 "prompt":"comfy_audio",
+                })
+        result = result[0]
+        
+        if select_input == 'audio_preview':
+            result = audio_preview
+        elif select_input == 'audio':
+            metadata = {}
+            disable_metadata = True
+            if not disable_metadata:
+                if prompt is not None:
+                    metadata["prompt"] = json.dumps(prompt)
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata[x] = json.dumps(extra_pnginfo[x])
+            for waveform in enumerate(audio["waveform"]):
+                import io
+                from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
+                buff = io.BytesIO()
+                buff = insert_or_replace_vorbis_comment(buff, metadata)
+                torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
+                with open(audio_path, 'wb') as f:
+                    f.write(buff.getbuffer())
+        else:
+            with open(audio_path, 'wb') as f:
+                f.write(vhs_audio())
+        # print(result)
+        return {"ui": {"audio":[result]}}
+
+class UL_Audio_Preview_noAutoPlay:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                "select_input": (["audio_preview", "audio", "vhs_audio"], {"default": "audio_preview"}),
+              }, 
+                 "optional": {
+                            "audio_preview": ("AUDIO_PREVIEW",),
+                            "audio": ("AUDIO", ),
+                            "vhs_audio": ("VHS_AUDIO", )
+                        },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
-            
-        return (result, audio_path)
+    
+    RETURN_TYPES = ()
+    RETURN_NAMES = ()
+    FUNCTION = "UL_Audio_Preview_noAutoPlay"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL Audio_Preview_noAutoPlay"
+    INPUT_IS_LIST = False
+    OUTPUT_IS_LIST = ()
+    OUTPUT_NODE = True
+  
+    def UL_Audio_Preview_noAutoPlay(self, select_input, audio_preview="", audio="", vhs_audio="", prompt=None, extra_pnginfo=None):
+        audio_file = 'UL_audio_preview.wav'
+        audio_path = os.path.join(output_dir,  'audio', audio_file)
+        
+        result = list()
+        if select_input == 'audio':
+            prompt = 'Audio from comfy audio.'
+        if select_input == 'vhs_audio':
+            prompt = 'Audio from comfy vhs_audio.'
+        result.append({
+                "filename": audio_file,
+                "subfolder": "audio",
+                "type": "output",
+                "prompt":prompt,
+                })
+        result = result[0]
+        
+        if select_input == 'audio_preview':
+            result = audio_preview
+        elif select_input == 'audio':
+            # save audio from comfy_audio
+            metadata = {}
+            disable_metadata = True
+            if not disable_metadata:
+                if prompt is not None:
+                    metadata["prompt"] = json.dumps(prompt)
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata[x] = json.dumps(extra_pnginfo[x])
+            for waveform in enumerate(audio["waveform"]):
+                import io
+                from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
+                buff = io.BytesIO()
+                buff = insert_or_replace_vorbis_comment(buff, metadata)
+                torchaudio.save(buff, waveform[1], audio["sample_rate"], format="WAV")
+                with open(audio_path, 'wb') as f:
+                    f.write(buff.getbuffer())
+        else:
+            # save audio from vhs_audio
+            with open(audio_path, 'wb') as f:
+                f.write(vhs_audio())
+        # print(result)
+        return {"ui": {"audio":[result]}}
+        
+# class UL_Advance_noAutoPlay:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required": {
+#             "audio_preview": ("AUDIO_PREVIEW",),
+#               }, 
+#                 }
+    
+#     RETURN_TYPES = ()
+#     RETURN_NAMES = ()
+#     FUNCTION = "UL_Advance_noAutoPlay"
+#     CATEGORY = "ExtraModels/UL Audio"
+#     TITLE = "UL Advance_noAutoPlay"
+#     INPUT_IS_LIST = False
+#     OUTPUT_IS_LIST = ()
+#     OUTPUT_NODE = True
+  
+#     def UL_Advance_noAutoPlay(self,audio_preview):
+#         return {"ui": {"audio":[audio_preview]}}
 
 class UL_Load_Audio:
     @classmethod
@@ -191,13 +290,12 @@ class UL_Audio_Stable_Audio_mask_args:
         return (self.mask_args, )
  
 NODE_CLASS_MAPPINGS = {
-    "UL_Advance_AutoPlay": UL_Advance_AutoPlay,
-    "UL_Advance_noAutoPlay": UL_Advance_noAutoPlay,
+    "UL_Audio_Preview_AutoPlay": UL_Audio_Preview_AutoPlay,
+    "UL_Audio_Preview_noAutoPlay": UL_Audio_Preview_noAutoPlay,
     "UL_Audio_ChatTTS_Loader": UL_Audio_ChatTTS_Loader, 
     "UL_Load_Audio": UL_Load_Audio, 
     # "UL_PreView_Audio": UL_PreView_Audio, 
     "UL_Audio_Stable_Audio_mask_args": UL_Audio_Stable_Audio_mask_args, 
-    "UL_VAEDecodeAudio": UL_VAEDecodeAudio, 
 }
 
 # 加载模型
