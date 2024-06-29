@@ -632,9 +632,13 @@ class UL_Audio_XTTS:
             config = XttsConfig()
             config.load_json(os.path.join(model_path, 'config.json'))
             model = Xtts.init_from_config(config)
+            vocab_path = os.path.join(model_path, 'vocab.json')
+            if model_path == 'coqui/XTTS-v2':
+                vocab_path = None
             model.load_checkpoint(
                                 config, 
                                 checkpoint_dir=model_path, 
+                                vocab_path=vocab_path,
                                 use_deepspeed=use_deepspeed,
                                 )
             model.to(device)
@@ -746,7 +750,10 @@ class UL_Audio_XTTS:
             
                 torchaudio.save(audio_path, torch.tensor(outputs["wav"]).unsqueeze(0), 24000)
                 
-            model.to('cpu')
+            # model.to('cpu')
+            del model
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
         else:
             from TTS.api import TTS
             config = os.path.join(model_path, 'config.json')
