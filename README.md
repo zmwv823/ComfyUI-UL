@@ -87,7 +87,7 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\audio_checkpoints>
 PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 ├─models--t5-base #文本编码模型text-encoder (stable-audio-open、facebook/musicgen)
 ```
-### UL_VAEDecodeAudio: Audio preview node for comfyui official audio_output--官方音频输出预览节点。
+### Audio preview: support for comfyui official audio_output--官方音频输出预览节点。
 - ![](./Audio/assets/stable_audio_open-preview-wf.png)
 ### **Some code copy from github repo: [shadowcz007/comfyui-sound-lab](https://github.com/shadowcz007/comfyui-sound-lab)  |  [AIFSH/ComfyUI-GPT_SoVITS](https://github.com/AIFSH/ComfyUI-GPT_SoVITS)  |  [jianchang512/ChatTTS-ui](https://github.com/jianchang512/ChatTTS-ui)  |  [AIFSH/ComfyUI-UVR5](https://github.com/AIFSH/ComfyUI-UVR5)**  |  [AIFSH/ComfyUI-XTTS](https://github.com/AIFSH/ComfyUI-XTTS)
 - ![](./Audio/assets/Audio-wf.png)
