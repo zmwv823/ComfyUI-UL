@@ -48,8 +48,8 @@ for site_packages_root in site_packages_roots:
             raise PermissionError
 
 if os.path.isfile("%s/ComfyUI-UL.pth" % (site_packages_root)):
-    print("\033[93m!!!ComfyUI-UL packages:[tts、deepspeed] path was added to " + "%s/ComfyUI-UL.pth" % (site_packages_root) 
-    + "\n if meet `No module` error,try `python main.py` again\033[0m")
+    print("\033[93m!!!ComfyUI-UL/Audio/site_packages [packages: TTS] path was added to " + "%s/ComfyUI-UL.pth" % (site_packages_root) 
+    + "\nWe can add custom packages into the folder if we don't want to pip install.\nIf meet `No module` error, try restart comfyui.\033[0m")
 
 # only import if running as a custom node
 try:

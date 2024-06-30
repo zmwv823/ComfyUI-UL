@@ -3,7 +3,7 @@ peft
 
 #AnyText
 pillow
-numpy
+numpy<=1.26.4
 torch
 torchvision
 opencv-python
@@ -20,11 +20,9 @@ modelscope #translator essensial
 #Audio
 ##stable-audio-open
 torchaudio
-einops
 einops-exts
 soundfile
 aeiou
-transformers
 alias-free-torch
 ema-pytorch
 encodec
@@ -36,39 +34,27 @@ setuptools==69.5.0
 
 ##ChatTTS
 omegaconf
-torch
 tqdm
-einops
 vector_quantize_pytorch
-transformers
 vocos
 IPython
 
 ##facebook--musicgen---audiocraft
 #windows ffmpeg env
 av
-einops
 flashy>=0.0.1
 hydra-core>=1.1
 hydra_colorlog
 julius
 num2words
-numpy
 sentencepiece
 spacy>=3.6.1
-torch
-torchaudio
-huggingface_hub
-tqdm
-transformers>=4.31.0  # need Encodec there.
 xformers
 demucs
 librosa
 gradio
 torchmetrics
-encodec
 protobuf
-torchvision
 torchtext
 
 #file changed
@@ -79,11 +65,9 @@ torchtext
 #D:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\ComfyUI-UL\Audio\music_gen_audiocraft\models\encodec.py --115
 
 #OpenVoiceV2
-librosa
 faster-whisper
 pydub
 wavmark
-numpy
 eng_to_ipa
 inflect
 unidecode
@@ -93,7 +77,6 @@ python-dotenv
 pypinyin
 cn2an
 jieba
-gradio
 langid
 
 #DataProcess
@@ -102,23 +85,15 @@ fitz
 PyMuPDF
 pysubs2
 moviepy
-faster-whisper
 # whisperx
 pyannote-audio
 
 #XTTS
 # core deps
-numpy
 cython>=0.29.30
 scipy>=1.11.2
-torch>=2.1
-torchaudio
-soundfile>=0.12.0
-librosa>=0.10.0
 scikit-learn>=1.3.0
 numba>=0.57.0
-inflect>=5.6.0
-tqdm>=4.64.1
 anyascii>=0.3.0
 pyyaml>=6.0
 fsspec
@@ -138,9 +113,6 @@ matplotlib>=3.7.0
 trainer>=0.0.36
 # config management
 coqpit>=0.0.16
-# chinese g2p deps
-jieba
-pypinyin
 # korean
 hangul_romanize
 # gruut+supported langs
@@ -153,14 +125,7 @@ g2pkk>=0.1.1
 bangla
 bnnumerizer
 bnunicodenormalizer
-#deps for tortoise
-einops>=0.6.0
-transformers>=4.33.0
-#deps for bark
-encodec>=0.1.1
 # deps for XTTS
-unidecode>=1.3.2
-num2words
 spacy[ja]>=3
 cutlet
 ffmpeg-python

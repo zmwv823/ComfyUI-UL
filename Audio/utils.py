@@ -57,7 +57,7 @@ class UL_Audio_Preview_AutoPlay:
     RETURN_NAMES = ()
     FUNCTION = "UL_Preview_AutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_AutoPlay"
+    TITLE = "UL Audio_Preview_AutoPlay"
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
     OUTPUT_NODE = True
@@ -205,7 +205,7 @@ class UL_Audio_Preview_noAutoPlay:
     RETURN_NAMES = ()
     FUNCTION = "UL_Preview_noAutoPlay"
     CATEGORY = "ExtraModels/UL Audio"
-    TITLE = "UL Advance_noAutoPlay"
+    TITLE = "UL Audio_Preview_noAutoPlay"
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = ()
     OUTPUT_NODE = True

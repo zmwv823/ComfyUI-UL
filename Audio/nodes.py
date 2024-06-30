@@ -1,4 +1,6 @@
 import os
+import audiotsm.io
+import audiotsm.io.wav
 import torch
 import torchaudio
 import numpy as np
@@ -519,14 +521,10 @@ class UL_Audio_XTTS:
             audio.export(tmp_path, format="wav")
             
             clone_path = f"{temp_folder}/cloned_{wav_name}"
-            if not is_module_imported('WavReader'):
-                from audiotsm.io.wav import WavReader
-            if not is_module_imported('WavWriter'):
-                from audiotsm.io.wav import WavWriter
-            reader = WavReader(tmp_path)
             
-            writer = WavWriter(clone_path,channels=reader.channels,
-                                            samplerate=reader.samplerate)
+            reader = audiotsm.io.wav.WavReader(tmp_path)
+            writer = audiotsm.io.wav.WavWriter(clone_path,channels=reader.channels, samplerate=reader.samplerate)
+            
             wsloa = audiotsm.wsola(channels=reader.channels,speed=ratio)
             wsloa.run(reader=reader,writer=writer)
             audio_extended = AudioSegment.from_file(clone_path)
@@ -630,11 +628,13 @@ class UL_Audio_XTTS:
             if not is_module_imported('Xtts'):
                 from TTS.tts.models.xtts import Xtts
             config = XttsConfig()
+            print('\033[93mLoading config---读取并加载配置.\033[0m')
             config.load_json(os.path.join(model_path, 'config.json'))
             model = Xtts.init_from_config(config)
             vocab_path = os.path.join(model_path, 'vocab.json')
             if model_path == 'coqui/XTTS-v2':
                 vocab_path = None
+            print('\033[93mLoading model---加载模型.\033[0m')
             model.load_checkpoint(
                                 config, 
                                 checkpoint_dir=model_path, 
@@ -684,6 +684,8 @@ class UL_Audio_XTTS:
                         new_text = new_text[13:]
                     else:
                         speaker = "SPK0"
+                        if "SPEAKER_" in new_text:
+                            new_text = new_text[13:]
                     gpt_cond_latent,speaker_embedding = gpt_embedding_dict[speaker]
                     print(f"use {speaker} voice Inference: {new_text}")
                     
