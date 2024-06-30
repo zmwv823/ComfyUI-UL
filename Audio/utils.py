@@ -216,7 +216,7 @@ class UL_Audio_Preview_noAutoPlay:
 class UL_Load_Audio:
     @classmethod
     def INPUT_TYPES(s):
-        files = [f for f in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, f)) and f.split('.')[-1] in ["wav", "mp3", "flac", "m4a", "ogg", "mp4", "mkv", "avi", "ts", "rm", "rmvb", "flv"]]
+        files = [f for f in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, f)) and f.split('.')[-1] in ["wav", "mp3", "flac", "m4a", "ogg",  "wma", "mp4", "mkv", "avi", "ts", "rm", "rmvb", "flv"]]
         return {"required":
                     {"audio": (sorted(files),)},
                     # "trim_audio": ("BOOLEAN",{"default": False}),
@@ -228,7 +228,7 @@ class UL_Load_Audio:
     RETURN_NAMES = ("audio_path",)
     RETURN_TYPES = ("AUDIO_PATH",)
     FUNCTION = "UL_load_audio"
-    TITLE = "UL Load Audio"
+    TITLE = "UL Load Audio & Video"
 
     def UL_load_audio(self, audio):
         audio_path = folder_paths.get_annotated_filepath(audio)

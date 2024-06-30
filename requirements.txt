@@ -13,9 +13,9 @@ einops
 huggingface_hub
 pytorch_lightning
 ujson
-tensorflow #translator essensial
-subword_nmt #translator essensial
-modelscope #translator essensial
+tensorflow #nlp_translator essensial
+subword_nmt #nlp_translator essensial
+modelscope #nlp_translator essensial
 
 #Audio
 ##stable-audio-open
