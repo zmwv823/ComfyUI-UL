@@ -3,7 +3,8 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import folder_paths
 import torch
 from ..UL_common.common import get_device_by_name, get_dtype_by_name, is_module_imported
-from .utils import nlp_csanmt_translation_zh2en, SavedModel_Translator, t5_translate_en_ru_zh, nllb_200_translator, write_to_result
+from .utils import nlp_csanmt_translation_zh2en, SavedModel_Translator, t5_translate_en_ru_zh, nllb_200_translator
+# , write_to_result
 from ..Audio.utils import get_audio_from_video
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -579,13 +580,16 @@ class UL_DataProcess_Faster_Whisper:
             if save_subtitles_to_folder == True:
                 diarize_result["language"] = result["language"]
                 srt_path = os.path.join(folder, f'{srt_name}.srt')
-                write_to_result(diarize_result, srt_path, whisperX_keep_speaker)
+                # write_to_result(diarize_result, srt_path, whisperX_keep_speaker)
+                with open(srt_path, 'w', encoding='utf-8') as srt:
+                    writesrt = WriteSRT(srt_path)
+                    writesrt.write_result(diarize_result, file=srt, options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words":whisperX_highlight_words})
                 if save_other_formats == True:
                     tsv_path = os.path.join(folder, f'{srt_name}.tsv')
                     json_path = os.path.join(folder, f'{srt_name}.json')
                     vtt_path = os.path.join(folder, f'{srt_name}.vtt')
                     txt_path = os.path.join(folder, f'{srt_name}.txt')
-                    ori_srt_path = os.path.join(folder, f'{srt_name}_ori.srt')
+                    # ori_srt_path = os.path.join(folder, f'{srt_name}_ori.srt')
                     with open(tsv_path, "w", encoding="utf-8") as tsv:
                         writetsv = WriteTSV(tsv_path)
                         writetsv.write_result(diarize_result, tsv, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
@@ -598,9 +602,9 @@ class UL_DataProcess_Faster_Whisper:
                     with open(txt_path, "w", encoding="utf-8") as txt:
                         writetxt = WriteTXT(txt_path)
                         writetxt.write_result(diarize_result, txt, {"max_line_width": None, "max_line_count": whisperX_max_line_count, "highlight_words": whisperX_highlight_words, "preserve_segments": True})
-                    with open(ori_srt_path, 'w', encoding='utf-8') as ori_srt:
-                        writesrt = WriteSRT(ori_srt_path)
-                        writesrt.write_result(diarize_result, file=ori_srt, options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words":whisperX_highlight_words})
+                    # with open(ori_srt_path, 'w', encoding='utf-8') as ori_srt:
+                    #     writesrt = WriteSRT(ori_srt_path)
+                    #     writesrt.write_result(diarize_result, file=ori_srt, options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words":whisperX_highlight_words})
             with open(temp_txt_path, "w", encoding="utf-8") as txt:
                 writetxt=WriteTXT(temp_txt_path)  #output file directory
                 writetxt.write_result(diarize_result, file=txt,options={"max_line_width":None,"max_line_count": whisperX_max_line_count,"highlight_words": whisperX_highlight_words})

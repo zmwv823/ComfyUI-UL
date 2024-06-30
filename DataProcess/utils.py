@@ -311,29 +311,30 @@ def convert_time_format(start_time, end_time):
 
     return f"{start_minutes:02d}:{start_seconds:02d}.{start_milliseconds:03d} --> {end_minutes:02d}:{end_seconds:02d}.{end_milliseconds:03d}"
 
-def write_to_result(result, file_path, keep_speaker):
-    mode = "w"
-    with open(file_path, mode, encoding="utf-8") as f:
-        # f.write("WEBVTT")
-        # f.write("\n\n")
-        if keep_speaker == True:
-            for segment in result["segments"]:
-                f.write(f'{convert_time_format(segment["start"],segment["end"])}')
-                f.write("\n")
-                f.write( 
-                    # (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "") + " "
-                    # + segment["text"].strip().replace("\t", " ")
-                    ((segment["speaker"] + ": ") if "speaker" in segment else "") + " "
-                    + segment["text"].strip().replace("\t", " ")
-                )
-                f.write("\n\n")
-        else:
-            for segment in result["segments"]:
-                f.write(f'{convert_time_format(segment["start"],segment["end"])}')
-                f.write("\n")
-                f.write( 
-                    # (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "") + " "
-                    # + segment["text"].strip().replace("\t", " ")
-                    segment["text"].strip().replace("\t", " ")
-                )
-                f.write("\n\n")
+# 保存的为webvtt格式
+# def write_to_result(result, file_path, keep_speaker):
+#     mode = "w"
+#     with open(file_path, mode, encoding="utf-8") as f:
+#         f.write("WEBVTT")
+#         f.write("\n\n")
+#         if keep_speaker == True:
+#             for segment in result["segments"]:
+#                 f.write(f'{convert_time_format(segment["start"],segment["end"])}')
+#                 f.write("\n")
+#                 f.write( 
+#                     # (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "") + " "
+#                     # + segment["text"].strip().replace("\t", " ")
+#                     ((segment["speaker"] + ": ") if "speaker" in segment else "") + " "
+#                     + segment["text"].strip().replace("\t", " ")
+#                 )
+#                 f.write("\n\n")
+#         else:
+#             for segment in result["segments"]:
+#                 f.write(f'{convert_time_format(segment["start"],segment["end"])}')
+#                 f.write("\n")
+#                 f.write( 
+#                     # (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "") + " "
+#                     # + segment["text"].strip().replace("\t", " ")
+#                     segment["text"].strip().replace("\t", " ")
+#                 )
+#                 f.write("\n\n")

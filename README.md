@@ -38,7 +38,7 @@
 - Original Github Repo: [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice)
 - Original Huggingface Repo: [myshell-ai/OpenVoiceV2](https://huggingface.co/myshell-ai/OpenVoiceV2)
 - Voice clone---音色克隆。
-### XTTS v2: need ffmpeg (After something, srt_function is down on my pc, seems audiotsm doesn't work well)--需要ffmpeg(现在srt_function在我电脑上失效了，貌似是audiotsm的问题)。
+### XTTS v2: need ffmpeg--需要ffmpeg。
 - Original Github Repo: [coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 - Original Huggingface Repo: [coqui/XTTS-v2](https://huggingface.co/coqui/XTTS-v2)
 - (TTS) Text to voice + Voice clone---文本转语音和音色克隆。

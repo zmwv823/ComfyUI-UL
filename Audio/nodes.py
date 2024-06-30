@@ -6,7 +6,8 @@ import torchaudio
 import numpy as np
 import folder_paths
 from pydub import AudioSegment
-import audiotsm
+import audiotsm.wsola
+import audiotsm.io.wav
 # import time
 from ..UL_common.common import is_module_imported, get_device_by_name, get_dtype_by_name
 # from huggingface_hub import snapshot_download as hg_snapshot_download
@@ -537,8 +538,10 @@ class UL_Audio_XTTS:
             "required": {
                 "use_srt_subtitle": ("BOOLEAN",{"default": False}),
                 "enable_mutiple_speaker_for_subtitle": ("BOOLEAN",{"default": True}),
+                "use_ref_audio_for_mutiple_speaker": ("BOOLEAN",{"default": True}),
                 "model": (models_list,),
                 "srt_subtitle_path": ("DATA_PATH",),
+                "srt_audio_for_mutiple_speaker": ("AUDIO_PATH",),
                 "ref_audio_path": ("AUDIO_PATH",),
                 "prompt": ("STRING", 
                          {
@@ -594,9 +597,10 @@ class UL_Audio_XTTS:
     INPUT_IS_LIST = False
     OUTPUT_IS_LIST = (False,)
   
-    def UL_XTTS(self, model, prompt, device, language, tts_api_gpt_cond_len, ref_audio_path, trim_ref_audio, start_time, duration, apply_tts_api, speed, tts_api_emotion, temperature, length_penalty, repetition_penalty, top_k, top_p, enable_text_splitting, use_deepspeed, do_sample, num_beams, use_srt_subtitle, srt_subtitle_path, enable_mutiple_speaker_for_subtitle):
+    def UL_XTTS(self, model, prompt, device, language, tts_api_gpt_cond_len, ref_audio_path, trim_ref_audio, start_time, duration, apply_tts_api, speed, tts_api_emotion, temperature, length_penalty, repetition_penalty, top_k, top_p, enable_text_splitting, use_deepspeed, do_sample, num_beams, use_srt_subtitle, srt_subtitle_path, enable_mutiple_speaker_for_subtitle, srt_audio_for_mutiple_speaker, use_ref_audio_for_mutiple_speaker):
         
         ref_audio = get_audio_from_video(ref_audio_path)
+        srt_audio_for_mutiple_speaker = get_audio_from_video(srt_audio_for_mutiple_speaker)
             
         if trim_ref_audio == True:
             # dirname, filename = os.path.split(ref_audio)
@@ -651,13 +655,13 @@ class UL_Audio_XTTS:
                     from srt import parse as SrtPare
                 text_subtitles = list(SrtPare(text_file_content))
                 spk_aduio_dict = {}
-                audio_seg = AudioSegment.from_file(ref_audio)
+                audio_seg = AudioSegment.from_file(srt_audio_for_mutiple_speaker)
                 gpt_embedding_dict = {}
                 if enable_mutiple_speaker_for_subtitle:
                     for i,text_sub in enumerate(text_subtitles):
                         sub_start_time = text_sub.start.total_seconds() * 1000
                         end_time = text_sub.end.total_seconds() * 1000
-                        speaker = 'SPK'+text_sub.content[:10]
+                        speaker = 'SPK'+text_sub.content[:12]
                         try:
                             spk_aduio_dict[speaker] += audio_seg[start_time:end_time]
                         except:
@@ -666,6 +670,8 @@ class UL_Audio_XTTS:
                         speaker_audio_seg = spk_aduio_dict[speaker]
                         speaker_audio = os.path.join(comfy_temp_dir, f"{speaker}.wav")
                         speaker_audio_seg.export(speaker_audio,format='wav')
+                        if use_ref_audio_for_mutiple_speaker == True:
+                            speaker_audio = ref_audio
                         gpt_embedding_dict[speaker] = model.get_conditioning_latents(audio_path=[speaker_audio])
                 else:
                     print(f"Computing speaker SPK0 latents...")
@@ -680,12 +686,12 @@ class UL_Audio_XTTS:
                         
                     new_text = text_sub.content
                     if enable_mutiple_speaker_for_subtitle:
-                        speaker = "SPK" + new_text[:10]
-                        new_text = new_text[13:]
+                        speaker = "SPK" + new_text[:12]
+                        new_text = new_text[14:]
                     else:
                         speaker = "SPK0"
                         if "SPEAKER_" in new_text:
-                            new_text = new_text[13:]
+                            new_text = new_text[14:]
                     gpt_cond_latent,speaker_embedding = gpt_embedding_dict[speaker]
                     print(f"use {speaker} voice Inference: {new_text}")
                     
