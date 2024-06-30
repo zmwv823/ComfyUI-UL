@@ -661,6 +661,7 @@ class UL_Audio_XTTS:
                     for i,text_sub in enumerate(text_subtitles):
                         sub_start_time = text_sub.start.total_seconds() * 1000
                         end_time = text_sub.end.total_seconds() * 1000
+                        # 说话人id占用的字符长度
                         speaker = 'SPK'+text_sub.content[:12]
                         try:
                             spk_aduio_dict[speaker] += audio_seg[start_time:end_time]
@@ -686,11 +687,14 @@ class UL_Audio_XTTS:
                         
                     new_text = text_sub.content
                     if enable_mutiple_speaker_for_subtitle:
+                        # 说话人id占用的字符长度
                         speaker = "SPK" + new_text[:12]
+                        # 字幕开始的位置
                         new_text = new_text[14:]
                     else:
                         speaker = "SPK0"
                         if "SPEAKER_" in new_text:
+                            # 字幕开始的位置
                             new_text = new_text[14:]
                     gpt_cond_latent,speaker_embedding = gpt_embedding_dict[speaker]
                     print(f"use {speaker} voice Inference: {new_text}")
