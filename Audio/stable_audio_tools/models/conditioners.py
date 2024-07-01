@@ -276,7 +276,7 @@ class T5Conditioner(Conditioner):
 
         self.max_length = max_length
         self.enable_grad = enable_grad
-        # print('#download',t5_model_name)
+
         # Suppress logging from transformers
         previous_level = logging.root.manager.disable
         logging.disable(logging.ERROR)
@@ -285,15 +285,9 @@ class T5Conditioner(Conditioner):
             try:
                 # self.tokenizer = T5Tokenizer.from_pretrained(t5_model_name, model_max_length = max_length)
                 # model = T5EncoderModel.from_pretrained(t5_model_name, max_length=max_length).train(enable_grad).requires_grad_(enable_grad)
-                # self.tokenizer = AutoTokenizer.from_pretrained(t5_model_name)
-                # model = T5EncoderModel.from_pretrained(t5_model_name).train(enable_grad).requires_grad_(enable_grad).to(torch.float16)
+                #self.tokenizer = AutoTokenizer.from_pretrained(t5_model_name)
+                #model = T5EncoderModel.from_pretrained(t5_model_name).train(enable_grad).requires_grad_(enable_grad).to(torch.float16)
                 current_file_path = os.path.abspath(__file__)
-                # if os.access(os.path.join(t5_base_path, "model.safetensors"), os.F_OK):
-                #     t5_base= t5_base_path
-                # else:
-                #     t5_base = t5_model_name
-                
-                
                 t5_base_path = os.path.join(folder_paths.models_dir, r"t5\models--t5-base")
                 if not os.access(os.path.join(t5_base_path, "model.safetensors"), os.F_OK):
                     from huggingface_hub import snapshot_download

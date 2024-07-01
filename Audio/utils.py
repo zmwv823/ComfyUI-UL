@@ -1,8 +1,11 @@
 import os
 import json
+import time
+import ffmpeg
 import torch
 import torchaudio
 import shutil
+import time
 import folder_paths
 import hashlib
 from einops import rearrange
@@ -213,7 +216,7 @@ class UL_Audio_Preview_noAutoPlay:
     def UL_Preview_noAutoPlay(self,audio_preview):
         return {"ui": {"audio":[audio_preview]}}
 
-class UL_Load_Audio:
+class UL_Load_Audio_or_Video:
     @classmethod
     def INPUT_TYPES(s):
         files = [f for f in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, f)) and f.split('.')[-1] in ["wav", "mp3", "flac", "m4a", "ogg",  "wma", "mp4", "mkv", "avi", "ts", "rm", "rmvb", "flv"]]
@@ -226,11 +229,11 @@ class UL_Load_Audio:
 
     CATEGORY = "ExtraModels/UL Audio"
     RETURN_NAMES = ("audio_path",)
-    RETURN_TYPES = ("AUDIO_PATH",)
-    FUNCTION = "UL_load_audio"
-    TITLE = "UL Load Audio & Video"
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "UL_Load_Audio_or_Video"
+    TITLE = "UL Load Audio_or_Video(Not comfy_tensor!!!)"
 
-    def UL_load_audio(self, audio):
+    def UL_Load_Audio_or_Video(self, audio):
         audio_path = folder_paths.get_annotated_filepath(audio)
         return (audio_path,)
 
@@ -241,27 +244,6 @@ class UL_Load_Audio:
         with open(audio_path, 'rb') as f:
             m.update(f.read())
         return m.digest().hex()
-    
-
-# class UL_PreView_Audio:
-#     @classmethod
-#     def INPUT_TYPES(s):
-#         return {"required":
-#                     {"audio_path": ("AUDIO_PATH",),}
-#                 }
-
-#     CATEGORY = "ExtraModels/UL Audio"
-#     TITLE = "UL PreView Audio"
-#     FUNCTION = "UL_PreView_Audio"
-#     RETURN_TYPES = ()
-#     RETURN_NAMES = ()
-#     OUTPUT_NODE = True
-
-#     def UL_PreView_Audio(self, audio_path):
-#         audio_name = os.path.basename(audio_path)
-#         tmp_path = os.path.dirname(audio_path)
-#         audio_root = os.path.basename(tmp_path)
-#         return {"ui": {"audio":[audio_name,audio_root]}}
  
 class UL_Audio_Stable_Audio_mask_args:
     @classmethod
@@ -288,14 +270,107 @@ class UL_Audio_Stable_Audio_mask_args:
     def UL_Audio_Stable_Audio_mask_args(self, mask_cropfrom, mask_pastefrom, mask_pasteto, mask_maskstart, mask_maskend, mask_softnessL, mask_softnessR, mask_marination):
         self.mask_args = str(mask_cropfrom) + '|' + str(mask_pastefrom) + '|' + str(mask_pasteto) + '|' + str(mask_maskstart) + '|' + str(mask_maskend) + '|' + str(mask_softnessL) + '|' + str(mask_softnessR) + '|' + str(mask_marination)
         return (self.mask_args, )
+        
+class UL_Audio_Convert_Audio2Wav:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                "audio": ("AUDIO",),
+                "mono2stereo": ("BOOLEAN",{"default": False}),
+                "acodec": (["pcm_s16le", "pcm_s24le", "pcm_s32le", "pcm_f32le", "pcm_f64le", ],{"default": "pcm_f32le"}), 
+                "channels":("INT",{
+                    "default": 2, 
+                    "min": 1, #Minimum value
+                    "max": 8, #Maximum value
+                    "step": 1, #Slider's step
+                    "display": "slider"
+                }),
+                "sample_rate": (["16000", "24000", "36000", "44100", "48000"],{"default": "48000"}), 
+              }, 
+                }
+    
+    RETURN_TYPES = ("AUDIO_PREVIEW", "AUDIO", )
+    RETURN_NAMES = ("audio_preview", "audio", )
+    FUNCTION = "UL_Audio_Convert_Audio2Wav"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL Audio_Convert_Audio2Wav"
+    INPUT_IS_LIST = False
+    OUTPUT_IS_LIST = (False, False, )
+    OUTPUT_NODE = True
+  
+    def UL_Audio_Convert_Audio2Wav(self,audio, mono2stereo, acodec, channels, sample_rate):
+        
+        audio_path = audio_file_or_audio_tensor(audio)
+        
+        converted_audio_temp_path = os.path.join(comfy_temp_dir, f'UL_audio_converted_audio_{time.time()}.wav')
+        preview_audio_path = os.path.join(output_dir, 'audio', 'UL_audio_converted_audio.wav')
+        
+        audio_path = convert_audio(mono2stereo, audio_path, acodec, converted_audio_temp_path, channels, sample_rate,)
+        
+        shutil.copy(converted_audio_temp_path, preview_audio_path)
+        
+        audio_tensor = audio_file2audio_tensor(converted_audio_temp_path)
+        
+        advance_preview = {
+                "filename": 'UL_audio_converted_audio.wav',
+                "subfolder": "audio",
+                "type": "output",
+                "prompt":'Convert audio or video into audio.',
+                }
+        
+        return (advance_preview, audio_tensor, )
+        
+class UL_Audio_Trim_Audio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                "audio": ("AUDIO",),
+                "start_time": ("FLOAT" , {"default": 0, "min": 0, "max": 10000000, "step": 0.01}),
+                "duration": ("FLOAT" , {"default": 9, "min": 0, "max": 10000000, "step": 0.01}),
+              }, 
+                }
+    
+    RETURN_TYPES = ("AUDIO_PREVIEW", "AUDIO", )
+    RETURN_NAMES = ("audio_preview", "audio", )
+    FUNCTION = "UL_Audio_Trim_Audio"
+    CATEGORY = "ExtraModels/UL Audio"
+    TITLE = "UL Audio_Trim_Audio"
+    INPUT_IS_LIST = False
+    OUTPUT_IS_LIST = (False, False, )
+    OUTPUT_NODE = True
+  
+    def UL_Audio_Trim_Audio(self,audio, start_time, duration):
+        
+        audio_path = audio_file_or_audio_tensor(audio)
+        if not ('waveform' in audio and 'sample_rate' in audio):
+            audio_path = convert_audio_or_video2wav(keep_info=True, acodec=None, input_audio=audio_path, channels=None, sample_rate=None)
+        
+        trimmed_audio_temp_path = os.path.join(comfy_temp_dir, f'UL_audio_trimmed_audio_{time.time()}.wav')
+        preview_audio_path = os.path.join(output_dir, 'audio', 'UL_audio_trimmed_audio.wav')
+        
+        audio_path = trim_audio(audio_path, trimmed_audio_temp_path, start_time, duration)
+        
+        shutil.copy(audio_path, preview_audio_path)
+        
+        audio_tensor = audio_file2audio_tensor(trimmed_audio_temp_path)
+        
+        advance_preview = {
+                "filename": 'UL_audio_trimmed_audio.wav',
+                "subfolder": "audio",
+                "type": "output",
+                "prompt":'Convert audio or video into audio.',
+                }
+        
+        return (advance_preview, audio_tensor, )
  
 NODE_CLASS_MAPPINGS = {
     "UL_Audio_Preview_AutoPlay": UL_Audio_Preview_AutoPlay,
     "UL_Audio_Preview_noAutoPlay": UL_Audio_Preview_noAutoPlay,
     "UL_Audio_ChatTTS_Loader": UL_Audio_ChatTTS_Loader, 
-    "UL_Load_Audio": UL_Load_Audio, 
-    # "UL_PreView_Audio": UL_PreView_Audio, 
+    "UL_Load_Audio_or_Video": UL_Load_Audio_or_Video, 
     "UL_Audio_Stable_Audio_mask_args": UL_Audio_Stable_Audio_mask_args, 
+    "UL_Audio_Convert_Audio2Wav": UL_Audio_Convert_Audio2Wav, 
+    "UL_Audio_Trim_Audio": UL_Audio_Trim_Audio, 
 }
 
 # 加载模型
@@ -408,26 +483,28 @@ def Run_ChatTTS(text, prompt, rand_spk, model_local_path, device, temperature, t
     # 暂时把do_text_normalization关掉
     wavs = chat.infer(texts, use_decoder=use_decoder,do_text_normalization=do_text_normalization,params_refine_text=params_refine_text,params_infer_code=params_infer_code, skip_refine_text=skip_refine_text)
 
-    
-    output_dir = folder_paths.get_output_directory()
     # print('#audio_path',folder_paths, )
     # 添加文件名后缀
-    audio_file = "UL_audio_ChatTTS"
-    audio_path = os.path.join(output_dir, 'audio', "UL_audio_ChatTTS.wav")
+    audio_file = f"UL_audio_ChatTTS_{time.time()}"
+    audio_path = os.path.join(comfy_temp_dir, f"{audio_file}.wav")
     #保存音频文件，默认不带后缀，得手动添加。
     torchaudio.save(audio_path, torch.from_numpy(wavs[0]), 24000)
+    
+    preview_audio_path = os.path.join(output_dir, 'audio', 'UL_audio_ChatTTS.wav')
+    shutil.copy(audio_path, preview_audio_path)
+    audio_tensor = audio_file2audio_tensor(audio_path)
     
     if save_speaker == True:
         torch.save(rand_spk, os.path.join(current_directory, f'ChatTTS_Speakers\{save_name}.pt'))
 
     result = {
-                "filename": f'{audio_file}.wav',
+                "filename": 'UL_audio_ChatTTS.wav',
                 "subfolder": "audio",
                 "type": "output",
                 "prompt":text,
                 }
         
-    return (result, rand_spk, audio_path)
+    return (result, rand_spk, audio_tensor, )
 
 # uvr5
 uvr5_weights = os.path.join(folder_paths.models_dir, r'audio_checkpoints\ExtraModels\uvr5')
@@ -453,23 +530,32 @@ def uvr5_split(self, audio, model,agg, device, is_half, tta):
                     local_dir= uvr5_weights
                 )
         
-        old_name = audio
-        new_name = os.path.join(comfy_temp_dir, 'UL_audio_uvr5.wav')
-        shutil.copy(old_name, new_name)
-        new_audio = new_name
-        save_root_vocal = os.path.join(output_dir, 'audio')
-        save_root_ins = os.path.join(output_dir, 'audio')
-        vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path = uvr5(model, new_audio, save_root_vocal,save_root_ins,agg, 'wav', device, is_half, tta)
+        # old_name = audio
+        # new_name = os.path.join(comfy_temp_dir, f'UL_audio_{time.time()}.wav')
+        # shutil.copy(old_name, new_name)
+        # new_audio = new_name
+        # save_root_vocal = comfy_temp_dir
+        # save_root_ins = comfy_temp_dir
+        # vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path = uvr5(model, new_audio, save_root_vocal,save_root_ins,agg, 'wav', device, is_half, tta)
+        vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path = uvr5(model, audio, agg, 'wav', device, is_half, tta)
         return (vocal_AUDIO,bgm_AUDIO, vocal_path, bgm_path)
 
-def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, device, is_half, tta):
-    import ffmpeg
+def uvr5(model_name, inp_root, agg, format0, device, is_half, tta):
     if not is_module_imported('MDXNetDereverb'):
         from .uvr5.mdxnet import MDXNetDereverb
     if not is_module_imported('AudioPre'):
         from .uvr5.vr import AudioPre
     if not is_module_imported('AudioPreDeEcho'):
         from .uvr5.vr import AudioPreDeEcho
+        
+    old_name = inp_root
+    audio_file = f'UL_audio_{time.time()}'
+    new_name = os.path.join(comfy_temp_dir, f'{audio_file}.wav')
+    shutil.copy(old_name, new_name)
+    inp_root = new_name
+    save_root_vocal, save_root_ins = comfy_temp_dir, comfy_temp_dir
+    
+        
     vocal_AUDIO,bgm_AUDIO = "", ""
     inp_root = inp_root.strip(" ").strip('"').strip("\n").strip('"').strip(" ")
     save_root_vocal = (
@@ -511,13 +597,15 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
         src_audio = inp_path
         dsc_audio = os.path.join(comfy_temp_dir, 'input_audio_uvr5.wav')
         shutil.copy(src_audio, dsc_audio)
-        # tmp_path = "%s/%s.reformatted.wav" % (
-        #     input_path,
-        #     os.path.basename(inp_path),
-        # )
-        tmp_path = os.path.join(comfy_temp_dir, 'inputUL_audio_uvr5.wav')
-        os.system(
-            f'ffmpeg -i "{dsc_audio}" -vn -acodec pcm_s16le -ac 2 -ar 44100 "{tmp_path}" -y'
+        
+        tmp_audio_file = f'UL_audio_{time.time()}'
+        tmp_path = os.path.join(comfy_temp_dir, f'{tmp_audio_file}.wav')
+        (
+        ffmpeg
+        .input(dsc_audio)
+        .output(tmp_path, acodec='pcm_s16le', ac=2, ar='44100')
+        .overwrite_output()
+        .run()
         )
         inp_path = tmp_path
     
@@ -536,17 +624,29 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
             del pre_fun
     except:
         pass
-    print("clean_empty_cache")
+    
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
+        
     if need_reformat == 1:
-        vocal_name = 'vocal_inputUL_audio_uvr5.wav_10.wav'
-        bgm_name = 'instrument_inputUL_audio_uvr5.wav_10.wav'
+        vocal_name = f'vocal_{tmp_audio_file}.wav_10.wav'
+        bgm_name = f'instrument_{tmp_audio_file}.wav_10.wav'
     else:
-        vocal_name = 'vocal_UL_audio_uvr5.wav_10.wav'
-        bgm_name = 'instrument_UL_audio_uvr5.wav_10.wav'
-    vocal_path = os.path.join(output_dir, 'audio', vocal_name)
-    bgm_path = os.path.join(output_dir, 'audio', bgm_name)
+        vocal_name = f'vocal_{audio_file}.wav_10.wav'
+        bgm_name = f'instrument_{audio_file}.wav_10.wav'
+    
+    preview_vocal_path = os.path.join(output_dir, 'audio', vocal_name)
+    preview_bgm_path = os.path.join(output_dir, 'audio', bgm_name)
+    
+    vocal_path = os.path.join(comfy_temp_dir, vocal_name)
+    bgm_path = os.path.join(comfy_temp_dir, bgm_name)
+    
+    vocal_tensor = audio_file2audio_tensor(vocal_path)
+    bgm_tensor = audio_file2audio_tensor(bgm_path)
+    
+    shutil.copy(vocal_path, preview_vocal_path)
+    shutil.copy(bgm_path, preview_bgm_path)
+    
     result_a = {
                 "filename": vocal_name,
                 "subfolder": "audio",
@@ -559,7 +659,7 @@ def uvr5(model_name, inp_root, save_root_vocal,save_root_ins, agg, format0, devi
                 "type": "output",
                 "prompt":"背景音",
                 }
-    return (result_a, result_b, vocal_path, bgm_path)
+    return (result_a, result_b, vocal_tensor, bgm_tensor)
 
 def noise_suppression(input_audio_path, output_audio_path, device, model):
     if not is_module_imported('pipeline_ali'):
@@ -575,12 +675,12 @@ def noise_suppression(input_audio_path, output_audio_path, device, model):
         if not os.access(os.path.join(noise_suppression_model_path, 'pytorch_model.bin'), os.F_OK):
             noise_suppression_model_path = 'damo/speech_dfsmn_ans_psm_48k_causal'
             
-        import ffmpeg
         info = ffmpeg.probe(input_audio_path, cmd="ffprobe")
-        tmp_path = os.path.join(comfy_temp_dir, 'UL_audio_denoised_48k_preprocess.wav')
+        tmp_path = os.path.join(comfy_temp_dir, f'UL_audio_denoised_48k_preprocess_{time.time()}.wav')
         if info["streams"][0]["sample_rate"] != "48000":
             # -i输入input， -vn表示vedio not，即输出不包含视频，-acodec重新音频编码，-ac 1单声道, -ac 2双声道, ar 48000采样率48khz, -y操作自动确认.
-            os.system(f'ffmpeg -i "{input_audio_path}" -vn -acodec pcm_s16le -ac 1 -ar 48000 "{tmp_path}" -y')
+            # os.system(f'ffmpeg -i "{input_audio_path}" -vn -acodec pcm_s16le -ac 1 -ar 48000 "{tmp_path}" -y')
+            tmp_path = convert_audio_or_video2wav(keep_info=False, acodec='pcm_s16le', input_audio=input_audio_path, channels=1, sample_rate='48000')
             input_audio_path = tmp_path
             
     ans = pipeline_ali(Tasks.acoustic_noise_suppression,model=noise_suppression_model_path, device=device)
@@ -593,16 +693,17 @@ def noise_suppression(input_audio_path, output_audio_path, device, model):
 
 def get_audio_from_video(input_video_path):
     if not is_module_imported('VideoFileClip'):
-            from moviepy.editor import VideoFileClip
-    match = ['.mp3','.wav','.m4a','.ogg','.flac']
+        from moviepy.editor import VideoFileClip
+    match = ['.mp3','.wav','.m4a','.ogg','.flac','wma']
     dirname, filename = os.path.split(input_video_path)
-    file_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
-    temp_audio = os.path.join(comfy_temp_dir, f'{file_name}.wav')
+    file_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".wma", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
+    temp_audio = os.path.join(comfy_temp_dir, f'{file_name}_{time.time()}.wav')
     
     if not any(c in input_video_path for c in match):
         if '.avi' in input_video_path:
             # -i 表示input，即输入文件, -f 表示format，即输出格式, -vn表示video not，即输出不包含视频，注：输出位置不能覆盖原始文件(输入文件)。
-            os.system(f'ffmpeg -i "{input_video_path}" -f wav -vn {temp_audio} -y')
+            # os.system(f'ffmpeg -i "{input_video_path}" -f wav -vn {temp_audio} -y')
+            temp_audio = convert_audio_or_video2wav(keep_info=True, acodec='pcm_s16le', input_audio=input_video_path, channels=2, sample_rate='48000')
         else:
             # 读取视频文件
             video = VideoFileClip(input_video_path)
@@ -613,3 +714,180 @@ def get_audio_from_video(input_video_path):
     else:
         audio = input_video_path
     return audio
+            
+def audio_file2audio_tensor(audio_path):
+    # convert audio file to audio_tensor
+    print(audio_path)
+    waveform, sample_rate = torchaudio.load(audio_path)
+    multiplier = 1.0
+    audio_tensor = {"waveform": waveform.unsqueeze(0), "sample_rate": sample_rate}
+    return audio_tensor
+
+def audio_file_or_audio_tensor(audio):
+    if ('waveform' in audio and 'sample_rate' in audio):
+        audio = audio_tensor2audio_file(audio)
+    return audio
+
+def audio_tensor2audio_file(audio_tensor):
+    # save audio from comfy_audio
+    save_audio_temp_dir = os.path.join(comfy_temp_dir, f'UL_audio_{time.time()}.wav')
+    metadata = {}
+    disable_metadata = True
+    prompt, extra_pnginfo = None, None
+    if not disable_metadata:
+        if prompt is not None:
+            metadata["prompt"] = json.dumps(prompt)
+        if extra_pnginfo is not None:
+            for x in extra_pnginfo:
+                metadata[x] = json.dumps(extra_pnginfo[x])
+    for waveform in enumerate(audio_tensor["waveform"]):
+        import io
+        from comfy_extras.nodes_audio import insert_or_replace_vorbis_comment
+        buff = io.BytesIO()
+        buff = insert_or_replace_vorbis_comment(buff, metadata)
+        torchaudio.save(buff, waveform[1], audio_tensor["sample_rate"], format="WAV")
+        with open(save_audio_temp_dir, 'wb') as f:
+            f.write(buff.getbuffer())
+    return(save_audio_temp_dir)
+
+def convert_audio_or_video2wav(keep_info=bool, acodec='', input_audio='', channels='', sample_rate=''):
+    output_audio = os.path.join(comfy_temp_dir, f'ffmpeg_converted_audio_{time.time()}.wav')
+    """
+    acodec:
+        pcm_alaw            PCM A-law
+        pcm_f32be           PCM 32-bit floating-point big-endian
+        pcm_f32le           PCM 32-bit floating-point little-endian
+        pcm_f64be           PCM 64-bit floating-point big-endian
+        pcm_f64le           PCM 64-bit floating-point little-endian
+        pcm_mulaw           PCM mu-law
+        pcm_s16be           PCM signed 16-bit big-endian
+        pcm_s16le           PCM signed 16-bit little-endian
+        pcm_s24be           PCM signed 24-bit big-endian
+        pcm_s24le           PCM signed 24-bit little-endian
+        pcm_s32be           PCM signed 32-bit big-endian
+        pcm_s32le           PCM signed 32-bit little-endian
+        pcm_s8              PCM signed 8-bit
+        pcm_u16be           PCM unsigned 16-bit big-endian
+        pcm_u16le           PCM unsigned 16-bit little-endian
+        pcm_u24be           PCM unsigned 24-bit big-endian
+        pcm_u24le           PCM unsigned 24-bit little-endian
+        pcm_u32be           PCM unsigned 32-bit big-endian
+        pcm_u32le           PCM unsigned 32-bit little-endian
+        pcm_u8              PCM unsigned 8-bit
+    sample_rate:
+        '16000'
+        '24000'
+        '32000'
+        '44100'
+        '48000'
+    channels:
+        1
+        2
+    """
+    if keep_info == True:
+        ffmpeg.input(input_audio).output(output_audio).run()
+    else:
+        (
+        ffmpeg
+        .input(input_audio)
+        .output(output_audio, acodec=acodec, ac=channels, ar=sample_rate)
+        .overwrite_output()
+        .run()
+        )
+    return output_audio
+
+def convert_audio(mono2stereo, audio_input, acodec, audio_output, channels, sample_rate):
+    """
+    acodec:
+        pcm_alaw ---> PCM A-law
+        
+        pcm_f32be ---> PCM 32-bit floating-point big-endian
+        
+        pcm_f32le ---> PCM 32-bit floating-point little-endian
+        
+        pcm_f64be ---> PCM 64-bit floating-point big-endian
+        
+        pcm_f64le ---> PCM 64-bit floating-point little-endian
+        
+        pcm_mulaw ---> PCM mu-law
+        
+        pcm_s16be ---> PCM signed 16-bit big-endian
+        
+        pcm_s16le ---> PCM signed 16-bit little-endian
+        
+        pcm_s24be ---> PCM signed 24-bit big-endian
+        
+        pcm_s24le ---> PCM signed 24-bit little-endian
+        
+        pcm_s32be ---> PCM signed 32-bit big-endian
+        
+        pcm_s32le ---> PCM signed 32-bit little-endian
+        
+        pcm_s8 ---> PCM signed 8-bit
+        
+        pcm_u16be ---> PCM unsigned 16-bit big-endian
+        
+        pcm_u16le ---> PCM unsigned 16-bit little-endian
+        
+        pcm_u24be ---> PCM unsigned 24-bit big-endian
+        
+        pcm_u24le ---> PCM unsigned 24-bit little-endian
+        
+        pcm_u32be ---> PCM unsigned 32-bit big-endian
+        
+        pcm_u32le ---> PCM unsigned 32-bit little-endian
+        
+        pcm_u8 ---> PCM unsigned 8-bit
+    sample_rate:
+        '16000'
+        
+        '24000'
+        
+        '32000'
+        
+        '44100'
+        
+        '48000'
+    channels:
+        1
+        
+        2
+    FFmpeg can take input of raw audio types by specifying the type on the command line. For instance, to convert a "raw" audio type to a ".wav" file:
+        ffmpeg -f s32le input_filename.raw output.wav
+    You can specify number of channels, etc. as well, ex:
+        ffmpeg -f u16le -ar 44100 -ac 1 -i input.raw output.wav
+    The default for muxing into WAV files is pcm_s16le. You can change it by specifying the audio codec and using the WAV file extension:
+        ffmpeg -i input -c:a pcm_s32le output.wav
+    which will create a WAV file containing audio with that codec (not a raw file). There are also other containers that can contain raw audio packets, like pcm_bluray.
+
+    If you want to create a raw file, don't use the WAV format, but the raw one (as seen in the table above), e.g. s16le, and the appropriate audio codec:
+        ffmpeg -i input -f s16le -c:a pcm_s16le output.raw
+    You can determine the format of a file, ex
+        $ ffmpeg -i Downloads/BabyElephantWalk60.wav 
+        ffmpeg version ...
+        ...
+        Input #0, wav, from 'Downloads/BabyElephantWalk60.wav':
+            Duration: 00:01:00.00, bitrate: 352 kb/s
+            Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 22050 Hz, mono, s16, 352 kb/s
+    The pcm_s16le tells you what format your audio is in. And that happens to be a common format.
+    """
+    if mono2stereo == True:
+        ffmpeg.input(audio_input).output(audio_output, ac=2).run()
+    else:
+        (
+        ffmpeg
+        .input(audio_input)
+        .output(audio_output, acodec=acodec, ac=channels, ar=sample_rate)
+        .overwrite_output()
+        .run()
+        )
+        
+def trim_audio(audio_input_path, audio_output_path, start_time, duration):
+    if not is_module_imported('AudioSegment'):
+        from pydub import AudioSegment
+    sound = AudioSegment.from_wav(audio_input_path)
+    start = start_time*1000
+    end = (start_time + duration)*1000
+    extract = sound[start:end]
+    extract.export(audio_output_path, format="wav")
+    return audio_output_path

@@ -193,9 +193,9 @@ function audioUpload(node, inputName, inputData, app) {
 ComfyWidgets.AUDIOPLOAD = audioUpload;
 
 app.registerExtension({
-    name: "UL.UploadAudio",
+    name: "UL.Load_Audio_or_Video",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData?.name == "UL_Load_Audio") {
+        if (nodeData?.name == "UL_Load_Audio_or_Video") {
             nodeData.input.required.upload = ["AUDIOPLOAD"];
         }
     },

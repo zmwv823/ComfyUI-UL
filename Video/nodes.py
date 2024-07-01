@@ -19,7 +19,7 @@ class UL_Video_Stabilization:
         return {
             "required": 
                 { 
-                 "video_path": ("AUDIO_PATH", ), 
+                 "video_path": ("AUDIO", ), 
                 "model": (model_list,{
                     "default": "damo/cv_dut-raft_video-stabilization_base"
                 }),

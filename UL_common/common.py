@@ -5,7 +5,7 @@ import shutil
 import comfy.model_management as mm
 import time
 
-class UL_Text_Input:
+class UL_common_Text_Input:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -24,13 +24,60 @@ class UL_Text_Input:
     FUNCTION = "UL_Text_Input"
     CATEGORY = "ExtraModels/UL Common"
     TITLE = "UL Text Input"
+    
+    OUTPUT_NODE = True
+    OUTPUT_IS_LIST = (False,)
 
     def UL_Text_Input(self, text):
         self.text = text
         return (text, )
     
+class UL_common_ShowText:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True}),
+            },
+            "hidden": {
+                "unique_id": "UNIQUE_ID",
+                "extra_pnginfo": "EXTRA_PNGINFO",
+            },
+        }
+
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("text", )
+    FUNCTION = "UL_common_ShowText"
+    CATEGORY = "ExtraModels/UL Common"
+    TITLE = "UL common ShowText"
+    
+    INPUT_IS_LIST = False
+    OUTPUT_NODE = True
+    OUTPUT_IS_LIST = (False,)
+
+    def UL_common_ShowText(self, text, unique_id=None, extra_pnginfo=None):
+        if unique_id is not None and extra_pnginfo is not None:
+            if not isinstance(extra_pnginfo, list):
+                print("Error: extra_pnginfo is not a list")
+            elif (
+                not isinstance(extra_pnginfo[0], dict)
+                or "workflow" not in extra_pnginfo[0]
+            ):
+                print("Error: extra_pnginfo[0] is not a dict or missing 'workflow' key")
+            else:
+                workflow = extra_pnginfo[0]["workflow"]
+                node = next(
+                    (x for x in workflow["nodes"] if str(x["id"]) == str(unique_id[0])),
+                    None,
+                )
+                if node:
+                    node["widgets_values"] = [text]
+
+        return {"ui": {"text": (text,)}, "result": (text,)}
+    
 NODE_CLASS_MAPPINGS = {
-    "UL_Text_Input": UL_Text_Input, 
+    "UL_common_Text_Input": UL_common_Text_Input, 
+    "UL_common_ShowText": UL_common_ShowText, 
 }
 
 def is_module_imported(module_name):

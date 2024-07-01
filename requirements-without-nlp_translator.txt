@@ -37,7 +37,6 @@ vocos
 IPython
 
 ##facebook--musicgen---audiocraft
-#windows ffmpeg env
 av
 flashy>=0.0.1
 hydra-core>=1.1
