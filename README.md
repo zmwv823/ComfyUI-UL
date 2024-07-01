@@ -60,12 +60,10 @@
 - Original Github Repo: [Anjok07/ultimatevocalremovergui](https://github.com/Anjok07/ultimatevocalremovergui)
 - Original Huggingface Repo: [Delik/uvr5_weights](https://huggingface.co/Delik/uvr5_weights)
 - Split vocal and bgm---分离人声和旋律。
-- Only one node can be used in ComfyUI, multiple doesn't work---在ComfyUI中仅能使用一个此节点，多个此节点只能输出后面执行的那个节点的结果。
 ### noise supression (16k/48k):
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression---人声降噪。
-- Uuid_output_noPreview option: with this checked, we can use multiple noise_supression node in comfyUI, but without preview---开启这个选项，我们可以在comfyUI中使用多个noise_supression节点，但是没有预览。
 ### audiotsm: change the speed of an audio signal without changing its pitch---音频变速不变调。
 - Original Huggingface Repo: [Muges/audiotsm](https://github.com/Muges/audiotsm)
 - [AudioTSM examples---官方示例](https://muges.github.io/audiotsm/)---[Docs(en) latest---最新英文文档](https://audiotsm.readthedocs.io/en/latest/)
