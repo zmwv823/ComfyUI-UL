@@ -38,7 +38,7 @@ class UL_Audio_stable_audio_open:
         return {
             "required": {
                 "ckpt_name": (checkpoints_list, ),
-                "ref_audio_or_audio_path": ("AUDIO",),
+                "ref_audio": ("AUDIO",),
                 "Stable_Audio_mask_args": ("mask_args",),
                 "prompt": ("STRING", 
                          {
@@ -71,8 +71,8 @@ class UL_Audio_stable_audio_open:
     OUTPUT_IS_LIST = (False, False, )
     OUTPUT_NODE = True
 
-    def UL_stable_audio_open(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, ckpt_name, dtype, sampler_type, device, ref_audio_or_audio_path, use_init_audio, init_noise_level, Stable_Audio_mask_args, apply_mask_cropfrom):
-        ref_audio_or_audio_path = audio_file_or_audio_tensor(ref_audio_or_audio_path)
+    def UL_stable_audio_open(self, prompt,seconds,steps,seed, cfg_scale,  sigma_min, sigma_max, ckpt_name, dtype, sampler_type, device, ref_audio, use_init_audio, init_noise_level, Stable_Audio_mask_args, apply_mask_cropfrom):
+        ref_audio_or_audio_path = audio_file_or_audio_tensor(ref_audio)
         ref_audio = get_audio_from_video(ref_audio_or_audio_path)
         #如果ckpt_name为‘Auto_Download’，混合进ckpt_path之后，ckpt_path会被写为None值。
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
@@ -182,10 +182,7 @@ class UL_Audio_facebook_musicgen:
         return {
             "required": {
                 "model": (["facebook/musicgen-stereo-small", "facebook/musicgen-stereo-medium", "facebook/musicgen-stereo-large","facebook/musicgen-stereo-melody", "facebook/musicgen-stereo-melody-large", "nateraw/musicgen-songstarter-v0.2"],{"default": "facebook/musicgen-stereo-small"}), 
-                "ref_audio_or_audio_path_for_melody": ("AUDIO",),
-                "trim_ref_audio": ("BOOLEAN",{"default": False}),
-                "start_time": ("FLOAT" , {"default": 0, "min": 0, "max": 10000000, "step": 0.01}),
-                "duration": ("FLOAT" , {"default": 9, "min": 0, "max": 10000000, "step": 0.01}),
+                "ref_audio_for_melody": ("AUDIO",),
                 "musicgen_type": (["musicgen", "musicgen_melody"],{"default": "musicgen"}), 
                 "prompt": ("STRING", 
                             {
@@ -239,10 +236,10 @@ class UL_Audio_facebook_musicgen:
     OUTPUT_IS_LIST = (False, False, )
     OUTPUT_NODE = True
   
-    def UL_facebook_musicgen(self, model, prompt, seconds, device, seed, guidance_scale, top_k, top_p, temperature, two_step_cfg, use_sampling, extend_stride, ref_audio_or_audio_path_for_melody, musicgen_type, apply_musicgen_with_transformers, transformers_audio_continuation, transformers_dtype):
+    def UL_facebook_musicgen(self, model, prompt, seconds, device, seed, guidance_scale, top_k, top_p, temperature, two_step_cfg, use_sampling, extend_stride, ref_audio_for_melody, musicgen_type, apply_musicgen_with_transformers, transformers_audio_continuation, transformers_dtype):
         seed = torch.manual_seed(seed)
         
-        ref_audio_or_audio_path_for_melody = audio_file_or_audio_tensor(ref_audio_or_audio_path_for_melody)
+        ref_audio_or_audio_path_for_melody = audio_file_or_audio_tensor(ref_audio_for_melody)
         ref_audio_for_melody = get_audio_from_video(ref_audio_or_audio_path_for_melody)
         
         device = get_device_by_name(device)
@@ -466,9 +463,8 @@ class UL_Audio_OpenVoiceV2:
         return {
             "required": {
                 "model": (models_list,),
-                "ori_audio_or_audio_path": ("AUDIO",),
-                "ref_audio_or_audio_path": ("AUDIO",),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "ori_audio": ("AUDIO",),
+                "ref_audio": ("AUDIO",),
                 "OpenVoiceV2_tau": ("FLOAT", {"default": 0.30, "min": 0.01, "max": 9999.00, "step": 0.01,}),
                 "device": (["auto", "cuda", "cpu", "mps", "xpu"],{"default": "auto"}), 
                     },
@@ -484,9 +480,9 @@ class UL_Audio_OpenVoiceV2:
     OUTPUT_IS_LIST = (False, False, )
     OUTPUT_NODE = True
   
-    def UL_OpenVoiceV2(self, model, ori_audio_or_audio_path, ref_audio_or_audio_path, seed, OpenVoiceV2_tau, device):
-        ori_audio_or_audio_path = audio_file_or_audio_tensor(ori_audio_or_audio_path)
-        ref_audio_or_audio_path = audio_file_or_audio_tensor(ref_audio_or_audio_path)
+    def UL_OpenVoiceV2(self, model, ori_audio, ref_audio, OpenVoiceV2_tau, device):
+        ori_audio_or_audio_path = audio_file_or_audio_tensor(ori_audio)
+        ref_audio_or_audio_path = audio_file_or_audio_tensor(ref_audio)
         
         ori_audio = get_audio_from_video(ori_audio_or_audio_path)
         ref_audio = get_audio_from_video(ref_audio_or_audio_path)
@@ -546,8 +542,8 @@ class UL_Audio_XTTS:
                 "use_ref_audio_for_mutiple_speaker": ("BOOLEAN",{"default": True}),
                 "model": (models_list,),
                 "srt_subtitle_path": ("DATA_PATH",),
-                "srt_audio_or_audio_path_for_mutiple_speaker": ("AUDIO",),
-                "ref_audio_or_audio_path": ("AUDIO",),
+                "srt_audio_for_mutiple_speaker": ("AUDIO",),
+                "ref_audio": ("AUDIO",),
                 "prompt": ("STRING", 
                          {
                             "multiline": True, 
@@ -600,9 +596,9 @@ class UL_Audio_XTTS:
     OUTPUT_IS_LIST = (False, False, )
     OUTPUT_NODE = True
   
-    def UL_XTTS(self, model, prompt, device, language, tts_api_gpt_cond_len, ref_audio_or_audio_path, apply_tts_api, speed, tts_api_emotion, temperature, length_penalty, repetition_penalty, top_k, top_p, enable_text_splitting, use_deepspeed, do_sample, num_beams, use_srt_subtitle, srt_subtitle_path, enable_mutiple_speaker_for_subtitle, srt_audio_or_audio_path_for_mutiple_speaker, use_ref_audio_for_mutiple_speaker):
-        ref_audio_path = audio_file_or_audio_tensor(ref_audio_or_audio_path)
-        srt_audio_for_mutiple_speaker = audio_file_or_audio_tensor(srt_audio_or_audio_path_for_mutiple_speaker)
+    def UL_XTTS(self, model, prompt, device, language, tts_api_gpt_cond_len, ref_audio, apply_tts_api, speed, tts_api_emotion, temperature, length_penalty, repetition_penalty, top_k, top_p, enable_text_splitting, use_deepspeed, do_sample, num_beams, use_srt_subtitle, srt_subtitle_path, enable_mutiple_speaker_for_subtitle, srt_audio_for_mutiple_speaker, use_ref_audio_for_mutiple_speaker):
+        ref_audio_path = audio_file_or_audio_tensor(ref_audio)
+        srt_audio_for_mutiple_speaker = audio_file_or_audio_tensor(srt_audio_for_mutiple_speaker)
         
         ref_audio = get_audio_from_video(ref_audio_path)
         srt_audio_for_mutiple_speaker = get_audio_from_video(srt_audio_for_mutiple_speaker)
@@ -658,9 +654,9 @@ class UL_Audio_XTTS:
                         # 说话人id占用的字符长度
                         speaker = 'SPK'+text_sub.content[:12]
                         try:
-                            spk_aduio_dict[speaker] += audio_seg[start_time:end_time]
+                            spk_aduio_dict[speaker] += audio_seg[sub_start_time:end_time]
                         except:
-                            spk_aduio_dict[speaker] = audio_seg[start_time:end_time]
+                            spk_aduio_dict[speaker] = audio_seg[sub_start_time:end_time]
                     for speaker in spk_aduio_dict.keys():
                         speaker_audio_seg = spk_aduio_dict[speaker]
                         speaker_audio = os.path.join(comfy_temp_dir, f"{speaker}.wav")
@@ -677,7 +673,7 @@ class UL_Audio_XTTS:
                     sub_start_time = text_sub.start.total_seconds() * 1000
                     end_time = text_sub.end.total_seconds() * 1000
                     if i == 0:
-                        new_audio_seg += audio_seg[:start_time]
+                        new_audio_seg += audio_seg[:sub_start_time]
                         
                     new_text = text_sub.content
                     if enable_mutiple_speaker_for_subtitle:
@@ -872,7 +868,7 @@ class UL_Audio_noise_suppression:
         model_list = ["damo/speech_frcrn_ans_cirm_16k", "damo/speech_dfsmn_ans_psm_48k_causal"]
         return {
             "required": {
-                "audio_or_audio_path": ("AUDIO",),
+                "audio": ("AUDIO",),
                 "model": (model_list,{
                     "default": "damo/speech_frcrn_ans_cirm_16k"
                 }),
@@ -890,8 +886,8 @@ class UL_Audio_noise_suppression:
     OUTPUT_IS_LIST = (False,False, )
     OUTPUT_NODE = True
     
-    def UL_Audio_noise_suppression(self, audio_or_audio_path, model, device): 
-        audio_path = audio_file_or_audio_tensor(audio_or_audio_path)
+    def UL_Audio_noise_suppression(self, audio, model, device): 
+        audio_path = audio_file_or_audio_tensor(audio)
         audio = get_audio_from_video(audio_path)
         
         device =get_device_by_name(device)
@@ -920,10 +916,9 @@ class UL_Audio_audiotsm:
         pass
     @classmethod
     def INPUT_TYPES(s):
-        model_list = ["damo/speech_frcrn_ans_cirm_16k", "damo/speech_dfsmn_ans_psm_48k_causal"]
         return {
             "required": {
-                "audio_or_audio_path": ("AUDIO",),
+                "audio": ("AUDIO",),
                 "speed": ("FLOAT" , {"default": 1, "min": 0, "max": 10000000, "step": 0.01}),
             },
         }
@@ -938,12 +933,12 @@ class UL_Audio_audiotsm:
     OUTPUT_IS_LIST = (False,False, )
     OUTPUT_NODE = True
     
-    def UL_Audio_audiotsm(self, audio_or_audio_path, speed): 
+    def UL_Audio_audiotsm(self, audio, speed): 
         from audiotsm import phasevocoder
         from audiotsm.io.wav import WavReader, WavWriter
-        audio = audio_file_or_audio_tensor(audio_or_audio_path)
+        audio = audio_file_or_audio_tensor(audio)
         tmp_output_path = os.path.join(comfy_temp_dir, f'UL_audio_audiotsm_{time.time()}.wav')
-        if ('waveform' in audio_or_audio_path and 'sample_rate' in audio_or_audio_path) or ('.wav' not in audio):
+        if ('waveform' in audio and 'sample_rate' in audio) or ('.wav' not in audio):
             audio = convert_audio_or_video2wav(keep_info=False, input_audio=audio, acodec='pcm_s16le', channels=2, sample_rate='48000')
             
         with WavReader(audio) as reader:
