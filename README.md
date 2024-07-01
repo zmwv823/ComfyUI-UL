@@ -65,8 +65,9 @@
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression---人声降噪。
-### audiotsm: change the speed of an audio signal without changing its pitch---音频变速不变调。
+### audiotsm: 
 - Original Huggingface Repo: [Muges/audiotsm](https://github.com/Muges/audiotsm)
+- Change the speed of an audio signal without changing its pitch---音频变速不变调。
 - [AudioTSM examples---官方示例](https://muges.github.io/audiotsm/)---[Docs(en) latest---最新英文文档](https://audiotsm.readthedocs.io/en/latest/)
 ### convert audio or video2wav
 - use ffmpeg-python---[github--kkroening/ffmpeg-python](https://github.com/kkroening/ffmpeg-python)---[ffmpeg-python documentation---文档](https://kkroening.github.io/ffmpeg-python/)
