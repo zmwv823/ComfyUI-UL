@@ -2,6 +2,7 @@
 # 个人专属插件  |  仅用于学习  |  不建议使用  |  不接收issue
 # Warning:
 - **Lots of bugs**---**大量bug**。
+- Repo is large (total 170mb, 90mb without git_blob_file), because some special model (70mb) files in it. They are special for not easy to auto access them (diarization 3.1-need huggingface token) or nearly can't be used for other places (anytext-ocr model、OpenVoiceV2-WavMark) or modified (whisperx-vad-segmentation)---插件体积庞大(总共170mb，不含git编码文件则是90mb)，因为放了一些特殊模型(占用了70mb)在里面。这些模型要么很难自动获取(diarization 3.1-需要笑脸的个人用户口令)，要么几乎没法被其他插件复用(anytext-ocr model、OpenVoiceV2-WavMark)，要么修改过(whisperx-vad-segmentation)。
 - **Tensorflow** need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu---**Tensorflow** 需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
 - **Deepspeed** for XTTS need specified **os、cuda version and torch version**, you have to pip install suitable deepspeed depend on your case---XTTS选项**Deepspeed** 需要**特定os、cuda版本和torch版本**，你需要手动pip安装适合你自己的deepspeed包
 - Prebuilt deepspeed wheels---编译好的deepspeed whl文件 -----> [alltalk_tts/releases](https://github.com/erew123/alltalk_tts/releases)
