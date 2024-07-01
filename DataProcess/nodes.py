@@ -1,11 +1,12 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import folder_paths
+import time
 import torch
 from ..UL_common.common import get_device_by_name, get_dtype_by_name, is_module_imported
 from .utils import nlp_csanmt_translation_zh2en, SavedModel_Translator, t5_translate_en_ru_zh, nllb_200_translator
 # , write_to_result
-from ..Audio.utils import get_audio_from_video
+from ..Audio.utils import get_audio_from_video, audio_file_or_audio_tensor
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 temp_txt_path = os.path.join(current_directory, "temp_dir", "Translation.txt")
@@ -335,7 +336,7 @@ class UL_DataProcess_Faster_Whisper:
     def INPUT_TYPES(s):
         return {
             "required": { 
-                "audio" : ("AUDIO_PATH",),
+                "audio" : ("AUDIO",),
                 "whisper_type": (["stable_whisper","faster_whisper","faster_whisper_whisperX"],{"default":"faster_whisper_whisperX"}),
                 "faster_whisper_model": (["Systran/faster-whisper-medium","Systran/faster-whisper-large-v3", "Systran/faster-whisper-large-v2", "Systran/faster-whisper-large-v1"],{"default":"Systran/faster-whisper-large-v3"}),
                 "stable_whisper_model": (["small","medium","large-v2","large-v3"],{"default":"medium"}),
@@ -344,7 +345,6 @@ class UL_DataProcess_Faster_Whisper:
                 "vad_filter": ("BOOLEAN", {"default": True},),
                 "whisperX_batch_size": ("INT", {"default": 16}),
                 "whisperX_task": (["transcribe", "translate"],{"default": "transcribe"}), 
-                "whisperX_keep_speaker": ("BOOLEAN", {"default": False},),
                 "whisperX_diarize_max_speakers": ("INT", {"default": 5, "min": 1,"max": 9999999999999,"step": 1}),
                 "whisperX_highlight_words": ("BOOLEAN", {"default": False},),
                 "whisperX_max_line_count": ("INT", {"default": 2, "min": 1,"max": 9999999999999,"step": 1}),
@@ -367,7 +367,7 @@ class UL_DataProcess_Faster_Whisper:
     CATEGORY = "ExtraModels/UL DataProcess"
     TITLE = "UL DataProcess Faster Whisper"
     
-    def UL_DataProcess_Faster_Whisper(self,audio, faster_whisper_model, device, faster_whisper_dtype, target_lanuage, word_timestamps, whisper_type, faster_whisper_beam_size, vad_filter, faster_whisper_min_silence_duration_ms, stable_whisper_model, stable_whisper_cpu_preload, save_subtitles_to_folder, folder, save_other_formats, stable_whisper_demucs_denoiser, faster_whisper_chunk_length, whisperX_task, whisperX_keep_speaker, whisperX_highlight_words, whisperX_max_line_count, whisperX_batch_size, whisperX_diarize_max_speakers):
+    def UL_DataProcess_Faster_Whisper(self,audio, faster_whisper_model, device, faster_whisper_dtype, target_lanuage, word_timestamps, whisper_type, faster_whisper_beam_size, vad_filter, faster_whisper_min_silence_duration_ms, stable_whisper_model, stable_whisper_cpu_preload, save_subtitles_to_folder, folder, save_other_formats, stable_whisper_demucs_denoiser, faster_whisper_chunk_length, whisperX_task, whisperX_highlight_words, whisperX_max_line_count, whisperX_batch_size, whisperX_diarize_max_speakers):
         if whisper_type != 'stable_whisper':
             if faster_whisper_model == 'Systran/faster-whisper-medium':
                 model_path = os.path.join(folder_paths.models_dir, 'audio_checkpoints\ExtraModels\models--Systran--faster-whisper-medium')
@@ -420,13 +420,16 @@ class UL_DataProcess_Faster_Whisper:
                     model_path = stable_whisper_model
 
         model_device = get_device_by_name(device)
-        audio_save_path = audio
-                
-        dirname, filename = os.path.split(audio)
-        srt_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
-        # srt_path = os.path.join(os.path.expanduser("~"), r"Desktop\ref_audio", srt_name)
-        # sys_temp_dir = tempfile.gettempdir()
-        # temp_audio = os.path.join(sys_temp_dir, srt_name)
+        audio_save_path = audio_file_or_audio_tensor(audio)
+        
+        if ('waveform' in audio and 'sample_rate' in audio):
+            srt_name = f'whisper_subtitle_{time.time()}'
+        else:
+            dirname, filename = os.path.split(audio_save_path)
+            srt_name = str(filename).replace(".wav", "").replace(".mp3", "").replace(".m4a", "").replace(".ogg", "").replace(".flac", "").replace(".mp4", "").replace(".mkv", "").replace(".flv", "").replace(".ts", "").replace(".rmvb", "").replace(".rm", "").replace(".avi", "")
+            # srt_path = os.path.join(os.path.expanduser("~"), r"Desktop\ref_audio", srt_name)
+            # sys_temp_dir = tempfile.gettempdir()
+            # temp_audio = os.path.join(sys_temp_dir, srt_name)
         
         audio_save_path = get_audio_from_video(audio_save_path)
             

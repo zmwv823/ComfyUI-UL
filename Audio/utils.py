@@ -703,7 +703,7 @@ def get_audio_from_video(input_video_path):
         if '.avi' in input_video_path:
             # -i 表示input，即输入文件, -f 表示format，即输出格式, -vn表示video not，即输出不包含视频，注：输出位置不能覆盖原始文件(输入文件)。
             # os.system(f'ffmpeg -i "{input_video_path}" -f wav -vn {temp_audio} -y')
-            temp_audio = convert_audio_or_video2wav(keep_info=True, acodec='pcm_s16le', input_audio=input_video_path, channels=2, sample_rate='48000')
+            temp_audio = convert_audio_or_video2wav(keep_info=True, acodec=None, input_audio=input_video_path, channels=None, sample_rate=None)
         else:
             # 读取视频文件
             video = VideoFileClip(input_video_path)

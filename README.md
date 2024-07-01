@@ -1,8 +1,12 @@
 # My Personal custom-nodes | For Study Purpose Only | Not Recommeded  |  Will Not Accept Any Issue
 # 个人专属插件  |  仅用于学习  |  不建议使用  |  不接收issue
 # Warning:
+- **Lots of bugs**---**大量bug**。
 - **Tensorflow** need specified cuda_version to run on gpu, but on native windows [tensorflow 2.10+: look at the note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) will not work on cuda, we need linux or wsl2 to make gpu work. In this case, `damo/nlp_csanmt_translation_zh2en` translator will run slowly on cpu---**Tensorflow** 需要特定版本cuda才能跑到gpu上，但是在原生windows上 [tensorflow 2.10+：详情看note](https://github.com/tensorflow/tensorflow/releases/tag/v2.11.1) 无法调用gpu，必须使用linux或者wsl2才行。这种情况下`damo/nlp_csanmt_translation_zh2en`翻译只能跑在cpu上，速度很慢。
-- **Deepspeed** need specified **os、cuda version and torch version**, deepspeed package in this node folder just for **windows with cu12 torch2.2+**, you have to delete it in this node_folder and pip install suitable deepspeed depend on your case---**Deepspeed** 需要**特定os、cuda版本和torch版本**，本插件内的Deepspeed包**仅适用于windows+cu12+torch2.2+**，你需要手动删除插件内deepspeed然后pip安装适合你自己的deepspeed包.----->`ComfyUI-UL\Audio\site_packages`----->deepspeed wheels [alltalk_tts/releases](https://github.com/erew123/alltalk_tts/releases)
+- **Deepspeed** for XTTS need specified **os、cuda version and torch version**, you have to pip install suitable deepspeed depend on your case---XTTS选项**Deepspeed** 需要**特定os、cuda版本和torch版本**，你需要手动pip安装适合你自己的deepspeed包
+- Prebuilt deepspeed wheels---编译好的deepspeed whl文件 -----> [alltalk_tts/releases](https://github.com/erew123/alltalk_tts/releases)
+# Models logic---模型逻辑:
+- First check specified folder whether model exist, if ok then load model from folder. If not ok, auto download or load the auto downloaded cached model file---首先检查指定目录下是否存在模型文件，有的话加载该目录下的模型。没有的话，自动下载或者加载已经缓存好的模型文件。
 ## 1、[AnyText](./AnyText/README.md) 
 - Original Github Repo: [tyxsspa/AnyText](https://github.com/tyxsspa/AnyText)
 - Original Modelscope Repo: [damo/cv_anytext_text_generation_editing](https://modelscope.cn/models/iic/cv_anytext_text_generation_editing/summary)
@@ -26,31 +30,39 @@
 - Original Github Repo: [2Noise/ChatTTS](https://github.com/2noise/ChatTTS)
 - Original Huggingface Repo: [2Noise/ChatTTS](https://huggingface.co/2Noise/ChatTTS)
 - (TTS) Text to audio---文本转语音。
-### facebook--musicgen-small: need ffmpeg (transformers_audio_continuation not work)--需要ffmpeg (transformers_audio_continuation选项没能跑通)。
+### facebook--musicgen-small: transformers_audio_continuation not work---transformers_audio_continuation选项没能跑通。
 - Original Huggingface Repo: [facebook--musicgen-small](https://huggingface.co/facebook/musicgen-small)
 - Generate music---生成音乐。
 - Generate melody with ref_audio---使用参考音频生成旋律。
 ##### 2 ways to implementation musicgen (not melody)---两种实现方法musicgen(非melody):
 - Audiocraft: fp32 only---仅fp32.
 - Transformers: much less control, such as without generation_length (seconds) control---可控参数很少，例如无法控制生成长度.
-### OpenVoiceV2: need ffmpeg--需要ffmpeg。
+### OpenVoiceV2:
 - Original Github Repo: [myshell-ai/OpenVoice](https://github.com/myshell-ai/OpenVoice)
 - Original Huggingface Repo: [myshell-ai/OpenVoiceV2](https://huggingface.co/myshell-ai/OpenVoiceV2)
 - Voice clone---音色克隆。
-### XTTS v2: need ffmpeg--需要ffmpeg。
+### XTTS v2:
 - Original Github Repo: [coqui-ai/TTS](https://github.com/coqui-ai/TTS)
 - Original Huggingface Repo: [coqui/XTTS-v2](https://huggingface.co/coqui/XTTS-v2)
 - (TTS) Text to voice + Voice clone---文本转语音和音色克隆。
-### uvr5: need ffmpeg--需要ffmpeg。
+### uvr5:
 - Original Github Repo: [Anjok07/ultimatevocalremovergui](https://github.com/Anjok07/ultimatevocalremovergui)
 - Original Huggingface Repo: [Delik/uvr5_weights](https://huggingface.co/Delik/uvr5_weights)
 - Split vocal and bgm---分离人声和旋律。
 - Only one node can be used in ComfyUI, multiple doesn't work---在ComfyUI中仅能使用一个此节点，多个此节点只能输出后面执行的那个节点的结果。
-### noise supression (16k/48k): need ffmpeg--需要ffmpeg。
+### noise supression (16k/48k):
 - Original Modelscope Repo: [damo/speech_frcrn_ans_cirm_16k](https://www.modelscope.cn/models/iic/speech_frcrn_ans_cirm_16k)
 - Original Modelscope Repo: [damo/speech_dfsmn_ans_psm_48k_causal](https://www.modelscope.cn/models/iic/speech_dfsmn_ans_psm_48k_causal)
 - Acoustic noise suppression---人声降噪。
 - Uuid_output_noPreview option: with this checked, we can use multiple noise_supression node in comfyUI, but without preview---开启这个选项，我们可以在comfyUI中使用多个noise_supression节点，但是没有预览。
+### audiotsm: change the speed of an audio signal without changing its pitch---音频变速不变调。
+- Original Huggingface Repo: [Muges/audiotsm](https://github.com/Muges/audiotsm)
+- [AudioTSM examples---官方示例](https://muges.github.io/audiotsm/)---[Docs(en) latest---最新英文文档](https://audiotsm.readthedocs.io/en/latest/)
+### convert audio or video2wav
+- use ffmpeg-python---[github--kkroening/ffmpeg-python](https://github.com/kkroening/ffmpeg-python)---[ffmpeg-python documentation---文档](https://kkroening.github.io/ffmpeg-python/)
+### trim audio
+- use pydub---[github--jiaaro/pydub](https://github.com/jiaaro/pydub)
+### load audio or video
 ### Models:
 - Manual place model_path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
 ```
@@ -105,6 +117,7 @@ PS D:\AI\ComfyUI_windows_portable\ComfyUI\models\t5>
 - **faster-whisper:** it can translate some languages to each other with large-v3---使用large-v3模型可以互译部分语言。
 - **whisperX:** it can generate subtitle with speakerid---能生成带说话人id的字幕。
 - **Extra:** faster-whisper and whisperX load the same models, stable-whisper load single_file models---faster-whisper和whisperX使用相同的模型，stable-whisper使用单文件模型.
+- **Input and output**: if input is tensor (comfy_load_audio), output subtitle file name will be `whisper_subtitle_{time.time}.xxx`---如果使用tensor(comfy_load_audio)作输入，生成的字幕文件名为`whisper_subtitle_{time.time}.xxx`。
 - ![](./DataProcess/assets/DataProcess-wf.png)
 ### Models:
 - Manual place model_path, ignore it if auto download---手动放置模型位置，自动下载模型可无视。
@@ -134,5 +147,5 @@ D:\AI\ComfyUI_windows_portable\ComfyUI\models\prompt_generator>
 - Max input 30fps-30s-1920x1080 video recommended when video card got 16GB vram---使用16G显存的显卡测试时，建议的最大输入为 30fps帧率下30s时长的1920x1080分辨率视频。
 - ![](./Video/assets/Video-wf.png)
 ## 6、[UL_common]()
-- Text input---文本输入。
+- Text input and ShowText---文本输入和显示文本。
 - ![](./UL_common/assets/UL_common-wf.png)
