@@ -1,6 +1,4 @@
 import os
-import audiotsm.io
-import audiotsm.io.wav
 import torch
 import time
 import shutil
@@ -9,7 +7,7 @@ import numpy as np
 import folder_paths
 from pydub import AudioSegment
 import audiotsm.wsola
-import audiotsm.io.wav
+from audiotsm.io.wav import WavReader, WavWriter
 # import time
 from ..UL_common.common import is_module_imported, get_device_by_name, get_dtype_by_name
 # from huggingface_hub import snapshot_download as hg_snapshot_download
@@ -524,8 +522,8 @@ class UL_Audio_XTTS:
             
             clone_path = f"{temp_folder}/cloned_{wav_name}"
             
-            reader = audiotsm.io.wav.WavReader(tmp_path)
-            writer = audiotsm.io.wav.WavWriter(clone_path,channels=reader.channels, samplerate=reader.samplerate)
+            reader = WavReader(tmp_path)
+            writer = WavWriter(clone_path,channels=reader.channels, samplerate=reader.samplerate)
             
             wsloa = audiotsm.wsola(channels=reader.channels,speed=ratio)
             wsloa.run(reader=reader,writer=writer)
@@ -919,6 +917,11 @@ class UL_Audio_audiotsm:
         return {
             "required": {
                 "audio": ("AUDIO",),
+                "method": (["phasevocoder", "wsloa", "ola"],{"default": "wsloa"}), 
+                "frame_length":  ("INT", {"default": 2048, "min": 0, "max": np.iinfo(np.int32).max}), 
+                "analysis_hop":  ("INT", {"default": 0, "min": 0, "max": np.iinfo(np.int32).max}), 
+                "synthesis_hop":  ("INT", {"default": 0, "min": 0, "max": np.iinfo(np.int32).max}), 
+                "wsloa_tolerance":  ("INT", {"default": 0, "min": 0, "max": np.iinfo(np.int32).max}), 
                 "speed": ("FLOAT" , {"default": 1, "min": 0, "max": 10000000, "step": 0.01}),
             },
         }
@@ -933,18 +936,40 @@ class UL_Audio_audiotsm:
     OUTPUT_IS_LIST = (False,False, )
     OUTPUT_NODE = True
     
-    def UL_Audio_audiotsm(self, audio, speed): 
-        from audiotsm import phasevocoder
-        from audiotsm.io.wav import WavReader, WavWriter
-        audio = audio_file_or_audio_tensor(audio)
+    def UL_Audio_audiotsm(self, audio, speed, method, frame_length, analysis_hop, synthesis_hop, wsloa_tolerance): 
+        """
+        '--speed', type=float, default=1: help="Set the speed ratio (e.g 0.5 to play at half speed)".
+        '--method', type=str, default="wsola": help="Select the TSM method (ola, wsola, or phasevocoder)".
+        '--frame-length', metavar='N', type=int, default=None: help="Set the frame length to N."
+        '--analysis-hop', metavar='N', type=int, default=None: help="Set the analysis hop to N."
+        '--synthesis-hop', metavar='N', type=int, default=None: help="Set the synthesis hop to N."
+        '--tolerance', metavar='N', type=int, default=None: help="Set the tolerance to N (only used when method is set to wsola)."
+        '--phase-locking', metavar='S', type=str, default=None: help=("Set the phase locking strategy (none or identity; ""only used when method is set to phasevocoder).")
+        '--output', metavar='FILENAME', type=str, default=None: help="Write the output in the wav file FILENAME.")
+        'input_filename', metavar='INPUT_FILENAME', type=str: help="The audio input file")
+        """
+        if analysis_hop == 0:
+            analysis_hop = None
+        if synthesis_hop == 0:
+            synthesis_hop = None
+        if wsloa_tolerance == 0:
+            wsloa_tolerance = None
         tmp_output_path = os.path.join(comfy_temp_dir, f'UL_audio_audiotsm_{time.time()}.wav')
         if ('waveform' in audio and 'sample_rate' in audio) or ('.wav' not in audio):
+            audio = audio_file_or_audio_tensor(audio)
             audio = convert_audio_or_video2wav(keep_info=False, input_audio=audio, acodec='pcm_s16le', channels=2, sample_rate='48000')
             
         with WavReader(audio) as reader:
             with WavWriter(tmp_output_path, reader.channels, reader.samplerate) as writer:
-                tsm = phasevocoder(reader.channels, speed=speed)
-                tsm.run(reader, writer)
+                if method == 'phasevocoder':
+                    phasevocoder = audiotsm.phasevocoder(reader.channels, speed=speed, frame_length=frame_length, analysis_hop=analysis_hop, synthesis_hop=synthesis_hop)
+                    phasevocoder.run(reader, writer)
+                elif method == 'wsloa':
+                    wsloa = audiotsm.wsola(channels=reader.channels,speed=speed, frame_length=frame_length, analysis_hop=analysis_hop, synthesis_hop=synthesis_hop, tolerance=wsloa_tolerance)
+                    wsloa.run(reader=reader,writer=writer)
+                else:
+                    ola = audiotsm.ola(channels=reader.channels,speed=speed, frame_length=frame_length, analysis_hop=analysis_hop, synthesis_hop=synthesis_hop)
+                    ola.run(reader=reader,writer=writer)
                 
         preview_audio_path = os.path.join(output_dir, 'audio', 'UL_audio_audiotsm.wav')
         shutil.copy(tmp_output_path, preview_audio_path)

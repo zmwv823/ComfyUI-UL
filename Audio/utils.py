@@ -750,41 +750,9 @@ def audio_tensor2audio_file(audio_tensor):
             f.write(buff.getbuffer())
     return(save_audio_temp_dir)
 
-def convert_audio_or_video2wav(keep_info=bool, acodec='', input_audio='', channels='', sample_rate=''):
+def convert_audio_or_video2wav(keep_info=None, acodec=None, input_audio=None, channels=None, sample_rate=None):
     output_audio = os.path.join(comfy_temp_dir, f'ffmpeg_converted_audio_{time.time()}.wav')
-    """
-    acodec:
-        pcm_alaw            PCM A-law
-        pcm_f32be           PCM 32-bit floating-point big-endian
-        pcm_f32le           PCM 32-bit floating-point little-endian
-        pcm_f64be           PCM 64-bit floating-point big-endian
-        pcm_f64le           PCM 64-bit floating-point little-endian
-        pcm_mulaw           PCM mu-law
-        pcm_s16be           PCM signed 16-bit big-endian
-        pcm_s16le           PCM signed 16-bit little-endian
-        pcm_s24be           PCM signed 24-bit big-endian
-        pcm_s24le           PCM signed 24-bit little-endian
-        pcm_s32be           PCM signed 32-bit big-endian
-        pcm_s32le           PCM signed 32-bit little-endian
-        pcm_s8              PCM signed 8-bit
-        pcm_u16be           PCM unsigned 16-bit big-endian
-        pcm_u16le           PCM unsigned 16-bit little-endian
-        pcm_u24be           PCM unsigned 24-bit big-endian
-        pcm_u24le           PCM unsigned 24-bit little-endian
-        pcm_u32be           PCM unsigned 32-bit big-endian
-        pcm_u32le           PCM unsigned 32-bit little-endian
-        pcm_u8              PCM unsigned 8-bit
-    sample_rate:
-        '16000'
-        '24000'
-        '32000'
-        '44100'
-        '48000'
-    channels:
-        1
-        2
-    """
-    if keep_info == True:
+    if keep_info:
         ffmpeg.input(input_audio).output(output_audio).run()
     else:
         (
