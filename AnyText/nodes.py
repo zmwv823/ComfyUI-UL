@@ -26,7 +26,7 @@ class UL_AnyText:
                 "sort_radio": (["↕", "↔"],{"default": "↔"}), 
                 "revise_pos": ("BOOLEAN", {"default": False}),
                 "img_count": ("INT", {"default": 1, "min": 1, "max": 10}),
-                "ddim_steps": ("INT", {"default": 20, "min": 1, "max": 100}),
+                "ddim_steps": ("INT", {"default": 20, "min": 2, "max": 100}),
                 "seed": ("INT", {"default": 9999, "min": -1, "max": 99999999}),
                 "nonEdit_random_gen_width": ("INT", {"default": 512, "min": 128, "max": 1920, "step": 64}),
                 "nonEdit_random_gen_height": ("INT", {"default": 512, "min": 128, "max": 1920, "step": 64}),

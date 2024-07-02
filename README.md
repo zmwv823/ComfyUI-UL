@@ -7,7 +7,7 @@
 - **Deepspeed** for XTTS need specified **os、cuda version and torch version**, you have to pip install suitable deepspeed depend on your case---XTTS选项**Deepspeed** 需要**特定os、cuda版本和torch版本**，你需要手动pip安装适合你自己的deepspeed包
 - Prebuilt deepspeed wheels---编译好的deepspeed whl文件 -----> [alltalk_tts/releases](https://github.com/erew123/alltalk_tts/releases)
 # Models logic---模型逻辑:
-- First check specified folder whether model exist, if ok then load model from folder. If not ok, auto download or load the auto downloaded cached model file---首先检查指定目录下是否存在模型文件，有的话加载该目录下的模型。没有的话，自动下载或者加载已经自动下载缓存好的模型文件。
+- First check specified folder whether model exist, if ok then load model from folder. If not ok, auto download or load the auto downloaded cached model file in `C:\Users\username\.cache`---首先检查指定目录下是否存在模型文件，有的话加载该目录下的模型。没有的话，自动下载或者加载已经自动下载缓存好在`C:\Users\username\.cache`的模型文件。
 # Abstract
 - [AnyText](#anytext)
 - [MiaoBi](#miaobi)

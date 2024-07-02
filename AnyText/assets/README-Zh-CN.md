@@ -4,8 +4,9 @@
 
 ## 警告: 
 - 这个插件生成质量可能比官方差很多。
-- 仅测试 **cuda+fp16** ，其他搭配自行测试。
+- 仅测试 **cuda+fp16/fp32** ，其他搭配自行测试。
 - 仅在**ComfyUI官方整合包稳定版**+**绿色便携(python_embed)**+**windows测试**，第三方整合包、虚拟环境和其他操作系统(例如linux)可能无法使用。
+- 如果出现`Input type (torch.cuda.FloatTensor) and weight type (torch.FloatTensor) should be the same`错误，打开**all_to_device**，也许有效。感谢 **@[602387193c](https://github.com/602387193c)**。
 ### v2测试，更加本地化，非远程代码模式。
 
 ## 使用说明:

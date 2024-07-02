@@ -226,8 +226,14 @@ class AnyText_Pipeline():
         masked_img = ((edit_image.astype(np.float32) / 127.5) - 1.0)*(1-np_hint)
         masked_img = np.transpose(masked_img, (2, 0, 1))
         masked_img = torch.from_numpy(masked_img.copy()).float().to(self.device)
+        # 确保模型在正确的设备上
+        self.model = self.model.to(self.device)
+        # 将masked_img移动到正确的设备并设置正确的数据类型
+        masked_img = masked_img.to(self.device)
         if self.use_fp16:
             masked_img = masked_img.half()
+        else:
+            masked_img = masked_img.float()
         encoder_posterior = self.model.encode_first_stage(masked_img[None, ...])
         masked_x = self.model.get_first_stage_encoding(encoder_posterior).detach()
         if self.use_fp16:
